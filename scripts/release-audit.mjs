@@ -10,7 +10,7 @@ const pkg = JSON.parse(text('package.json'));
 pass(pkg.version === '1.0.0-rc.2', 'package version must be 1.0.0-rc.2');
 pass(pkg.engines?.node === '^20.19.0 || >=22.12.0', 'Node engine must match the supported Vite 7 runtime floor');
 pass(pkg.devDependencies?.vite === '7.3.5', 'Vite must stay pinned to the security-patched 7.3.5 release');
-pass(pkg.devDependencies?.vitest === '3.2.5', 'Vitest must stay pinned to the security-patched 3.2.5 release');
+pass(pkg.devDependencies?.vitest === '3.2.7', 'Vitest must stay pinned to the security-patched 3.2.7 release');
 for (const [groupName, group] of Object.entries({ dependencies: pkg.dependencies ?? {}, devDependencies: pkg.devDependencies ?? {} })) {
   for (const [name, version] of Object.entries(group)) pass(/^\d+\.\d+\.\d+(?:-[0-9A-Za-z.-]+)?$/.test(String(version)), `${groupName}.${name} must be pinned to an exact release version`);
 }
@@ -39,7 +39,6 @@ const index = text('index.html');
 pass(index.includes('apple-touch-icon'), 'index.html lacks apple-touch icon');
 pass(index.includes('manifest.webmanifest'), 'index.html lacks manifest');
 pass(index.includes('name="referrer"') && index.includes('no-referrer'), 'index.html lacks release referrer policy');
-
 
 const viteConfig = text('vite.config.ts');
 pass(viteConfig.includes("sourcemap: false"), 'production source maps must be disabled for the release archive');
