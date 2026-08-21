@@ -5,6 +5,7 @@ import { AppErrorBoundary } from './app/components/AppErrorBoundary';
 import './styles/tokens.css';
 import './styles/global.css';
 import './styles/app.css';
+import './styles/m1.css';
 
 if ('serviceWorker' in navigator && import.meta.env.PROD) {
   window.addEventListener('load', () => {
