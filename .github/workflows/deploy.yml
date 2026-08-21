@@ -28,11 +28,6 @@ jobs:
         with:
           node-version: "22"
 
-      - name: Configure Pages to use GitHub Actions
-        env:
-          GH_TOKEN: ${{ github.token }}
-        run: gh api --method PUT "repos/${GITHUB_REPOSITORY}/pages" -f build_type=workflow
-
       - name: Release audit
         run: npm run audit:release
 
@@ -49,7 +44,7 @@ jobs:
         uses: actions/configure-pages@v5
 
       - name: Upload production build
-        uses: actions/upload-pages-artifact@v3
+        uses: actions/upload-pages-artifact@v4
         with:
           path: ./dist
 
