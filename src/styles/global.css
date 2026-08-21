@@ -2,20 +2,41 @@
 
 html, body, #root { min-height: 100%; margin: 0; }
 
-html { background: var(--ml-white); }
+html {
+  background: var(--ml-canvas);
+  font-size: 16px;
+  scroll-behavior: smooth;
+}
 
 body {
   min-width: 320px;
   color: var(--ml-ink);
-  background: var(--ml-white);
+  background: var(--ml-canvas);
   font-family: var(--ml-font-ui);
   font-size: 16px;
+  line-height: var(--ml-leading-normal);
+  letter-spacing: -0.006em;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
-button, input { font: inherit; }
+button, input, textarea, select { font: inherit; }
 button { color: inherit; }
+
+h1, h2, h3, h4 {
+  font-family: var(--ml-font-display);
+  text-wrap: balance;
+}
+
+p { text-wrap: pretty; }
+
+code, kbd, samp { font-family: var(--ml-font-mono); }
+
+math {
+  font-family: var(--ml-font-math);
+  font-variant-numeric: lining-nums tabular-nums;
+}
 
 button:focus-visible,
 input:focus-visible,
@@ -23,8 +44,12 @@ textarea:focus-visible,
 select:focus-visible,
 a:focus-visible,
 [tabindex]:focus-visible {
-  outline: 2px solid var(--ml-blue);
+  outline: 3px solid color-mix(in srgb, var(--ml-blue) 65%, white);
   outline-offset: 2px;
 }
 
-::selection { background: #cfe1ff; }
+::selection { background: #cfdbff; color: var(--ml-ink); }
+
+@media (max-width: 820px) {
+  html { font-size: 16px; }
+}
