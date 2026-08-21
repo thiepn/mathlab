@@ -1,31 +1,49 @@
 :root {
   color-scheme: light;
 
+  /* M1 surface system */
   --ml-white: #ffffff;
-  --ml-paper: #fbfcfe;
-  --ml-ink: #101827;
-  --ml-ink-soft: #3f4a5a;
-  --ml-muted: #5f6b7a;
-  --ml-line: #d9e0e8;
-  --ml-line-strong: #bec9d6;
-  --ml-blue: #1769e0;
-  --ml-blue-strong: #0759ca;
-  --ml-blue-soft: #eef5ff;
-  --ml-blue-faint: #f7faff;
-  --ml-green: #16845b;
-  --ml-amber: #a76508;
-  --ml-red: #b33a3a;
+  --ml-canvas: #f4f6f8;
+  --ml-paper: #f8fafc;
+  --ml-paper-strong: #f1f4f7;
+  --ml-ink: #17202b;
+  --ml-ink-soft: #3e4a59;
+  --ml-muted: #647181;
+  --ml-muted-soft: #7e8997;
+  --ml-line: #dce2e8;
+  --ml-line-strong: #c5ced8;
+  --ml-blue: #2357d6;
+  --ml-blue-strong: #1746ba;
+  --ml-blue-soft: #eaf0ff;
+  --ml-blue-faint: #f5f7ff;
+  --ml-green: #177558;
+  --ml-green-soft: #eaf6f1;
+  --ml-amber: #95630d;
+  --ml-amber-soft: #fff6df;
+  --ml-red: #a73a42;
+  --ml-red-soft: #fff0f1;
 
-  --ml-font-ui: "IBM Plex Sans", "Avenir Next", "Segoe UI Variable", "Segoe UI", system-ui, sans-serif;
-  --ml-font-math: "STIX Two Math", "Cambria Math", "Times New Roman", serif;
-  --ml-font-mono: "Cascadia Code", "SFMono-Regular", Consolas, monospace;
+  /*
+   * Deliberately system-first: no remote font dependency, no flash of
+   * unstyled text, and the PWA remains fully usable offline.
+   */
+  --ml-font-ui: "Segoe UI Variable Text", "Aptos", "Segoe UI", -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+  --ml-font-display: "Segoe UI Variable Display", "Aptos Display", "Segoe UI", -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+  --ml-font-math: "Cambria Math", "STIX Two Math", "Latin Modern Math", "DejaVu Math TeX Gyre", "Times New Roman", serif;
+  --ml-font-mono: "Cascadia Mono", "Cascadia Code", "SFMono-Regular", Consolas, "Liberation Mono", monospace;
 
-  --ml-text-xs: 0.72rem;
-  --ml-text-sm: 0.82rem;
-  --ml-text-md: 0.94rem;
-  --ml-text-lg: 1.12rem;
-  --ml-text-xl: 1.45rem;
-  --ml-text-2xl: 1.9rem;
+  /* M1 readable type scale: no primary UI text below ~13px. */
+  --ml-text-xs: 0.82rem;
+  --ml-text-sm: 0.93rem;
+  --ml-text-md: 1rem;
+  --ml-text-lg: 1.18rem;
+  --ml-text-xl: 1.55rem;
+  --ml-text-2xl: 2.05rem;
+  --ml-text-3xl: 2.55rem;
+
+  --ml-leading-tight: 1.2;
+  --ml-leading-normal: 1.5;
+  --ml-leading-relaxed: 1.65;
 
   --ml-space-1: 4px;
   --ml-space-2: 8px;
@@ -33,25 +51,34 @@
   --ml-space-4: 16px;
   --ml-space-5: 20px;
   --ml-space-6: 24px;
+  --ml-space-7: 28px;
   --ml-space-8: 32px;
+  --ml-space-10: 40px;
+  --ml-space-12: 48px;
 
-  --ml-radius-xs: 3px;
-  --ml-radius-sm: 5px;
-  --ml-radius-md: 7px;
+  /* Structural rather than pill-heavy geometry. */
+  --ml-radius-xs: 4px;
+  --ml-radius-sm: 6px;
+  --ml-radius-md: 9px;
+  --ml-radius-lg: 12px;
 
-  --ml-shadow-float: 0 10px 28px rgba(27, 45, 73, 0.08);
-  --ml-header-height: 64px;
-  --ml-left-width: 246px;
-  --ml-right-width: 278px;
-  --ml-mobile-nav-height: 60px;
+  --ml-shadow-float: 0 16px 38px rgba(31, 45, 62, 0.12);
+  --ml-shadow-card: 0 1px 2px rgba(31, 45, 62, 0.04), 0 8px 24px rgba(31, 45, 62, 0.045);
+  --ml-shadow-input: 0 8px 24px rgba(35, 87, 214, 0.06);
+
+  --ml-header-height: 68px;
+  --ml-left-width: 268px;
+  --ml-right-width: 316px;
+  --ml-mobile-nav-height: 64px;
+  --ml-content-max: 1160px;
 }
 
-/* P6 visualization palette: deliberately distinct, restrained series colors. */
+/* Visualization colors remain distinct on the lighter M1 canvas. */
 :root {
-  --ml-plot-1: #1769e0;
-  --ml-plot-2: #16845b;
-  --ml-plot-3: #a76508;
+  --ml-plot-1: #2357d6;
+  --ml-plot-2: #177558;
+  --ml-plot-3: #a8680c;
   --ml-plot-4: #7650bd;
-  --ml-plot-5: #bd4646;
-  --ml-plot-6: #0f8292;
+  --ml-plot-5: #b94a54;
+  --ml-plot-6: #0a7d8c;
 }
