@@ -33,17 +33,17 @@ jobs:
           GH_TOKEN: ${{ github.token }}
         run: gh api --method PUT "repos/${GITHUB_REPOSITORY}/pages" -f build_type=workflow
 
+      - name: Release audit
+        run: npm run audit:release
+
       - name: Install dependencies
-        run: npm install
+        run: npm install --no-package-lock
 
       - name: Run tests
         run: npm run test
 
       - name: Build
         run: npm run build
-
-      - name: Release audit
-        run: npm run audit:release
 
       - name: Configure GitHub Pages
         uses: actions/configure-pages@v5
