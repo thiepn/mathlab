@@ -10,11 +10,13 @@ export const OPERATIONS_REQUIRING_CONTROLS = new Set([
   'recurrence-terms','sorting-trace','binary-search','numerical-root','numerical-derivative','numerical-integral',
   'iterative-linear-solve','ode-solve','verify-transition','verify',
   'partial-derivative','mixed-partial','directional-derivative','linearization','tangent-plane','lagrange-multipliers',
+  'coordinate-transform','double-integral','triple-integral','scalar-line-integral','line-integral','surface-integral','flux-integral','green-theorem','gauss-theorem','stokes-theorem',
 ]);
 
 const PRIORITY = [
   'solve','solve-inequality','solve-system','simplify','factor','expand',
   'gradient','jacobian','hessian','multivariable-critical-points','second-derivative-test',
+  'vector-field-profile','divergence','curl','conservative-field','scalar-potential',
   'function-profile','derivative','differentiate','integrate','zeros','graph','det','rref','rank','inverse','eigen','linear-profile','descriptive-statistics',
   'distribution-profile','evaluate-probability','logic-profile','graph-profile','recurrence-profile','numerical-linear-solve',
   'condition-estimate','set-profile','relation-profile','complexity-profile','inspect-exact','inspect-decimal',
