@@ -1,4 +1,4 @@
-import { capabilitiesFor as e5CapabilitiesFor, type ObjectCapability } from './capabilitiesE5';
+import type { ObjectCapability } from './capabilities';
 import type { SemanticMathObject } from './types';
 
 type Seed=Omit<ObjectCapability,'applicable'|'available'|'reason'>;
@@ -27,7 +27,7 @@ const DISTRIBUTION:Seed[]=[
 function ready(seed:Seed):ObjectCapability{return{...seed,applicable:true,available:true};}
 function blocked(seed:Seed,reason:string):ObjectCapability{return{...seed,applicable:false,available:false,reason};}
 function numericResolved(object:SemanticMathObject):boolean{return object.variables.length===0&&object.domain!=='complex';}
-function e6Capabilities(object:SemanticMathObject):ObjectCapability[]{
+export function e6CapabilitiesForObject(object:SemanticMathObject):ObjectCapability[]{
   if(object.kind==='matrix'&&object.shape.type==='matrix'){
     const {rows,columns}=object.shape;
     return MATRIX.map(seed=>{
@@ -51,12 +51,8 @@ function e6Capabilities(object:SemanticMathObject):ObjectCapability[]{
   }
   return[];
 }
-export function capabilitiesFor(object:SemanticMathObject|null):ObjectCapability[]{
-  if(!object)return[];
-  let base=e5CapabilitiesFor(object);
-  if(object.kind==='distribution'&&object.valueAst.type==='call'&&object.valueAst.name==='jointpmf'){
-    base=base.filter(item=>!['distribution-probability','distribution-quantile','sampling-mean-profile','simulate-distribution'].includes(item.id));
-  }
-  return[...base,...e6Capabilities(object)];
+
+export function filterBaseCapabilitiesForE6(object:SemanticMathObject,base:ObjectCapability[]):ObjectCapability[]{
+  if(object.kind==='distribution'&&object.valueAst.type==='call'&&object.valueAst.name==='jointpmf')return base.filter(item=>!['distribution-probability','distribution-quantile','sampling-mean-profile','simulate-distribution'].includes(item.id));
+  return base;
 }
-export type{ObjectCapability};
