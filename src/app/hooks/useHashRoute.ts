@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 
-export const ROUTES = ['workspace', 'visualize', 'proof', 'practice', 'reference'] as const;
+export const ROUTES = ['workspace', 'tools', 'visualize', 'proof', 'practice', 'reference'] as const;
 export type Route = (typeof ROUTES)[number];
 
 function readRoute(): Route {
