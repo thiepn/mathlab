@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import type { MathResult } from '../../lib/math/types';
 import { MathWorkerClient } from '../../lib/worker/client';
 import { AlgebraResult } from './AlgebraResult';
+import { MathLinesPreview } from './MathLinesPreview';
 
 type ProofMode = 'transition' | 'chain' | 'entailment';
 
@@ -70,23 +71,23 @@ export function ProofLabPage({ initialSource = '' }: ProofLabPageProps) {
 
         {mode === 'transition' && (
           <div className="proof-form-grid">
-            <label><span>Before</span><textarea value={before} onChange={(event) => setBefore(event.target.value)} rows={3} spellCheck={false} /></label>
-            <label><span>Proposed next line</span><textarea value={after} onChange={(event) => setAfter(event.target.value)} rows={3} spellCheck={false} /></label>
-            <label className="proof-wide"><span>Assumptions · one per line or separated by ;</span><textarea value={assumptions} onChange={(event) => setAssumptions(event.target.value)} rows={2} placeholder="x != 0" spellCheck={false} /></label>
+            <label><span>Before</span><textarea value={before} onChange={(event) => setBefore(event.target.value)} rows={3} spellCheck={false} /><MathLinesPreview source={before} label="Rendered current line" /></label>
+            <label><span>Proposed next line</span><textarea value={after} onChange={(event) => setAfter(event.target.value)} rows={3} spellCheck={false} /><MathLinesPreview source={after} label="Rendered proposed line" /></label>
+            <label className="proof-wide"><span>Assumptions · one per line or separated by ;</span><textarea value={assumptions} onChange={(event) => setAssumptions(event.target.value)} rows={2} placeholder="x != 0" spellCheck={false} />{assumptions.trim() && <MathLinesPreview source={assumptions} label="Rendered assumptions" />}</label>
           </div>
         )}
 
         {mode === 'chain' && (
           <div className="proof-form-grid single-column">
-            <label><span>Work · one mathematical line per step</span><textarea value={chain} onChange={(event) => setChain(event.target.value)} rows={9} spellCheck={false} /></label>
-            <label><span>Assumptions · carried through the full chain</span><textarea value={assumptions} onChange={(event) => setAssumptions(event.target.value)} rows={2} placeholder="x != 0" spellCheck={false} /></label>
+            <label><span>Work · one mathematical line per step</span><textarea value={chain} onChange={(event) => setChain(event.target.value)} rows={9} spellCheck={false} /><MathLinesPreview source={chain} label="Rendered derivation chain" /></label>
+            <label><span>Assumptions · carried through the full chain</span><textarea value={assumptions} onChange={(event) => setAssumptions(event.target.value)} rows={2} placeholder="x != 0" spellCheck={false} />{assumptions.trim() && <MathLinesPreview source={assumptions} label="Rendered assumptions" />}</label>
           </div>
         )}
 
         {mode === 'entailment' && (
           <div className="proof-form-grid">
-            <label><span>Premises · one per line</span><textarea value={premises} onChange={(event) => setPremises(event.target.value)} rows={6} spellCheck={false} /></label>
-            <label><span>Conclusion</span><textarea value={conclusion} onChange={(event) => setConclusion(event.target.value)} rows={6} spellCheck={false} /></label>
+            <label><span>Premises · one per line</span><textarea value={premises} onChange={(event) => setPremises(event.target.value)} rows={6} spellCheck={false} /><MathLinesPreview source={premises} label="Rendered premises" /></label>
+            <label><span>Conclusion</span><textarea value={conclusion} onChange={(event) => setConclusion(event.target.value)} rows={6} spellCheck={false} /><MathLinesPreview source={conclusion} label="Rendered conclusion" /></label>
           </div>
         )}
 
