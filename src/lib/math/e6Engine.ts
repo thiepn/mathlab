@@ -26,6 +26,7 @@ import {
   wilcoxonSignedRank,
   type E6Transform,
 } from './e6ProbabilityStatistics';
+import { validateContinuousQuantileProbability, validateE6MatrixOperation } from './e6Validation';
 import type { MathOperationRequest, MathResult } from './types';
 
 const E6_OPERATIONS=new Set([
@@ -39,7 +40,8 @@ const DISTRIBUTION_OPERATIONS=new Set(['distribution-profile','distribution-prob
 function requestAst(request:MathOperationRequest):AstNode{if(!request.ast)throw new Error('E6 requires a resolved mathematical object.');const ast=request.ast.type==='definition'?request.ast.right:request.ast;return substituteBindings(ast,request.bindings??[],[]);}
 function textOption(request:MathOperationRequest,name:string):string|undefined{const raw=request.options?.[name];if(raw===undefined)return undefined;const value=String(raw).trim();return value||undefined;}
 function numberOption(request:MathOperationRequest,name:string,fallback?:number):number|undefined{const raw=request.options?.[name];if(raw===undefined||raw==='')return fallback;const value=Number(raw);return Number.isFinite(value)?value:fallback;}
-function result(request:MathOperationRequest,out:E6Transform):MathResult{return{id:request.id,operation:request.operation,input:request.input,exactness:out.exactness,value:out.display,display:out.display,resultAst:out.ast,variable:request.variable,assumptions:request.assumptions??[],warnings:out.warnings,steps:[],sections:out.sections,createdAt:Date.now()};}
+function finiteResultAst(ast:AstNode|undefined):AstNode|undefined{if(ast?.type==='number'&&!Number.isFinite(Number(ast.value)))return undefined;return ast;}
+function result(request:MathOperationRequest,out:E6Transform):MathResult{return{id:request.id,operation:request.operation,input:request.input,exactness:out.exactness,value:out.display,display:out.display,resultAst:finiteResultAst(out.ast),variable:request.variable,assumptions:request.assumptions??[],warnings:out.warnings,steps:[],sections:out.sections,createdAt:Date.now()};}
 function isJoint(node:AstNode):boolean{return node.type==='call'&&node.name==='jointpmf';}
 
 export class E6MathEngine extends E5MathEngine{
@@ -48,12 +50,17 @@ export class E6MathEngine extends E5MathEngine{
     if(DISTRIBUTION_OPERATIONS.has(request.operation)&&isE6DistributionCall(ast)){
       if(request.operation==='distribution-profile')return result(request,advancedDistributionProfile(ast));
       if(request.operation==='distribution-probability')return result(request,advancedDistributionProbability(ast,textOption(request,'event')??'le',textOption(request,'value'),textOption(request,'lower'),textOption(request,'upper')));
-      if(request.operation==='distribution-quantile')return result(request,advancedDistributionQuantile(ast,textOption(request,'probability')??'0.5'));
+      if(request.operation==='distribution-quantile'){
+        const probability=textOption(request,'probability')??'0.5';
+        validateContinuousQuantileProbability(probability);
+        return result(request,advancedDistributionQuantile(ast,probability));
+      }
       if(request.operation==='sampling-mean-profile')return result(request,advancedSamplingMean(ast,numberOption(request,'sampleSize',30)!));
       if(request.operation==='simulate-distribution')return result(request,simulateAdvancedDistribution(ast,numberOption(request,'count',1000)!,numberOption(request,'seed',42)!));
     }
     if(request.operation==='distribution-profile'&&isJoint(ast))return result(request,jointDistributionProfile(ast));
     if(!E6_OPERATIONS.has(request.operation))return super.execute(request);
+    validateE6MatrixOperation(request.operation,ast);
     const confidence=numberOption(request,'confidence',0.95)!;
     const nullValue=numberOption(request,'nullValue',0)!;
     const alternative=(textOption(request,'alternative')??'two-sided') as 'two-sided'|'less'|'greater';
