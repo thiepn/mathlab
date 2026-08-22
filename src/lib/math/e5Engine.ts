@@ -1,9 +1,9 @@
 import type { AstNode } from './ast';
 import { E4MathEngine } from './e4Engine';
+import { numericalConvexityDiagnostic } from './e5Correctness';
 import {
   conjugateGradient,
   constrainedOptimize,
-  convexityDiagnostic,
   linearProgram2d,
   nonlinearSystemSolve,
   numericalCholesky,
@@ -54,7 +54,7 @@ export class E5MathEngine extends E4MathEngine{
       case'nonlinear-system-solve':return result(request,nonlinearSystemSolve(ast,request.input,textOption(request,'point'),tolerance,maxIterations));
       case'numerical-optimize':return result(request,numericalOptimize(ast,request.input,{method:(textOption(request,'method') as OptimizationMethod|undefined),point:textOption(request,'point'),tolerance,maxIterations}));
       case'constrained-optimize':return result(request,constrainedOptimize(ast,request.input,{constraint:textOption(request,'constraint'),point:textOption(request,'point'),tolerance,maxIterations}));
-      case'convexity-diagnostic':return result(request,convexityDiagnostic(ast,request.input,textOption(request,'point')));
+      case'convexity-diagnostic':return result(request,numericalConvexityDiagnostic(ast,request.input,textOption(request,'point')));
       case'linear-program':return result(request,linearProgram2d(ast,{objective:textOption(request,'objective'),sense:textOption(request,'sense')}));
       default:return super.execute(request);
     }
