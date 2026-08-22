@@ -22,6 +22,7 @@ export function App() {
   const [commandOpen, setCommandOpen] = useState(false);
   const [online, setOnline] = useState(() => navigator.onLine);
   const [drawerOpen, setDrawerOpen] = useState(false);
+  const [toolsOpen, setToolsOpen] = useState(false);
   const [activeParsed, setActiveParsed] = useState<ParsedMath>(() => parseMath(''));
   const [mathResult, setMathResult] = useState<MathResult | null>(null);
   const [engineStatus, setEngineStatus] = useState<'idle' | 'running' | 'error' | 'done'>('idle');
@@ -45,6 +46,10 @@ export function App() {
   useEffect(() => {
     const label = route === 'proof' ? 'Proof Lab' : route[0].toUpperCase() + route.slice(1);
     document.title = `${label} · MathLab`;
+    if (route !== 'workspace') {
+      setToolsOpen(false);
+      setDrawerOpen(false);
+    }
   }, [route]);
 
   useEffect(() => {
@@ -83,10 +88,13 @@ export function App() {
       });
       setMathResult(result);
       setEngineStatus('done');
+      setToolsOpen(false);
+      window.requestAnimationFrame(() => document.getElementById('mathlab-result')?.scrollIntoView({ behavior: 'smooth', block: 'start' }));
     } catch (error) {
       setMathResult(null);
       setEngineStatus('error');
       setEngineError(error instanceof Error ? error.message : 'The local mathematics engine could not complete this operation.');
+      window.requestAnimationFrame(() => document.getElementById('mathlab-result')?.scrollIntoView({ behavior: 'smooth', block: 'start' }));
     } finally {
       setRunningOperation('');
     }
@@ -103,8 +111,17 @@ export function App() {
         controller.clearSelection();
         setActiveParsed(parseMath(''));
         setRoute('workspace');
+        setToolsOpen(false);
       }
-      if (event.key === 'Escape') setCommandOpen(false);
+      if ((event.ctrlKey || event.metaKey) && event.key === '.') {
+        event.preventDefault();
+        setRoute('workspace');
+        setToolsOpen((value) => !value);
+      }
+      if (event.key === 'Escape') {
+        setCommandOpen(false);
+        setToolsOpen(false);
+      }
     };
     window.addEventListener('keydown', onKey);
     return () => window.removeEventListener('keydown', onKey);
@@ -115,6 +132,7 @@ export function App() {
     const object = controller.state.objects.find((item) => item.id === id);
     setActiveParsed(parseMath(object?.source ?? ''));
     setDrawerOpen(false);
+    setToolsOpen(false);
   };
 
   const openObject = (id: string) => {
@@ -125,8 +143,10 @@ export function App() {
   const newWork = () => {
     controller.clearSelection();
     setActiveParsed(parseMath(''));
+    clearResult();
     setRoute('workspace');
     setDrawerOpen(false);
+    setToolsOpen(false);
   };
 
   const requestDelete = (id: string) => {
@@ -137,46 +157,83 @@ export function App() {
     if (window.confirm(`Delete ${object.name ?? 'this object'}?${dependencyWarning}`)) controller.removeObject(id);
   };
 
+  const openWorkspaceObjects = () => {
+    if (route !== 'workspace') setRoute('workspace');
+    setToolsOpen(false);
+    setDrawerOpen(true);
+  };
+
   return (
     <div className="app-shell">
       <a className="skip-link" href="#mathlab-main">Skip to main content</a>
-      <Header route={route} online={online} onRoute={setRoute} onCommand={() => setCommandOpen(true)} onMobileMenu={() => setDrawerOpen(true)} />
-      <div className="app-grid" id="mathlab-main" tabIndex={-1}>
-        <ObjectSidebar
-          open={drawerOpen}
-          onClose={() => setDrawerOpen(false)}
-          objects={controller.state.objects}
-          activity={controller.state.activity}
-          pinnedObjectIds={controller.state.pinnedObjectIds}
-          activeObjectId={controller.state.activeObjectId}
-          onSelect={openObject}
-          onDelete={requestDelete}
-          onTogglePin={controller.togglePin}
-          onNew={newWork}
-        />
-        {route === 'workspace' && <Workspace controller={controller} onActiveParsed={changeActiveParsed} mathResult={mathResult} engineStatus={engineStatus} engineError={engineError} onClearResult={clearResult} />}
+      <Header route={route} online={online} onRoute={setRoute} onCommand={() => setCommandOpen(true)} onMobileMenu={openWorkspaceObjects} />
+      <div className={`app-grid ${route === 'workspace' ? 'is-workspace-route' : 'is-focus-route'}`} id="mathlab-main" tabIndex={-1}>
+        {route === 'workspace' && (
+          <ObjectSidebar
+            open={drawerOpen}
+            onClose={() => setDrawerOpen(false)}
+            objects={controller.state.objects}
+            activity={controller.state.activity}
+            pinnedObjectIds={controller.state.pinnedObjectIds}
+            activeObjectId={controller.state.activeObjectId}
+            onSelect={openObject}
+            onDelete={requestDelete}
+            onTogglePin={controller.togglePin}
+            onNew={newWork}
+          />
+        )}
+
+        {route === 'workspace' && (
+          <Workspace
+            controller={controller}
+            onActiveParsed={changeActiveParsed}
+            mathResult={mathResult}
+            engineStatus={engineStatus}
+            engineError={engineError}
+            onClearResult={clearResult}
+            onAction={(operation) => {
+              if (operation === 'graph') { setRoute('visualize'); return; }
+              void executeOperation(operation);
+            }}
+            onOpenTools={() => setToolsOpen(true)}
+            onOpenProof={() => setRoute('proof')}
+            runningOperation={runningOperation}
+          />
+        )}
         {route === 'visualize' && <VisualizationPage objects={controller.state.objects} activeObject={controller.activeObject} onActivateObject={activateObject} onOpenObject={openObject} />}
         {route === 'proof' && <ProofLabPage initialSource={contextObject?.source ?? ''} />}
         {route === 'practice' && <PracticePage />}
         {route === 'reference' && <CourseReferencePage />}
-        <ContextPanel
-          object={contextObject}
-          diagnostics={liveResolution.diagnostics}
-          persisted={Boolean(persistedContext)}
-          pinned={persistedContext ? controller.state.pinnedObjectIds.includes(persistedContext.id) : false}
-          dependents={dependents}
-          onRename={persistedContext ? (name) => controller.renameObject(persistedContext.id, name) : undefined}
-          onDuplicate={persistedContext ? () => controller.duplicate(persistedContext.id) : undefined}
-          onTogglePin={persistedContext ? () => controller.togglePin(persistedContext.id) : undefined}
-          onDelete={persistedContext ? () => requestDelete(persistedContext.id) : undefined}
-          onAction={(operation, options) => {
-            if (operation === 'graph') { setRoute('visualize'); return; }
-            if (route !== 'workspace') setRoute('workspace');
-            void executeOperation(operation, options);
-          }}
-          runningOperation={runningOperation}
-        />
       </div>
+
+      {route === 'workspace' && toolsOpen && (
+        <>
+          <button className="workspace-tools-backdrop" onClick={() => setToolsOpen(false)} aria-label="Close tools and inspector" />
+          <section className="workspace-tools-drawer" role="dialog" aria-modal="true" aria-label="Tools and object inspector">
+            <header>
+              <div><span className="section-kicker">Current object</span><strong>Tools &amp; inspector</strong></div>
+              <button onClick={() => setToolsOpen(false)} aria-label="Close tools">×</button>
+            </header>
+            <ContextPanel
+              object={contextObject}
+              diagnostics={liveResolution.diagnostics}
+              persisted={Boolean(persistedContext)}
+              pinned={persistedContext ? controller.state.pinnedObjectIds.includes(persistedContext.id) : false}
+              dependents={dependents}
+              onRename={persistedContext ? (name) => controller.renameObject(persistedContext.id, name) : undefined}
+              onDuplicate={persistedContext ? () => controller.duplicate(persistedContext.id) : undefined}
+              onTogglePin={persistedContext ? () => controller.togglePin(persistedContext.id) : undefined}
+              onDelete={persistedContext ? () => requestDelete(persistedContext.id) : undefined}
+              onAction={(operation, options) => {
+                if (operation === 'graph') { setToolsOpen(false); setRoute('visualize'); return; }
+                void executeOperation(operation, options);
+              }}
+              runningOperation={runningOperation}
+            />
+          </section>
+        </>
+      )}
+
       <nav className="mobile-nav mobile-only mobile-nav-five" aria-label="Mobile primary navigation">
         <button className={route === 'workspace' ? 'is-active' : ''} onClick={() => setRoute('workspace')}>Workspace</button>
         <button className={route === 'visualize' ? 'is-active' : ''} onClick={() => setRoute('visualize')}>Visualize</button>
@@ -184,7 +241,7 @@ export function App() {
         <button className={route === 'practice' ? 'is-active' : ''} onClick={() => setRoute('practice')}>Practice</button>
         <button className={route === 'reference' ? 'is-active' : ''} onClick={() => setRoute('reference')}>Reference</button>
       </nav>
-      {drawerOpen && <button className="drawer-backdrop mobile-only" onClick={() => setDrawerOpen(false)} aria-label="Close navigation" />}
+      {drawerOpen && <button className="drawer-backdrop mobile-only" onClick={() => setDrawerOpen(false)} aria-label="Close objects" />}
       {commandOpen && (
         <CommandPalette
           onClose={() => setCommandOpen(false)}

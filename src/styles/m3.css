@@ -1,0 +1,365 @@
+/* M3 — Workspace UX Reconstruction
+   The workspace is a focused two-column environment. Advanced controls are available on demand. */
+
+.app-grid.is-workspace-route {
+  grid-template-columns: var(--ml-left-width) minmax(0, 1fr);
+}
+
+.app-grid.is-focus-route {
+  display: block;
+  min-height: calc(100vh - var(--ml-header-height));
+}
+
+.app-grid.is-focus-route > main {
+  width: 100%;
+  min-height: calc(100vh - var(--ml-header-height));
+}
+
+.is-workspace-route .object-sidebar {
+  position: sticky;
+  top: var(--ml-header-height);
+  height: calc(100dvh - var(--ml-header-height));
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+
+.m3-workspace-main {
+  padding-top: 34px;
+}
+
+.workspace-heading-subtitle {
+  max-width: 720px;
+  margin: 9px 0 0;
+  color: var(--ml-muted);
+  font-size: var(--ml-text-md);
+  line-height: 1.55;
+}
+
+.m3-heading-actions {
+  align-items: center;
+}
+
+.workspace-data-menu {
+  position: relative;
+}
+
+.workspace-data-menu summary {
+  list-style: none;
+  cursor: pointer;
+  min-height: 38px;
+  display: inline-flex;
+  align-items: center;
+  padding: 0 12px;
+  border: 1px solid var(--ml-line-strong);
+  border-radius: var(--ml-radius-sm);
+  background: var(--ml-white);
+  color: var(--ml-ink-soft);
+  font-size: var(--ml-text-sm);
+  font-weight: 650;
+}
+
+.workspace-data-menu summary::-webkit-details-marker { display: none; }
+.workspace-data-menu[open] summary { border-color: var(--ml-blue); color: var(--ml-blue-strong); }
+.workspace-data-menu > div {
+  position: absolute;
+  right: 0;
+  top: calc(100% + 8px);
+  z-index: 25;
+  width: 210px;
+  padding: 7px;
+  border: 1px solid var(--ml-line);
+  border-radius: var(--ml-radius-md);
+  background: var(--ml-white);
+  box-shadow: var(--ml-shadow-popover, 0 12px 34px rgba(24, 35, 48, .14));
+}
+.workspace-data-menu > div button {
+  width: 100%;
+  min-height: 38px;
+  padding: 0 10px;
+  text-align: left;
+  border: 0;
+  border-radius: var(--ml-radius-sm);
+  background: transparent;
+  color: var(--ml-ink-soft);
+}
+.workspace-data-menu > div button:hover { background: var(--ml-blue-soft); color: var(--ml-blue-strong); }
+
+.current-work-card {
+  margin: 18px 0 14px;
+  border: 1px solid var(--ml-line);
+  border-radius: var(--ml-radius-md);
+  background: var(--ml-paper);
+  box-shadow: 0 1px 2px rgba(28, 39, 52, .035);
+  overflow: hidden;
+}
+
+.current-work-summary {
+  min-height: 82px;
+  display: grid;
+  grid-template-columns: minmax(180px, .8fr) minmax(220px, 1.35fr) auto;
+  align-items: center;
+  gap: 20px;
+  padding: 16px 18px;
+}
+.current-work-summary > div:first-child { display: grid; gap: 4px; }
+.current-work-summary > div:first-child > strong {
+  font-family: var(--ml-font-display);
+  font-size: 1.12rem;
+  letter-spacing: -0.025em;
+}
+.current-work-summary > div:first-child > small {
+  color: var(--ml-muted);
+  font-size: var(--ml-text-xs);
+  line-height: 1.4;
+}
+.current-work-math {
+  min-width: 0;
+  overflow-x: auto;
+  display: flex;
+  justify-content: center;
+  padding: 6px 10px;
+}
+.current-work-math .math-preview { font-size: clamp(1.18rem, 1.8vw, 1.5rem); }
+.current-work-copy { display: flex; gap: 6px; }
+.current-work-copy button {
+  min-height: 34px;
+  padding: 0 9px;
+  border: 1px solid var(--ml-line);
+  border-radius: var(--ml-radius-xs);
+  background: var(--ml-white);
+  color: var(--ml-muted);
+  font-size: var(--ml-text-xs);
+}
+.current-work-copy button:hover { color: var(--ml-blue-strong); border-color: #b8c9e9; }
+
+.current-work-ledger {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  padding: 9px 18px 10px;
+  border-top: 1px solid var(--ml-line);
+  background: #f8fafc;
+  color: var(--ml-muted);
+  font-size: var(--ml-text-xs);
+}
+.current-work-ledger span::before {
+  content: '';
+  display: inline-block;
+  width: 5px;
+  height: 5px;
+  margin-right: 7px;
+  border-radius: 50%;
+  background: #9eabba;
+  vertical-align: 2px;
+}
+
+.workspace-actions {
+  margin: 14px 0 30px;
+  padding: 18px;
+  border: 1px solid var(--ml-line);
+  border-radius: var(--ml-radius-md);
+  background: var(--ml-white);
+  box-shadow: var(--ml-shadow-card);
+}
+.workspace-actions.is-empty {
+  display: flex;
+  justify-content: space-between;
+  gap: 24px;
+  color: var(--ml-muted);
+}
+.workspace-actions.is-empty strong { display: block; margin-top: 4px; color: var(--ml-ink); }
+.workspace-actions.is-empty p { max-width: 560px; margin: 0; line-height: 1.55; }
+
+.workspace-actions-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 20px;
+  margin-bottom: 14px;
+}
+.workspace-actions-head > div:first-child { display: grid; gap: 4px; }
+.workspace-actions-head > div:first-child > strong { font-size: var(--ml-text-sm); color: var(--ml-ink-soft); }
+.workspace-actions-head-buttons { display: flex; gap: 7px; }
+.workspace-actions-head-buttons button {
+  min-height: 36px;
+  padding: 0 11px;
+  border: 1px solid var(--ml-line);
+  border-radius: var(--ml-radius-sm);
+  background: #f8fafc;
+  color: var(--ml-ink-soft);
+  font-size: var(--ml-text-xs);
+  font-weight: 650;
+}
+.workspace-actions-head-buttons button:hover { background: var(--ml-blue-soft); color: var(--ml-blue-strong); }
+.workspace-actions-head-buttons .all-tools-button { border-color: #bfd0ec; background: var(--ml-blue-soft); color: var(--ml-blue-strong); }
+.all-tools-button span {
+  min-width: 20px;
+  display: inline-flex;
+  justify-content: center;
+  margin-left: 6px;
+  padding: 1px 5px;
+  border-radius: 999px;
+  background: rgba(42, 98, 180, .1);
+}
+
+.workspace-action-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 8px;
+}
+.workspace-action-list button {
+  min-height: 64px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: flex-start;
+  gap: 5px;
+  padding: 10px 13px;
+  border: 1px solid var(--ml-line);
+  border-radius: var(--ml-radius-sm);
+  background: #fbfcfe;
+  color: var(--ml-ink);
+  text-align: left;
+}
+.workspace-action-list button:hover { border-color: #b9c9e4; background: var(--ml-blue-soft); }
+.workspace-action-list button.is-primary {
+  border-color: var(--ml-blue);
+  background: var(--ml-blue);
+  color: white;
+}
+.workspace-action-list button.is-primary:hover { background: var(--ml-blue-strong); }
+.workspace-action-list button span { font-size: var(--ml-text-sm); font-weight: 700; }
+.workspace-action-list button small { color: var(--ml-muted); font-size: var(--ml-text-xs); }
+.workspace-action-list button.is-primary small { color: rgba(255,255,255,.72); }
+.workspace-action-list button:disabled { opacity: .55; cursor: wait; }
+
+.workspace-action-groups {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 12px;
+}
+.workspace-action-groups span {
+  padding: 4px 7px;
+  border-radius: var(--ml-radius-xs);
+  background: #f1f4f8;
+  color: var(--ml-muted);
+  font-size: .72rem;
+  font-weight: 650;
+}
+
+#mathlab-result {
+  scroll-margin-top: calc(var(--ml-header-height) + 20px);
+}
+
+.m3-relations {
+  margin-top: 28px;
+  border: 1px solid var(--ml-line);
+  border-radius: var(--ml-radius-md);
+  background: var(--ml-paper);
+}
+.m3-relations > summary {
+  cursor: pointer;
+  padding: 14px 16px;
+  color: var(--ml-ink-soft);
+  font-size: var(--ml-text-sm);
+  font-weight: 700;
+}
+.m3-relations[open] > summary { border-bottom: 1px solid var(--ml-line); }
+.m3-relations .relationship-grid { padding: 14px; }
+.m3-notice { margin-top: 26px; }
+
+.workspace-tools-backdrop {
+  position: fixed;
+  inset: var(--ml-header-height) 0 0 0;
+  z-index: 70;
+  border: 0;
+  background: rgba(18, 27, 38, .28);
+  backdrop-filter: blur(2px);
+}
+.workspace-tools-drawer {
+  position: fixed;
+  top: var(--ml-header-height);
+  right: 0;
+  bottom: 0;
+  z-index: 71;
+  width: min(430px, 92vw);
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr);
+  background: var(--ml-paper);
+  border-left: 1px solid var(--ml-line-strong);
+  box-shadow: -18px 0 48px rgba(24, 35, 48, .16);
+  animation: m3-drawer-in 150ms ease-out;
+}
+.workspace-tools-drawer > header {
+  min-height: 64px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 10px 16px 10px 18px;
+  border-bottom: 1px solid var(--ml-line);
+  background: var(--ml-white);
+}
+.workspace-tools-drawer > header > div { display: grid; gap: 3px; }
+.workspace-tools-drawer > header > div > strong { font-family: var(--ml-font-display); font-size: 1.05rem; }
+.workspace-tools-drawer > header > button {
+  width: 38px;
+  height: 38px;
+  border: 1px solid var(--ml-line);
+  border-radius: var(--ml-radius-sm);
+  background: transparent;
+  color: var(--ml-muted);
+  font-size: 1.3rem;
+}
+.workspace-tools-drawer > .context-panel {
+  position: static;
+  width: auto;
+  height: 100%;
+  min-height: 0;
+  overflow-y: auto;
+  border: 0;
+  padding-top: 18px;
+}
+
+@keyframes m3-drawer-in {
+  from { transform: translateX(24px); opacity: .7; }
+  to { transform: translateX(0); opacity: 1; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .workspace-tools-drawer { animation: none; }
+}
+
+@media (max-width: 1100px) {
+  .current-work-summary { grid-template-columns: minmax(170px, .8fr) minmax(180px, 1fr); }
+  .current-work-copy { grid-column: 1 / -1; justify-content: flex-end; margin-top: -8px; }
+}
+
+@media (max-width: 820px) {
+  .app-grid.is-workspace-route { display: block; }
+  .m3-workspace-main { padding-top: 24px; }
+  .workspace-heading-subtitle { font-size: .94rem; }
+  .m3-heading-actions { width: 100%; justify-content: space-between; }
+  .workspace-data-menu > div { right: 0; }
+
+  .current-work-summary {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+  .current-work-math { justify-content: flex-start; padding-inline: 0; }
+  .current-work-copy { grid-column: auto; justify-content: flex-start; margin-top: 0; }
+
+  .workspace-actions { padding: 14px; }
+  .workspace-actions-head { align-items: flex-start; flex-direction: column; }
+  .workspace-actions-head-buttons { width: 100%; }
+  .workspace-actions-head-buttons button { flex: 1; }
+  .workspace-action-list { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .workspace-actions.is-empty { flex-direction: column; }
+  .workspace-tools-drawer { width: 100vw; }
+}
+
+@media (max-width: 480px) {
+  .workspace-action-list { grid-template-columns: 1fr; }
+  .current-work-ledger { gap: 9px 13px; }
+}

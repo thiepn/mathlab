@@ -10,6 +10,7 @@ import { AssumptionBar } from './AssumptionBar';
 import { MathInput } from './MathInput';
 import { MathPreview } from './MathPreview';
 import { AlgebraResult } from './AlgebraResult';
+import { WorkspaceActions } from './WorkspaceActions';
 
 interface WorkspaceProps {
   controller: MathWorkspaceController;
@@ -18,6 +19,10 @@ interface WorkspaceProps {
   engineStatus?: 'idle' | 'running' | 'error' | 'done';
   engineError?: string;
   onClearResult?: () => void;
+  onAction: (operation: string) => void;
+  onOpenTools: () => void;
+  onOpenProof: () => void;
+  runningOperation?: string;
 }
 
 function downloadWorkspace(raw: string) {
@@ -33,7 +38,18 @@ function downloadWorkspace(raw: string) {
   window.setTimeout(() => URL.revokeObjectURL(url), 0);
 }
 
-export function Workspace({ controller, onActiveParsed, mathResult = null, engineStatus = 'idle', engineError = '', onClearResult }: WorkspaceProps) {
+export function Workspace({
+  controller,
+  onActiveParsed,
+  mathResult = null,
+  engineStatus = 'idle',
+  engineError = '',
+  onClearResult,
+  onAction,
+  onOpenTools,
+  onOpenProof,
+  runningOperation = '',
+}: WorkspaceProps) {
   const [submitted, setSubmitted] = useState<ParsedMath | null>(null);
   const [resolutionMessage, setResolutionMessage] = useState('');
   const [transferMessage, setTransferMessage] = useState('');
@@ -45,7 +61,6 @@ export function Workspace({ controller, onActiveParsed, mathResult = null, engin
     [submitted, controller.state.objects, controller.state.assumptions],
   );
   const object = resolution?.object ?? controller.activeObject;
-  const submittedErrors = submitted?.diagnostics.filter((item) => item.severity === 'error') ?? [];
   const persistedObject = object ? controller.state.objects.find((item) => item.id === object.id || (!!object.name && item.name === object.name)) : undefined;
   const usedBy = persistedObject ? dependentObjects(controller.state.objects, persistedObject.name) : [];
 
@@ -85,17 +100,23 @@ export function Workspace({ controller, onActiveParsed, mathResult = null, engin
   };
 
   return (
-    <main className="workspace-main">
+    <main className="workspace-main m3-workspace-main">
       <div className="workspace-heading p3-workspace-heading">
         <div>
           <span className="eyebrow">Mathematical workspace</span>
-          <h1>{controller.activeObject?.name ? `Working on ${controller.activeObject.name}` : 'Work directly with mathematics.'}</h1>
+          <h1>{controller.activeObject?.name ? `Working on ${controller.activeObject.name}` : 'What do you want to work out?'}</h1>
+          <p className="workspace-heading-subtitle">Enter mathematics once. MathLab recognizes the object and surfaces the operations that make sense for it.</p>
         </div>
-        <div className="workspace-heading-actions">
+        <div className="workspace-heading-actions m3-heading-actions">
           <span className={`save-state save-${controller.saveState}`}><i />{controller.saveState === 'saving' ? 'Saving' : controller.saveState === 'error' ? 'Storage issue' : controller.saveState === 'loading' ? 'Loading' : 'Saved locally'}</span>
-          <button onClick={() => downloadWorkspace(controller.exportWorkspace())}>Export</button>
-          <button onClick={() => importRef.current?.click()}>Import</button>
-          <button onClick={() => void restore()}>Recovery</button>
+          <details className="workspace-data-menu">
+            <summary>Workspace data</summary>
+            <div>
+              <button onClick={() => downloadWorkspace(controller.exportWorkspace())}>Export workspace</button>
+              <button onClick={() => importRef.current?.click()}>Import workspace</button>
+              <button onClick={() => void restore()}>Restore recovery</button>
+            </div>
+          </details>
           <input ref={importRef} className="visually-hidden" type="file" accept="application/json,.json" onChange={(event) => void importFile(event.target.files?.[0])} />
         </div>
       </div>
@@ -109,59 +130,61 @@ export function Workspace({ controller, onActiveParsed, mathResult = null, engin
         onRemove={controller.removeAssumption}
       />
 
-      <section className="object-stage p3-stage">
-        <div className="stage-heading">
+      <section className="current-work-card" aria-label="Current mathematical work">
+        <div className="current-work-summary">
           <div>
-            <span className="section-kicker">{persistedObject ? 'Saved object' : object ? 'Scratch object' : 'Workspace canvas'}</span>
-            <div className="object-type">
-              {object ? `${object.name ?? 'Anonymous'} · ${shapeLabel(object.shape)} · ${domainSymbol(object.domain)}` : 'Enter an expression or choose a saved object'}
-            </div>
+            <span className="section-kicker">{persistedObject ? 'Saved object' : object ? 'Current work' : 'Ready'}</span>
+            <strong>{object ? object.name ?? shapeLabel(object.shape) : 'Commit mathematics to unlock tools'}</strong>
+            <small>{object ? `${shapeLabel(object.shape)} · ${domainSymbol(object.domain)} · ${object.exactness}` : 'The live preview above is editable; Commit turns it into the active mathematical object.'}</small>
           </div>
+          {object?.ast && <div className="current-work-math"><MathPreview ast={object.ast} compact /></div>}
           {object?.ast && (
-            <div className="stage-actions">
+            <div className="current-work-copy">
               <button onClick={() => void navigator.clipboard?.writeText(astToPlainText(object.ast))}>Copy</button>
               <button onClick={() => void navigator.clipboard?.writeText(astToLatex(object.ast))}>LaTeX</button>
             </div>
           )}
         </div>
-
-        <div className="submitted-math-display p3-math-display">
-          <MathPreview ast={submittedErrors.length ? null : object?.ast ?? null} fallback="Your current mathematical object will appear here." />
-        </div>
-
         {object && (
-          <div className="semantic-ledger p3-ledger">
-            <div><span>Kind</span><strong>{object.kind}</strong></div>
-            <div><span>Domain</span><strong>{domainSymbol(object.domain)}</strong></div>
-            <div><span>Exactness</span><strong>{object.exactness}</strong></div>
-            <div><span>Status</span><strong>{persistedObject ? 'saved' : 'temporary'}</strong></div>
+          <div className="current-work-ledger">
+            <span>{persistedObject ? 'Saved' : 'Temporary'}</span>
+            <span>{object.dependencies.length ? `${object.dependencies.length} dependenc${object.dependencies.length === 1 ? 'y' : 'ies'}` : 'Independent'}</span>
+            <span>{object.assumptions.length ? `${object.assumptions.length} assumption${object.assumptions.length === 1 ? '' : 's'}` : 'No assumptions'}</span>
           </div>
         )}
       </section>
 
+      <WorkspaceActions
+        object={object ?? null}
+        runningOperation={runningOperation}
+        onRun={onAction}
+        onOpenTools={onOpenTools}
+        onOpenProof={onOpenProof}
+      />
+
       <AlgebraResult result={mathResult} status={engineStatus} error={engineError} onClear={onClearResult} />
 
-      {object && (
-        <section className="workspace-relations">
-          <div className="result-heading"><span className="section-kicker">Object relationships</span><span>{persistedObject ? 'Persistent workspace' : 'Current scratch work'}</span></div>
+      {object && (object.dependencies.length > 0 || usedBy.length > 0 || object.assumptions.length > 0) && (
+        <details className="workspace-relations m3-relations">
+          <summary>Object relationships &amp; assumptions</summary>
           <div className="relationship-grid">
             <article>
               <span>Depends on</span>
               <strong>{object.dependencies.join(', ') || 'Nothing'}</strong>
-              <p>{object.dependencies.length ? 'These named objects are referenced by the current definition.' : 'This object is independent of other saved workspace objects.'}</p>
+              <p>{object.dependencies.length ? 'Named objects referenced by this definition.' : 'Independent of other saved objects.'}</p>
             </article>
             <article>
               <span>Used by</span>
               <strong>{usedBy.map((item) => item.name).filter(Boolean).join(', ') || 'Nothing'}</strong>
-              <p>{usedBy.length ? 'Renaming this object will update these dependent definitions.' : 'No saved object currently depends on this one.'}</p>
+              <p>{usedBy.length ? 'Saved definitions that depend on this object.' : 'No saved object currently depends on this one.'}</p>
             </article>
             <article>
               <span>Assumptions</span>
               <strong>{object.assumptions.length ? object.assumptions.map((item) => item.label).join(' · ') : 'None'}</strong>
-              <p>Assumptions remain explicit and travel with the semantic context.</p>
+              <p>Explicit mathematical assumptions carried with the current context.</p>
             </article>
           </div>
-        </section>
+        </details>
       )}
 
       {(resolutionMessage || resolution?.diagnostics.length || transferMessage) && (
@@ -172,8 +195,8 @@ export function Workspace({ controller, onActiveParsed, mathResult = null, engin
         </div>
       )}
 
-      <div className="phase-notice p3-notice">
-        <strong>MathLab v1.0 RC2 release candidate.</strong> Exact symbolic mathematics, numerical methods, verification, visualization, and persistent practice now share one local-first workspace. Saved mathematical objects remain separate from learning progress.
+      <div className="phase-notice p3-notice m3-notice">
+        <strong>Local-first workspace.</strong> Your saved mathematical objects and practice progress stay on this device unless you explicitly export them.
       </div>
     </main>
   );

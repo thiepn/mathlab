@@ -41,7 +41,7 @@ export function AlgebraResult({ result, status, error, onClear }: AlgebraResultP
   useEffect(() => setView('answer'), [result?.id]);
   if (status === 'idle' && !result) return null;
   return (
-    <section className="algebra-result" aria-live="polite">
+    <section className="algebra-result" id="mathlab-result" aria-live="polite">
       <div className="result-heading algebra-result-heading">
         <div><span className="section-kicker">MathLab local mathematics engine</span><strong>{result ? operationLabels[result.operation] ?? result.operation : status === 'running' ? 'Computing' : 'Could not compute'}</strong></div>
         <div className="result-view-controls">
