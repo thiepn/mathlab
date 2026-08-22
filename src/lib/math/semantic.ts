@@ -3,7 +3,7 @@ import { isKnownFunction, parseMath } from './parser';
 import { classifyParsed } from './classify';
 import { assumptionsForSubject, domainFromAssumptions } from './assumptions';
 import { finiteSetShapeInfo, graphShapeInfo, relationShapeInfo, recurrenceShapeInfo } from './discreteAlgorithms';
-import { ivpShapeInfo } from './numerical';
+import { isOdeConstructorCall, odeIntrinsicSymbols, odeShapeInfo } from './e4Ode';
 import type {
   Exactness,
   MathAssumption,
@@ -26,7 +26,7 @@ function isStructuredObjectCall(node: AstNode): boolean {
   return node.type === 'call' && (
     node.name === 'data' || P10_DISTRIBUTIONS.has(node.name) || P10_PROBABILITY_CALLS.has(node.name) ||
     P11_LOGIC_CALLS.has(node.name) || node.name === 'set' || node.name === 'relation' || P11_GRAPH_CALLS.has(node.name) ||
-    node.name === 'linrec' || node.name === 'linrec2' || node.name === 'complexity' || node.name === 'master' || P11_COMBINATORICS_CALLS.has(node.name) || node.name === 'ivp'
+    node.name === 'linrec' || node.name === 'linrec2' || node.name === 'complexity' || node.name === 'master' || P11_COMBINATORICS_CALLS.has(node.name) || isOdeConstructorCall(node)
   );
 }
 
@@ -134,7 +134,6 @@ function getDefinition(parsed: ParsedMath): { name?: string; parameters: string[
   return { parameters: [], valueAst: ast, style: 'anonymous' };
 }
 
-
 interface LinearShapeInference { shape: MathShape; usesCollection: boolean }
 
 function inferLinearShape(node: AstNode, objects: SemanticMathObject[]): LinearShapeInference | null {
@@ -203,7 +202,7 @@ function shapeFor(kind: MathObjectKind, valueAst: AstNode, parameters: string[],
   if (kind === 'recurrence') return { type: 'recurrence', order: recurrenceShapeInfo(valueAst)?.order ?? (valueAst.type === 'call' && valueAst.name === 'linrec2' ? 2 : 1) };
   if (kind === 'complexity' && valueAst.type === 'call') return { type: 'complexity', family: valueAst.name };
   if (kind === 'combinatorics') return { type: 'combinatorics' };
-  if (kind === 'ode') return { type: 'ode', variables: ivpShapeInfo(valueAst)?.variables ?? 2 };
+  if (kind === 'ode') return { type: 'ode', variables: odeShapeInfo(valueAst)?.variables ?? 1 };
   if (valueAst.type === 'symbol') {
     const dependency = objects.find((item) => item.name === valueAst.name);
     if (dependency) return dependency.shape;
@@ -228,7 +227,7 @@ function inferKind(parsed: ParsedMath, valueAst: AstNode, name: string | undefin
   if (valueAst.type === 'call' && (valueAst.name === 'linrec' || valueAst.name === 'linrec2')) return 'recurrence';
   if (valueAst.type === 'call' && (valueAst.name === 'complexity' || valueAst.name === 'master')) return 'complexity';
   if (valueAst.type === 'call' && P11_COMBINATORICS_CALLS.has(valueAst.name)) return 'combinatorics';
-  if (valueAst.type === 'call' && valueAst.name === 'ivp') return 'ode';
+  if (isOdeConstructorCall(valueAst)) return 'ode';
   if (valueAst.type === 'matrix') return valueAst.rows.length === 1 ? 'vector' : 'matrix';
   const linear = inferLinearShape(valueAst, objects);
   if (linear?.usesCollection && linear.shape.type === 'vector') return 'vector';
@@ -276,9 +275,9 @@ export function resolveSemanticObject(
   }
 
   const symbols = collectSymbols(valueAst).filter((symbol) => !CONSTANTS.has(symbol));
-  const intrinsicParameters = valueAst.type === 'call' && valueAst.name === 'ivp' ? ['x','y'] : [];
+  const intrinsicParameters = odeIntrinsicSymbols(valueAst);
   const variables = symbols.filter((symbol) => !parameters.includes(symbol) && !intrinsicParameters.includes(symbol) && !objects.some((item) => item.name === symbol));
-  const dependencies = symbols.filter((symbol) => objects.some((item) => item.name === symbol));
+  const dependencies = symbols.filter((symbol) => !intrinsicParameters.includes(symbol) && objects.some((item) => item.name === symbol));
   if (name && (variables.includes(name) || dependencies.includes(name))) {
     diagnostics.push({ severity: 'error', code: 'recursive-definition', symbol: name, message: `“${name}” depends on itself. Recursive definitions are not enabled in the current MathLab core.` });
   }
@@ -354,7 +353,7 @@ export function shapeLabel(shape: MathShape): string {
     case 'recurrence': return `Recurrence · order ${shape.order}`;
     case 'complexity': return `Complexity · ${shape.family}`;
     case 'combinatorics': return 'Discrete combinatorics';
-    case 'ode': return `ODE IVP · x,y`;
+    case 'ode': return `ODE · ${shape.variables} state${shape.variables === 1 ? '' : 's'}`;
     case 'equation': return 'Equation';
     case 'inequality': return 'Inequality';
     case 'system': return `System · ${shape.count} relations`;
