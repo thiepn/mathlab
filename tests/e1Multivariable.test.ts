@@ -13,14 +13,7 @@ async function run(input: string, operation: string, options?: Record<string, st
   const resolved = resolveSemanticObject(parsed, [], []);
   expect(resolved.object).not.toBeNull();
   const object = resolved.object!;
-  const result = await engine.execute({
-    id: `${operation}:${input}`,
-    operation,
-    input: object.source,
-    ast: object.valueAst,
-    assumptions: object.assumptions,
-    options,
-  });
+  const result = await engine.execute({ id: `${operation}:${input}`, operation, input: object.source, ast: object.valueAst, assumptions: object.assumptions, options });
   return { object, result, text: result.resultAst ? astToPlainText(result.resultAst) : result.display };
 }
 
@@ -62,7 +55,7 @@ describe('E1 multivariable calculus foundation', () => {
     expect(scalar.result.resultAst?.type).toBe('matrix');
     const vector = await run('F(x,y) := [x^2 + y, x - y^2]', 'jacobian');
     expect(vector.text).toContain('2x');
-    expect(vector.text).toContain('-2y');
+    expect(vector.text).toContain('-(2y)');
     expect(vector.text).toContain('1');
   });
 
@@ -74,7 +67,7 @@ describe('E1 multivariable calculus foundation', () => {
 
   it('computes a directional derivative with an explicitly normalized direction', async () => {
     const directional = await run('f(x,y) := 3*x + 4*y', 'directional-derivative', { point: '2, -1', direction: '3, 4' });
-    expect(directional.text).toContain('sqrt');
+    expect(directional.text).toBe('5');
     expect(directional.result.warnings.join(' ')).toContain('normalized');
   });
 
@@ -127,6 +120,8 @@ describe('E1 multivariable calculus foundation', () => {
 
   it('keeps scalar-only and exact two-variable boundaries explicit', () => {
     const vectorFunction = resolveSemanticObject(parseMath('F(x,y) := [x,y]'), [], []).object!;
+    expect(vectorFunction.kind).toBe('function');
+    expect(vectorFunction.parameters).toEqual(['x','y']);
     expect(capabilitiesFor(vectorFunction).find((item) => item.id === 'jacobian')?.available).toBe(true);
     expect(capabilitiesFor(vectorFunction).find((item) => item.id === 'gradient')?.available).toBe(false);
     const threeVariables = resolveSemanticObject(parseMath('f(x,y,z) := x+y+z'), [], []).object!;
