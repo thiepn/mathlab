@@ -1,7 +1,8 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import type { SemanticMathObject } from '../../lib/math/types';
+import { ALL_TOOL_CATALOG } from '../allToolCatalog';
 import type { Route } from '../hooks/useHashRoute';
-import { TOOL_CATALOG, toolSearchText } from '../toolCatalog';
+import { toolSearchText } from '../toolCatalog';
 
 interface CommandPaletteProps {
   onClose: () => void;
@@ -33,7 +34,7 @@ export function CommandPalette({ onClose, objects, onNew, onOpenObject, onRoute,
     { id: 'proof', label: 'Proof Lab', detail: 'Verify transformations and logical entailment', search: 'proof verify check work', badge: 'Page', run: () => onRoute('proof') },
     { id: 'practice', label: 'Practice', detail: 'Adaptive courses, review, and exams', search: 'practice course exam review', badge: 'Page', run: () => onRoute('practice') },
     { id: 'reference', label: 'Course Reference', detail: 'Curriculum and capability map', search: 'reference curriculum course', badge: 'Page', run: () => onRoute('reference') },
-    ...TOOL_CATALOG.map((tool) => ({
+    ...ALL_TOOL_CATALOG.map((tool) => ({
       id: `tool:${tool.id}`,
       label: tool.label,
       detail: `${tool.category} · ${tool.phase} · ${tool.description}`,
@@ -77,7 +78,7 @@ export function CommandPalette({ onClose, objects, onNew, onOpenObject, onRoute,
           if (event.key === 'ArrowUp') { event.preventDefault(); setIndex((value) => Math.max(0, value - 1)); }
           if (event.key === 'Enter') { event.preventDefault(); run(selected); }
           if (event.key === 'Escape') onClose();
-        }} placeholder="Search tools, e.g. eigenvalues, Taylor, Bayes, RREF, RK4…" /></div>
+        }} placeholder="Search ANOVA, regression, Markov, SVD, Taylor, Bayes, RREF…" /></div>
         <div className="command-results">
           {filtered.length === 0 && <div className="command-empty">No matching tool, page, or workspace object.</div>}
           {filtered.slice(0, 12).map((item, itemIndex) => (
