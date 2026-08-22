@@ -18,6 +18,8 @@ export function normalizeDisplayMathSource(source: string): string {
     .replace(/ℚ/g, 'Q')
     .replace(/ℤ/g, 'Z')
     .replace(/ℕ/g, 'N')
+    .replace(/⁻¹/g, '^(-1)')
+    .replace(/ᵀ/g, '^(T)')
     .replace(/√\s*\(/g, 'sqrt(')
     .trim();
 }
@@ -46,13 +48,14 @@ function proseWordCount(source: string): number {
 export function looksLikeDisplayMath(source: string): boolean {
   const text = source.trim();
   if (!text || text.length > 180) return false;
+  if (text === '∅' || /^[ℝℂℚℤℕ∞]$/.test(text)) return true;
   if (/^-?\d+(?:\.\d+)?(?:e[+-]?\d+)?$/i.test(text)) return true;
   if (/^-?\d+\s*\/\s*-?\d+$/.test(text)) return true;
-  if (/^[A-Za-zΑ-Ωα-ω](?:_[A-Za-z0-9]+)?$/.test(text) && text.length <= 12) return true;
+  if (/^[A-Za-zΑ-Ωα-ω](?:_[A-Za-z0-9]+)?[′']?$/.test(text) && text.length <= 12) return true;
   if (/^(?:sin|cos|tan|sec|csc|cot|asin|acos|atan|sinh|cosh|tanh|ln|log|exp|sqrt|abs|det|rank)\s*\(/.test(text)) return true;
   if (/^\[.*\]$/.test(text) || /^\{.*\}$/.test(text) || /^\(.*,.+\)$/.test(text)) return true;
   if (/^[A-Za-z][A-Za-z0-9_]*\s*\([^)]*\)\s*(?:=|≠|<=|>=|≤|≥|<|>)/.test(text)) return true;
-  const strongSignal = /(?:=|!=|<=|>=|≤|≥|≠|[+*/^]|√|∑|∫|∞|π|→|←|↔|∈|∉|⊂|⊆|Θ\s*\()/.test(text);
+  const strongSignal = /(?:=|!=|<=|>=|≤|≥|≠|[+*/^]|√|∑|∫|∞|π|′|→|←|↔|∈|∉|⊂|⊆|Θ\s*\()/.test(text);
   if (!strongSignal) return false;
   if (proseWordCount(text) >= 2 && /[.!?]/.test(text)) return false;
   if (proseWordCount(text) >= 3) return false;
@@ -67,8 +70,8 @@ function parseSingle(source: string): AstNode | null {
 
 export function parseDisplayMath(source: string): AstNode | null {
   const text = source.trim();
-  if (!looksLikeDisplayMath(text)) return null;
   if (text === '∅') return { type: 'set', items: [] };
+  if (!looksLikeDisplayMath(text)) return null;
   if (text.startsWith('{') && text.endsWith('}')) {
     const inside = text.slice(1, -1).trim();
     if (!inside) return { type: 'set', items: [] };
