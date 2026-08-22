@@ -9,6 +9,7 @@ import { Header } from './components/Header';
 import { ObjectSidebar } from './components/ObjectSidebar';
 import { ContextPanel } from './components/ContextPanel';
 import { Workspace } from './components/Workspace';
+import { ToolsPage } from './components/ToolsPage';
 import { VisualizationPage } from './components/VisualizationPage';
 import { ProofLabPage } from './components/ProofLabPage';
 import { PracticePage } from './components/PracticePage';
@@ -16,6 +17,7 @@ import { CourseReferencePage } from './components/CourseReferencePage';
 import { CommandPalette } from './components/CommandPalette';
 import { useHashRoute } from './hooks/useHashRoute';
 import { useMathWorkspace } from './hooks/useMathWorkspace';
+import { findTool, toolNeedsConfiguration, type ToolCatalogItem } from './toolCatalog';
 
 export function App() {
   const [route, setRoute] = useHashRoute();
@@ -23,6 +25,7 @@ export function App() {
   const [online, setOnline] = useState(() => navigator.onLine);
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [toolsOpen, setToolsOpen] = useState(false);
+  const [selectedToolId, setSelectedToolId] = useState('');
   const [activeParsed, setActiveParsed] = useState<ParsedMath>(() => parseMath(''));
   const [mathResult, setMathResult] = useState<MathResult | null>(null);
   const [engineStatus, setEngineStatus] = useState<'idle' | 'running' | 'error' | 'done'>('idle');
@@ -163,6 +166,41 @@ export function App() {
     setDrawerOpen(true);
   };
 
+  const openCatalogTool = (toolId: string) => {
+    setSelectedToolId(toolId);
+    setRoute('tools');
+  };
+
+  const runCatalogTool = (tool: ToolCatalogItem) => {
+    if (tool.specialRoute === 'proof') { setRoute('proof'); return; }
+    if (tool.operation === 'graph' || tool.specialRoute === 'visualize') { setRoute('visualize'); return; }
+    setRoute('workspace');
+    void executeOperation(tool.operation);
+  };
+
+  const configureCatalogTool = (tool: ToolCatalogItem) => {
+    if (tool.specialRoute === 'proof') { setRoute('proof'); return; }
+    if (tool.operation === 'graph' || tool.specialRoute === 'visualize') { setRoute('visualize'); return; }
+    setRoute('workspace');
+    setToolsOpen(true);
+  };
+
+  const tryToolExample = (tool: ToolCatalogItem) => {
+    if (tool.specialRoute === 'proof') { setRoute('proof'); return; }
+    const parsed = parseMath(tool.example);
+    if (!parsed.ast || parsed.diagnostics.some((item) => item.severity === 'error')) {
+      void navigator.clipboard?.writeText(tool.example);
+      setRoute('workspace');
+      return;
+    }
+    controller.commitParsed(parsed);
+    setActiveParsed(parsed);
+    clearResult();
+    setRoute('workspace');
+    setDrawerOpen(false);
+    setToolsOpen(toolNeedsConfiguration(tool));
+  };
+
   return (
     <div className="app-shell">
       <a className="skip-link" href="#mathlab-main">Skip to main content</a>
@@ -200,6 +238,15 @@ export function App() {
             runningOperation={runningOperation}
           />
         )}
+        {route === 'tools' && (
+          <ToolsPage
+            currentObject={contextObject}
+            initialToolId={selectedToolId}
+            onRun={runCatalogTool}
+            onConfigure={configureCatalogTool}
+            onTryExample={tryToolExample}
+          />
+        )}
         {route === 'visualize' && <VisualizationPage objects={controller.state.objects} activeObject={controller.activeObject} onActivateObject={activateObject} onOpenObject={openObject} />}
         {route === 'proof' && <ProofLabPage initialSource={contextObject?.source ?? ''} />}
         {route === 'practice' && <PracticePage />}
@@ -234,8 +281,9 @@ export function App() {
         </>
       )}
 
-      <nav className="mobile-nav mobile-only mobile-nav-five" aria-label="Mobile primary navigation">
+      <nav className="mobile-nav mobile-only mobile-nav-six" aria-label="Mobile primary navigation">
         <button className={route === 'workspace' ? 'is-active' : ''} onClick={() => setRoute('workspace')}>Workspace</button>
+        <button className={route === 'tools' ? 'is-active' : ''} onClick={() => setRoute('tools')}>Tools</button>
         <button className={route === 'visualize' ? 'is-active' : ''} onClick={() => setRoute('visualize')}>Visualize</button>
         <button className={route === 'proof' ? 'is-active' : ''} onClick={() => setRoute('proof')}>Proof</button>
         <button className={route === 'practice' ? 'is-active' : ''} onClick={() => setRoute('practice')}>Practice</button>
@@ -249,6 +297,10 @@ export function App() {
           onNew={newWork}
           onOpenObject={openObject}
           onRoute={(nextRoute) => setRoute(nextRoute)}
+          onTool={(toolId) => {
+            const tool = findTool(toolId);
+            if (tool) openCatalogTool(tool.id);
+          }}
         />
       )}
     </div>
