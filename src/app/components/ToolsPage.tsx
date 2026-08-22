@@ -1,7 +1,8 @@
 import { useEffect, useMemo, useState } from 'react';
-import { capabilitiesFor } from '../../lib/math/capabilities';
+import { capabilitiesFor } from '../../lib/math/capabilitiesE5';
 import type { SemanticMathObject } from '../../lib/math/types';
 import { E4_TOOL_CATALOG } from '../e4ToolCatalog';
+import { E5_TOOL_CATALOG } from '../e5ToolCatalog';
 import { TOOL_CATALOG, TOOL_CATEGORIES, toolNeedsConfiguration, toolSearchText, type ToolCatalogItem, type ToolCategory } from '../toolCatalog';
 import { MathValue } from './MathValue';
 
@@ -13,7 +14,7 @@ interface ToolsPageProps {
   onTryExample: (tool: ToolCatalogItem) => void;
 }
 
-const ALL_TOOLS: ToolCatalogItem[] = [...TOOL_CATALOG, ...E4_TOOL_CATALOG];
+const ALL_TOOLS: ToolCatalogItem[] = [...TOOL_CATALOG, ...E4_TOOL_CATALOG, ...E5_TOOL_CATALOG];
 
 function kindLabel(kind: SemanticMathObject['kind']) {
   return kind.replace('finite-set', 'set').replace('ode', 'ODE');
@@ -70,7 +71,7 @@ export function ToolsPage({ currentObject, initialToolId = '', onRun, onConfigur
       <section className="tool-finder" aria-label="Search mathematical tools">
         <div className="tool-search-box">
           <span aria-hidden="true">⌕</span>
-          <input value={query} onChange={(event) => setQuery(event.target.value)} placeholder="Search eigenvalues, phase planes, RK45, vector fields, Bayes, RREF…" aria-label="Search tools" />
+          <input value={query} onChange={(event) => setQuery(event.target.value)} placeholder="Search SVD, BFGS, eigenvalues, phase planes, RK45, Bayes, RREF…" aria-label="Search tools" />
           {query && <button onClick={() => setQuery('')}>Clear</button>}
         </div>
         <div className="tool-category-strip" role="list" aria-label="Tool categories">
@@ -83,7 +84,7 @@ export function ToolsPage({ currentObject, initialToolId = '', onRun, onConfigur
       <div className="tools-layout">
         <section className="tool-results" aria-label="Tool search results">
           <div className="tool-results-heading"><strong>{category === 'All' ? 'All tools' : category}</strong><span>{filtered.length} result{filtered.length === 1 ? '' : 's'}</span></div>
-          {filtered.length === 0 && <div className="tool-empty">No tool matches that search. Try a mathematical term such as “matrix”, “phase plane”, “RK45”, “vector field”, “limit”, “probability”, or “proof”.</div>}
+          {filtered.length === 0 && <div className="tool-empty">No tool matches that search. Try a mathematical term such as “matrix”, “SVD”, “optimization”, “phase plane”, “limit”, “probability”, or “proof”.</div>}
           <div className="tool-card-list">
             {filtered.map((tool) => {
               const status = statusFor(tool);
