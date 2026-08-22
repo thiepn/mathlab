@@ -153,28 +153,54 @@ See `E5_ACCEPTANCE.md`.
 
 ---
 
-## Next — E6: Probability & Statistics II
+## E6 — Probability & Statistics II — Complete
 
-Extend P10 from introductory probability/statistics into a broader university workbench:
+E6 extends P10's introductory statistics model using the existing dataset, matrix and distribution semantics rather than introducing a parallel statistics workspace.
 
-- joint distributions;
-- covariance/correlation matrices;
-- random-variable transformations;
-- additional common distributions;
-- two-sample mean procedures;
-- paired inference;
-- two-proportion inference;
-- chi-square goodness-of-fit and independence;
-- one-way ANOVA;
-- multiple linear regression;
-- regression diagnostics;
-- nonparametric tests;
-- bootstrap/resampling workflows with explicit heuristic/approximate labels;
-- Markov-chain foundation.
+Implemented probability/random-variable baseline:
+
+- exponential, chi-square, Student-t and F distribution objects;
+- numerical CDF, tail, interval-probability and quantile workflows for those families;
+- deterministic seeded simulation;
+- finite `jointpmf(...)` objects with explicit zero-based support convention;
+- joint marginals, expectations, covariance and correlation;
+- affine random-variable expectation/variance transforms;
+- sample covariance and Pearson correlation matrices.
+
+Implemented inference baseline:
+
+- Welch two-sample mean inference;
+- paired mean inference;
+- two-proportion large-sample inference;
+- chi-square goodness-of-fit testing;
+- chi-square independence testing with Cramér's V;
+- one-way ANOVA for rectangular equal-size group columns with eta-squared effect size.
+
+Implemented regression/nonparametric/resampling baseline:
+
+- multiple ordinary least squares with automatic intercept, coefficient inference, `R²` and adjusted `R²`;
+- standardized residual, leverage, Cook's-distance and VIF diagnostics;
+- Mann–Whitney U with tie/continuity correction;
+- Wilcoxon signed-rank with tie/continuity correction;
+- deterministic seeded percentile bootstrap intervals for the sample mean.
+
+Implemented stochastic-process foundation:
+
+- finite row-stochastic transition-matrix validation;
+- reachability-based irreducibility signal;
+- numerical stationary candidate by power iteration;
+- finite-step probability-vector propagation;
+- self-loop signal as a sufficient, not exhaustive, aperiodicity indication.
+
+E6 keeps special-function probabilities, inferential procedures, regression calculations, rank-test approximations and Markov decimals explicitly approximate; bootstrap output is explicitly heuristic. Degenerate zero-variance/zero-standard-error cases are refused rather than surfaced as misleading `NaN` results. General Bayesian modeling, GLMs/mixed models, survival/time-series methods, exact small-sample categorical/rank procedures, general multivariate distributions and advanced stochastic processes remain outside the accepted boundary.
+
+E6 also unifies the E4–E6 extension tool catalog used by both the Tools page and `Ctrl+K`, removing the earlier discovery gap where expansion tools were not all globally searchable.
+
+See `E6_ACCEPTANCE.md`.
 
 ---
 
-## E7 — Fourier, Laplace & Transform Methods
+## Next — E7: Fourier, Laplace & Transform Methods
 
 - Laplace transforms;
 - inverse Laplace transforms;
@@ -296,7 +322,7 @@ Re-run the exact M7 rubric rather than inventing a more favorable metric.
 
 ## Current evidence after E3
 
-The most recent fixed M7 re-score was taken after E3; later E-phases have not been used to rewrite that historical score outside the scheduled integration audit.
+The most recent fixed M7 re-score was taken after E3; E4–E6 have not been used to rewrite that historical score outside the scheduled integration audit.
 
 Under that fixed M7 22-domain rubric:
 
