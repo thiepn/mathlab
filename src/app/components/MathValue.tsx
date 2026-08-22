@@ -37,13 +37,14 @@ function directStructuredMath(source: string): ReactNode | null {
     if (left && right) return <mrow>{left}<mo>{relation[2]}</mo>{right}</mrow>;
   }
 
-  const bracketPair = text.match(/^([\[(])(.+)([\])])$/);
-  if (bracketPair) {
-    const parts = splitTopLevel(bracketPair[2]);
+  const open = text[0];
+  const close = text[text.length - 1];
+  if ((open === '(' && close === ')') || (open === '[' && close === ']')) {
+    const parts = splitTopLevel(text.slice(1, -1));
     if (parts.length >= 2) {
       const parsed = parts.map(renderEndpoint);
       if (parsed.every(Boolean)) {
-        return <mrow><mo>{bracketPair[1]}</mo>{parsed.map((node, index) => <mrow key={index}>{index > 0 && <mo>,</mo>}{node}</mrow>)}<mo>{bracketPair[3]}</mo></mrow>;
+        return <mrow><mo>{open}</mo>{parsed.map((node, index) => <mrow key={index}>{index > 0 && <mo>,</mo>}{node}</mrow>)}<mo>{close}</mo></mrow>;
       }
     }
   }
