@@ -92,33 +92,35 @@ See `E3_ACCEPTANCE.md`.
 
 ---
 
-## Next — E4: ODEs & Dynamical Systems II
+## E4 — ODEs & Dynamical Systems II — Complete
 
-The current P12 ODE model is still primarily a first-order numerical IVP object. E3 can visualize supplied 2D vector fields, but that is not a substitute for a real differential-equations engine.
+E4 extends the P12 scalar numerical-IVP foundation into a bounded symbolic/numerical ODE and dynamical-systems layer and connects autonomous two-state systems directly to E3 phase-plane visualization.
 
-### E4 target scope
+Implemented baseline:
 
 - symbolic separable first-order ODEs;
-- first-order linear ODEs;
-- supported exact-equation workflows where deterministic rules are reliable;
+- first-order linear ODEs with exact integrating-factor representation;
+- supported exact differential-equation workflows with cross-partial certification;
 - second-order constant-coefficient linear ODEs;
-- higher-order-to-system conversion;
+- bounded higher-order constant-coefficient equations and first-order-system conversion;
 - first-class systems of first-order ODEs;
-- equilibrium points;
-- Jacobian linearization of autonomous systems;
-- eigenvalue-based local stability classification in supported cases;
+- equilibrium points in supported exact linear/decoupled cases;
+- exact Jacobian linearization of autonomous systems;
+- planar eigenvalue/trace/determinant local stability classification with nonhyperbolic caveats;
 - phase-plane analysis connected to E3;
-- adaptive Runge–Kutta integration;
-- event / stopping conditions;
-- foundation for stiff-method diagnostics;
-- solution-curve visualization through the E3 renderer;
-- explicit symbolic vs numerical solution provenance.
+- adaptive Dormand–Prince RK45 integration for scalar IVPs and systems;
+- event / stopping conditions through sign crossing;
+- an explicitly heuristic stiffness signal rather than a false stiff solver;
+- explicit symbolic vs numerical solution provenance;
+- backward-compatible P12 fixed-step Euler/Heun/RK4 for scalar `ivp(...)` objects.
 
-E4 should make the phase portrait a view of an ODE-system object rather than merely a view of an arbitrary vector field.
+E4 makes the phase portrait a view of an ODE-system object rather than merely a view of an arbitrary vector field. Unsupported symbolic classes, global nonlinear stability, stiff integration, BVPs and DAEs remain outside the accepted boundary.
+
+See `E4_ACCEPTANCE.md`.
 
 ---
 
-## E5 — Numerical Linear Algebra & Optimization
+## Next — E5: Numerical Linear Algebra & Optimization
 
 ### Numerical linear algebra
 
@@ -288,7 +290,9 @@ Re-run the exact M7 rubric rather than inventing a more favorable metric.
 
 ## Current evidence after E3
 
-Under the fixed M7 22-domain rubric:
+The most recent fixed M7 re-score was taken after E3; E4 has not been used to rewrite that historical score outside the scheduled integration audit.
+
+Under that fixed M7 22-domain rubric:
 
 - university-domain breadth: **43/100**;
 - implemented-domain maturity: **59/100**;
