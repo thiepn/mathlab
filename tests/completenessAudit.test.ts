@@ -47,7 +47,8 @@ describe('M7/E1/E2/E3 mathematical completeness registry', () => {
     expect(domain?.status).toBe('strong');
     expect(domain?.evidence.join(' ')).toContain('Parameterized');
     expect(domain?.evidence.join(' ')).toContain('phase portraits');
-    expect(domain?.evidence.join(' ')).toContain('3D');
+    expect(domain?.evidence.join(' ')).toContain('graph surfaces');
+    expect(domain?.evidence.join(' ')).toContain('three-component parametric surfaces');
     expect(domain?.gaps.join(' ')).toContain('Implicit 3D');
     expect(domain?.nextPhase).toBe('E12');
   });
