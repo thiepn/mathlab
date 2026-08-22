@@ -7,7 +7,7 @@ import {
   implementedDomainMaturityPercent,
 } from '../src/app/completenessAudit';
 
-describe('M7/E1/E2 mathematical completeness registry', () => {
+describe('M7/E1/E2/E3 mathematical completeness registry', () => {
   it('keeps the fixed 22-domain university-math baseline', () => {
     expect(COMPLETENESS_DOMAINS).toHaveLength(22);
     expect(new Set(COMPLETENESS_DOMAINS.map((domain) => domain.id)).size).toBe(22);
@@ -17,9 +17,9 @@ describe('M7/E1/E2 mathematical completeness registry', () => {
     for (const domain of COMPLETENESS_DOMAINS) expect(domain.status).toBe(COMPLETENESS_RUBRIC[domain.level]);
   });
 
-  it('advances the audit only for evidence actually added through E2', () => {
-    expect(completenessBreadthPercent()).toBe(41);
-    expect(implementedDomainMaturityPercent()).toBe(56);
+  it('advances the audit only for evidence actually added through E3', () => {
+    expect(completenessBreadthPercent()).toBe(43);
+    expect(implementedDomainMaturityPercent()).toBe(59);
     expect(domainsByStatus('missing')).toHaveLength(6);
   });
 
@@ -32,14 +32,24 @@ describe('M7/E1/E2 mathematical completeness registry', () => {
     expect(domain?.nextPhase).toBe('E5');
   });
 
-  it('records vector calculus as partial with theorem and field evidence', () => {
+  it('keeps vector calculus partial while recognizing its E3 geometry views', () => {
     const domain = COMPLETENESS_DOMAINS.find((item) => item.id === 'vector-calculus');
     expect(domain?.level).toBe(3);
     expect(domain?.status).toBe('partial');
-    expect(domain?.evidence.join(' ')).toContain('divergence');
-    expect(domain?.evidence.join(' ')).toContain('Stokes');
-    expect(domain?.gaps.join(' ')).toContain('General parametric surfaces');
-    expect(domain?.nextPhase).toBe('E3');
+    expect(domain?.evidence.join(' ')).toContain('vector fields');
+    expect(domain?.evidence.join(' ')).toContain('graph surfaces');
+    expect(domain?.nextPhase).toBe('E10');
+  });
+
+  it('promotes visualization to strong only after E3 adds multiple geometry families', () => {
+    const domain = COMPLETENESS_DOMAINS.find((item) => item.id === 'visualization');
+    expect(domain?.level).toBe(4);
+    expect(domain?.status).toBe('strong');
+    expect(domain?.evidence.join(' ')).toContain('Parametric');
+    expect(domain?.evidence.join(' ')).toContain('phase portraits');
+    expect(domain?.evidence.join(' ')).toContain('3D');
+    expect(domain?.gaps.join(' ')).toContain('Implicit 3D');
+    expect(domain?.nextPhase).toBe('E12');
   });
 
   it('records optimization only incidentally because E1 Lagrange solving is bounded', () => {
@@ -53,7 +63,7 @@ describe('M7/E1/E2 mathematical completeness registry', () => {
     expect(domainsByStatus('comprehensive')).toHaveLength(0);
   });
 
-  it('preserves strong ratings only for evidence-backed core domains', () => {
-    expect(domainsByStatus('strong').map((domain) => domain.id).sort()).toEqual(['algebra-cas', 'linear-core', 'single-calculus']);
+  it('adds visualization to the evidence-backed strong domains', () => {
+    expect(domainsByStatus('strong').map((domain) => domain.id).sort()).toEqual(['algebra-cas', 'linear-core', 'single-calculus', 'visualization']);
   });
 });
