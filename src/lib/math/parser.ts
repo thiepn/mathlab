@@ -19,8 +19,8 @@ const KNOWN_FUNCTIONS = new Set([
   'set', 'relation', 'graph', 'digraph', 'wgraph', 'wdigraph',
   'linrec', 'linrec2', 'complexity', 'master',
   'multinomial', 'starsbars', 'derangements', 'stirling2', 'bell', 'pigeonhole',
-  // P12 numerical ODE constructor.
-  'ivp',
+  // P12 numerical IVP + E4 ODE/dynamical-system constructors.
+  'ivp', 'odesys', 'separable', 'linearode', 'exactode', 'ode2', 'oden',
 ]);
 
 const SINGLE_CHAR_TOKENS: Record<string, MathTokenKind> = {
