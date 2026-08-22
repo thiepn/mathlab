@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import type { SemanticMathObject } from '../../lib/math/types';
+import { E6OperationControls, isE6ControlledOperation } from './E6OperationControls';
 
 interface Props {
   operation: string;
@@ -13,9 +14,10 @@ const CONTROLLED = new Set([
   'nonlinear-system-solve','numerical-optimize','constrained-optimize','convexity-diagnostic','linear-program',
 ]);
 
-export function isE5ControlledOperation(operation: string): boolean { return CONTROLLED.has(operation); }
+export function isE5ControlledOperation(operation: string): boolean { return CONTROLLED.has(operation) || isE6ControlledOperation(operation); }
 
 export function E5OperationControls({ operation, object, running, onAction }: Props) {
+  if (isE6ControlledOperation(operation)) return <E6OperationControls operation={operation} object={object} running={running} onAction={onAction} />;
   const dimension = object.kind === 'function' ? object.parameters.length : object.variables.length;
   const defaultPoint = `[${Array.from({ length: Math.max(2, dimension) }, () => '0').join(', ')}]`;
   const [tolerance, setTolerance] = useState('1e-9');

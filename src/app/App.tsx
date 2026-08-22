@@ -5,6 +5,7 @@ import { dependentObjects } from '../lib/math/workspaceLifecycle';
 import { resolveSemanticObject } from '../lib/math/semantic';
 import type { MathResult } from '../lib/math/types';
 import { MathWorkerClient } from '../lib/worker/client';
+import { findAllTool } from './allToolCatalog';
 import { Header } from './components/Header';
 import { ObjectSidebar } from './components/ObjectSidebar';
 import { ContextPanel } from './components/ContextPanel';
@@ -17,7 +18,7 @@ import { CourseReferencePage } from './components/CourseReferencePage';
 import { CommandPalette } from './components/CommandPalette';
 import { useHashRoute } from './hooks/useHashRoute';
 import { useMathWorkspace } from './hooks/useMathWorkspace';
-import { findTool, toolNeedsConfiguration, type ToolCatalogItem } from './toolCatalog';
+import { toolNeedsConfiguration, type ToolCatalogItem } from './toolCatalog';
 
 export function App() {
   const [route, setRoute] = useHashRoute();
@@ -298,7 +299,7 @@ export function App() {
           onOpenObject={openObject}
           onRoute={(nextRoute) => setRoute(nextRoute)}
           onTool={(toolId) => {
-            const tool = findTool(toolId);
+            const tool = findAllTool(toolId);
             if (tool) openCatalogTool(tool.id);
           }}
         />

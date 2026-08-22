@@ -13,6 +13,7 @@ export const OPERATIONS_REQUIRING_CONTROLS = new Set([
   'coordinate-transform','double-integral','triple-integral','scalar-line-integral','line-integral','surface-integral','flux-integral','green-theorem','gauss-theorem','stokes-theorem',
   'numerical-eigen','numerical-svd','pseudoinverse','numerical-rank','spectral-condition','conjugate-gradient',
   'nonlinear-system-solve','numerical-optimize','constrained-optimize','convexity-diagnostic','linear-program',
+  'affine-rv-transform','two-sample-mean-inference','paired-mean-inference','two-proportion-inference','chi-square-goodness','bootstrap-mean','markov-step',
 ]);
 
 const PRIORITY = [
@@ -21,6 +22,7 @@ const PRIORITY = [
   'vector-field-profile','divergence','curl','conservative-field','scalar-potential',
   'ode-profile','ode-symbolic-solve','ode-equilibria','ode-stability','ode-linearize','ode-to-system','ode-adaptive-solve',
   'numerical-lu','numerical-cholesky','numerical-qr','numerical-eigen','numerical-svd','pseudoinverse','numerical-rank','spectral-condition','conjugate-gradient','numerical-optimize','nonlinear-system-solve',
+  'joint-distribution-profile','covariance-correlation-matrix','chi-square-independence','one-way-anova','multiple-linear-regression','regression-diagnostics','mann-whitney','wilcoxon-signed-rank','markov-profile',
   'function-profile','derivative','differentiate','integrate','zeros','graph','det','rref','rank','inverse','eigen','linear-profile','descriptive-statistics',
   'distribution-profile','evaluate-probability','logic-profile','graph-profile','recurrence-profile','numerical-linear-solve',
   'condition-estimate','set-profile','relation-profile','complexity-profile','inspect-exact','inspect-decimal',

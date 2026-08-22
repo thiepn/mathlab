@@ -17,14 +17,14 @@ import type {
 
 const CONSTANTS = new Set(['pi', 'e', 'infinity', 'i']);
 const DOMAIN_ORDER: MathDomain[] = ['natural','integer','rational','real','complex'];
-const P10_DISTRIBUTIONS = new Set(['bernoulli','binomial','geometric','poisson','uniform','normal']);
+const DISTRIBUTIONS = new Set(['bernoulli','binomial','geometric','poisson','uniform','normal','exponential','chisquare','studentt','fdist','jointpmf']);
 const P10_PROBABILITY_CALLS = new Set(['choose','permute','conditional','bayes','unionprob','independentjoint','complement']);
 const P11_LOGIC_CALLS = new Set(['not','and','or','xor','implies','iff']);
 const P11_GRAPH_CALLS = new Set(['graph','digraph','wgraph','wdigraph']);
 const P11_COMBINATORICS_CALLS = new Set(['multinomial','starsbars','derangements','stirling2','bell','pigeonhole']);
 function isStructuredObjectCall(node: AstNode): boolean {
   return node.type === 'call' && (
-    node.name === 'data' || P10_DISTRIBUTIONS.has(node.name) || P10_PROBABILITY_CALLS.has(node.name) ||
+    node.name === 'data' || DISTRIBUTIONS.has(node.name) || P10_PROBABILITY_CALLS.has(node.name) ||
     P11_LOGIC_CALLS.has(node.name) || node.name === 'set' || node.name === 'relation' || P11_GRAPH_CALLS.has(node.name) ||
     node.name === 'linrec' || node.name === 'linrec2' || node.name === 'complexity' || node.name === 'master' || P11_COMBINATORICS_CALLS.has(node.name) || isOdeConstructorCall(node)
   );
@@ -218,7 +218,7 @@ function inferKind(parsed: ParsedMath, valueAst: AstNode, name: string | undefin
   const initial = classifyParsed(parsed);
   if (parameters.length) return 'function';
   if (valueAst.type === 'call' && valueAst.name === 'data') return 'dataset';
-  if (valueAst.type === 'call' && P10_DISTRIBUTIONS.has(valueAst.name)) return 'distribution';
+  if (valueAst.type === 'call' && DISTRIBUTIONS.has(valueAst.name)) return 'distribution';
   if (valueAst.type === 'call' && P10_PROBABILITY_CALLS.has(valueAst.name)) return 'probability';
   if (valueAst.type === 'call' && P11_LOGIC_CALLS.has(valueAst.name)) return 'proposition';
   if (valueAst.type === 'call' && valueAst.name === 'set') return 'finite-set';
