@@ -240,6 +240,45 @@ math.math-preview {
   font-size: 1rem;
 }
 
+/* Proof editors preserve exact source syntax while every line gets a mathematical reading surface underneath. */
+.math-lines-preview {
+  display: grid;
+  gap: 0;
+  margin-top: 9px;
+  overflow: hidden;
+  border: 1px solid var(--ml-line);
+  border-radius: var(--ml-radius-md);
+  background: var(--ml-blue-faint);
+}
+
+.math-lines-preview > div {
+  min-height: 50px;
+  display: grid;
+  grid-template-columns: 34px minmax(0, 1fr);
+  align-items: center;
+  gap: 10px;
+  padding: 7px 12px;
+  border-bottom: 1px solid var(--ml-line);
+  overflow-x: auto;
+}
+
+.math-lines-preview > div:last-child {
+  border-bottom: 0;
+}
+
+.math-lines-preview > div > span:first-child {
+  color: var(--ml-muted);
+  font-family: var(--ml-font-mono);
+  font-size: var(--ml-text-xs);
+  font-weight: 650;
+}
+
+.math-lines-preview .math-preview,
+.math-lines-preview > div > math.math-value,
+.math-lines-preview .math-text-fallback {
+  font-size: clamp(1.18rem, 1.8vw, 1.45rem);
+}
+
 /* Source-entry controls stay source-like by design; rendered previews/results carry the mathematical typography. */
 .math-input-shell input,
 .proof-form-grid textarea,
@@ -273,5 +312,11 @@ math.math-preview {
   .practice-typeset-answer > math.math-value,
   .practice-typeset-answer .math-text-fallback {
     font-size: 1.2rem;
+  }
+
+  .math-lines-preview .math-preview,
+  .math-lines-preview > div > math.math-value,
+  .math-lines-preview .math-text-fallback {
+    font-size: 1.16rem;
   }
 }
