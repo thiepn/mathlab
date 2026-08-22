@@ -1,10 +1,8 @@
 import { useEffect, useMemo, useState } from 'react';
 import { capabilitiesFor } from '../../lib/math/capabilitiesE5';
 import type { SemanticMathObject } from '../../lib/math/types';
-import { E4_TOOL_CATALOG } from '../e4ToolCatalog';
-import { E5_TOOL_CATALOG } from '../e5ToolCatalog';
-import { E6_TOOL_CATALOG } from '../e6ToolCatalog';
-import { TOOL_CATALOG, TOOL_CATEGORIES, toolNeedsConfiguration, toolSearchText, type ToolCatalogItem, type ToolCategory } from '../toolCatalog';
+import { ALL_TOOL_CATALOG } from '../allToolCatalog';
+import { TOOL_CATEGORIES, toolNeedsConfiguration, toolSearchText, type ToolCatalogItem, type ToolCategory } from '../toolCatalog';
 import { MathValue } from './MathValue';
 
 interface ToolsPageProps {
@@ -15,7 +13,7 @@ interface ToolsPageProps {
   onTryExample: (tool: ToolCatalogItem) => void;
 }
 
-const ALL_TOOLS: ToolCatalogItem[] = [...TOOL_CATALOG, ...E4_TOOL_CATALOG, ...E5_TOOL_CATALOG, ...E6_TOOL_CATALOG];
+const ALL_TOOLS: ToolCatalogItem[] = ALL_TOOL_CATALOG;
 
 function kindLabel(kind: SemanticMathObject['kind']) {
   return kind.replace('finite-set', 'set').replace('ode', 'ODE');
