@@ -12,12 +12,7 @@ export interface CompletenessDomain {
 }
 
 export const COMPLETENESS_RUBRIC: Record<CompletenessLevel, CompletenessStatus> = {
-  0: 'missing',
-  1: 'incidental',
-  2: 'narrow',
-  3: 'partial',
-  4: 'strong',
-  5: 'comprehensive',
+  0: 'missing', 1: 'incidental', 2: 'narrow', 3: 'partial', 4: 'strong', 5: 'comprehensive',
 };
 
 export const COMPLETENESS_DOMAINS: CompletenessDomain[] = [
@@ -32,8 +27,9 @@ export const COMPLETENESS_DOMAINS: CompletenessDomain[] = [
     gaps: ['Implicit differentiation', 'Improper integrals', 'Broader integration techniques', 'Parametric and polar calculus'],
   },
   {
-    id: 'multivariable-calculus', title: 'Multivariable calculus', level: 0, status: 'missing',
-    evidence: [], gaps: ['Multivariable functions', 'Partial derivatives', 'Gradient, Jacobian and Hessian', 'Directional derivatives', 'Multivariable limits and extrema', 'Lagrange multipliers'], nextPhase: 'E1',
+    id: 'multivariable-calculus', title: 'Multivariable calculus', level: 3, status: 'partial',
+    evidence: ['First-class scalar and vector-valued multi-parameter function definitions', 'Exact partial and mixed derivatives', 'Gradient, Jacobian and Hessian matrices', 'Directional derivatives, first-order linearization and tangent planes', 'Bounded exact two-variable critical-point solving with Hessian classification', 'Bounded one-constraint Lagrange stationarity workflows'],
+    gaps: ['Multivariable limits, continuity and differentiability theory', 'General nonlinear critical-point systems', 'Multiple constraints and KKT conditions', 'General/global optimization certification', 'Double and triple integration'], nextPhase: 'E2',
   },
   {
     id: 'vector-calculus', title: 'Vector calculus & multivariable integration', level: 0, status: 'missing',
@@ -60,8 +56,8 @@ export const COMPLETENESS_DOMAINS: CompletenessDomain[] = [
     gaps: ['Epsilon-delta proof workflows', 'Uniform convergence', 'Metric spaces', 'Compactness/completeness theorem workflows', 'Riemann/Lebesgue integration theory'], nextPhase: 'E11',
   },
   {
-    id: 'complex-analysis', title: 'Complex analysis', level: 0, status: 'missing',
-    evidence: [], gaps: ['Complex differentiability', 'Cauchy-Riemann equations', 'Contour integration', 'Residues', 'Complex series and mappings'], nextPhase: 'E8',
+    id: 'complex-analysis', title: 'Complex analysis', level: 0, status: 'missing', evidence: [],
+    gaps: ['Complex differentiability', 'Cauchy-Riemann equations', 'Contour integration', 'Residues', 'Complex series and mappings'], nextPhase: 'E8',
   },
   {
     id: 'probability', title: 'Probability', level: 3, status: 'partial',
@@ -94,28 +90,29 @@ export const COMPLETENESS_DOMAINS: CompletenessDomain[] = [
     gaps: ['Symbolic first-order ODE solving', 'Higher-order ODEs', 'Systems of ODEs', 'Adaptive RK methods', 'Stiff solvers', 'Phase-plane and stability analysis'], nextPhase: 'E4',
   },
   {
-    id: 'pde', title: 'Partial differential equations', level: 0, status: 'missing',
-    evidence: [], gaps: ['PDE objects', 'Classification', 'Separation of variables', 'Boundary/initial-value workflows', 'Numerical PDE methods'], nextPhase: 'E10',
+    id: 'pde', title: 'Partial differential equations', level: 0, status: 'missing', evidence: [],
+    gaps: ['PDE objects', 'Classification', 'Separation of variables', 'Boundary/initial-value workflows', 'Numerical PDE methods'], nextPhase: 'E10',
   },
   {
-    id: 'optimization', title: 'Optimization', level: 0, status: 'missing',
-    evidence: [], gaps: ['Multivariable unconstrained optimization', 'Constrained optimization', 'Linear programming', 'Convexity tools', 'Numerical optimization'], nextPhase: 'E5',
+    id: 'optimization', title: 'Optimization', level: 1, status: 'incidental',
+    evidence: ['Exact local min/max/saddle classification for bounded two-variable critical-point problems', 'One-equality-constraint Lagrange stationarity when the exact system is linear'],
+    gaps: ['General nonlinear optimization', 'Convexity and global-optimum tools', 'Linear programming', 'Multiple constraints and KKT conditions', 'Numerical optimization'], nextPhase: 'E5',
   },
   {
-    id: 'transforms', title: 'Transforms & harmonic analysis', level: 0, status: 'missing',
-    evidence: [], gaps: ['Laplace transforms', 'Inverse Laplace', 'Fourier series', 'Fourier transforms', 'Convolution and transform-based ODE/PDE workflows'], nextPhase: 'E7',
+    id: 'transforms', title: 'Transforms & harmonic analysis', level: 0, status: 'missing', evidence: [],
+    gaps: ['Laplace transforms', 'Inverse Laplace', 'Fourier series', 'Fourier transforms', 'Convolution and transform-based ODE/PDE workflows'], nextPhase: 'E7',
   },
   {
-    id: 'number-theory', title: 'Number theory', level: 0, status: 'missing',
-    evidence: [], gaps: ['Divisibility and Euclidean algorithm as user tools', 'Modular arithmetic', 'Congruences and CRT', 'Prime factorization', 'Diophantine equations'], nextPhase: 'E9',
+    id: 'number-theory', title: 'Number theory', level: 0, status: 'missing', evidence: [],
+    gaps: ['Divisibility and Euclidean algorithm as user tools', 'Modular arithmetic', 'Congruences and CRT', 'Prime factorization', 'Diophantine equations'], nextPhase: 'E9',
   },
   {
-    id: 'abstract-algebra', title: 'Abstract algebra', level: 0, status: 'missing',
-    evidence: [], gaps: ['Groups', 'Rings', 'Fields', 'Homomorphisms', 'Quotients', 'Finite algebraic structures'], nextPhase: 'E10',
+    id: 'abstract-algebra', title: 'Abstract algebra', level: 0, status: 'missing', evidence: [],
+    gaps: ['Groups', 'Rings', 'Fields', 'Homomorphisms', 'Quotients', 'Finite algebraic structures'], nextPhase: 'E10',
   },
   {
-    id: 'geometry-topology', title: 'Geometry & topology', level: 0, status: 'missing',
-    evidence: [], gaps: ['Euclidean/analytic geometry workbench', 'Curves and surfaces', 'Metric/topological spaces', 'Connectedness and compactness tools'], nextPhase: 'E10',
+    id: 'geometry-topology', title: 'Geometry & topology', level: 0, status: 'missing', evidence: [],
+    gaps: ['Euclidean/analytic geometry workbench', 'Curves and surfaces', 'Metric/topological spaces', 'Connectedness and compactness tools'], nextPhase: 'E10',
   },
   {
     id: 'proof', title: 'Proof & formal reasoning', level: 2, status: 'narrow',
