@@ -36,11 +36,17 @@ export function ToolsPage({ currentObject, initialToolId = '', onRun, onConfigur
   const readyCount = currentObject ? TOOL_CATALOG.filter((tool) => capabilities.some((capability) => capability.id === tool.operation && capability.available)).length : 0;
 
   const statusFor = (tool: ToolCatalogItem) => {
-    if (tool.specialRoute) return { label: 'Dedicated workspace', tone: 'route' };
+    if (tool.specialRoute === 'visualize') return { label: 'Visualization workspace', tone: 'route' };
+    if (tool.specialRoute === 'proof') return { label: 'Proof workspace', tone: 'route' };
     const capability = capabilities.find((item) => item.id === tool.operation);
     if (capability?.available) return { label: toolNeedsConfiguration(tool) ? 'Configure' : 'Ready now', tone: 'ready' };
     if (capability && !capability.applicable) return { label: 'Input needs adjustment', tone: 'blocked' };
     return { label: 'Try example', tone: 'example' };
+  };
+
+  const openSpecialRoute = (tool: ToolCatalogItem) => {
+    if (tool.specialRoute === 'visualize') sessionStorage.setItem('mathlab:e3-mode', tool.operation);
+    onConfigure(tool);
   };
 
   return (
@@ -49,19 +55,19 @@ export function ToolsPage({ currentObject, initialToolId = '', onRun, onConfigur
         <div>
           <span className="section-kicker">Mathematical tool catalog</span>
           <h1>Find the operation you need.</h1>
-          <p>Search MathLab by mathematical task instead of memorizing object types or menus. Every item below maps to a real implemented engine workflow.</p>
+          <p>Search MathLab by mathematical task instead of memorizing object types or menus. Every item below maps to a real implemented engine or visualization workflow.</p>
         </div>
         <div className="tools-current-context">
           <span>Current work</span>
           <strong>{currentObject ? currentObject.name ?? kindLabel(currentObject.kind) : 'No mathematical object selected'}</strong>
-          <small>{currentObject ? `${readyCount} catalog tool${readyCount === 1 ? '' : 's'} ready for this ${kindLabel(currentObject.kind)}.` : 'Choose a tool and start from its example.'}</small>
+          <small>{currentObject ? `${readyCount} computational catalog tool${readyCount === 1 ? '' : 's'} ready for this ${kindLabel(currentObject.kind)}.` : 'Choose a tool and start from its example or dedicated workspace.'}</small>
         </div>
       </section>
 
       <section className="tool-finder" aria-label="Search mathematical tools">
         <div className="tool-search-box">
           <span aria-hidden="true">⌕</span>
-          <input value={query} onChange={(event) => setQuery(event.target.value)} placeholder="Search eigenvalues, Taylor, Bayes, RREF, RK4, regression…" aria-label="Search tools" />
+          <input value={query} onChange={(event) => setQuery(event.target.value)} placeholder="Search eigenvalues, contours, vector fields, Bayes, RREF, RK4…" aria-label="Search tools" />
           {query && <button onClick={() => setQuery('')}>Clear</button>}
         </div>
         <div className="tool-category-strip" role="list" aria-label="Tool categories">
@@ -74,7 +80,7 @@ export function ToolsPage({ currentObject, initialToolId = '', onRun, onConfigur
       <div className="tools-layout">
         <section className="tool-results" aria-label="Tool search results">
           <div className="tool-results-heading"><strong>{category === 'All' ? 'All tools' : category}</strong><span>{filtered.length} result{filtered.length === 1 ? '' : 's'}</span></div>
-          {filtered.length === 0 && <div className="tool-empty">No tool matches that search. Try a mathematical term such as “matrix”, “limit”, “probability”, or “proof”.</div>}
+          {filtered.length === 0 && <div className="tool-empty">No tool matches that search. Try a mathematical term such as “matrix”, “contour”, “vector field”, “limit”, “probability”, or “proof”.</div>}
           <div className="tool-card-list">
             {filtered.map((tool) => {
               const status = statusFor(tool);
@@ -115,7 +121,10 @@ export function ToolsPage({ currentObject, initialToolId = '', onRun, onConfigur
 
             <div className="tool-detail-actions">
               {selected.specialRoute ? (
-                <button className="primary-action" onClick={() => onConfigure(selected)}>Open Proof Lab</button>
+                <>
+                  <button className="primary-action" onClick={() => openSpecialRoute(selected)}>{selected.specialRoute === 'visualize' ? 'Open visualization' : 'Open Proof Lab'}</button>
+                  <button onClick={() => onTryExample(selected)}>Start from example</button>
+                </>
               ) : selectedCapability?.available ? (
                 toolNeedsConfiguration(selected)
                   ? <button className="primary-action" onClick={() => onConfigure(selected)}>Configure for current work</button>
@@ -123,7 +132,7 @@ export function ToolsPage({ currentObject, initialToolId = '', onRun, onConfigur
               ) : (
                 <button className="primary-action" onClick={() => onTryExample(selected)}>Try this example</button>
               )}
-              {selectedCapability?.available && <button onClick={() => onTryExample(selected)}>Start from example</button>}
+              {selectedCapability?.available && !selected.specialRoute && <button onClick={() => onTryExample(selected)}>Start from example</button>}
             </div>
           </aside>
         )}

@@ -2,6 +2,7 @@ import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
 import { App } from './app/App';
 import { AppErrorBoundary } from './app/components/AppErrorBoundary';
+import './app/e3VisualTools';
 import './styles/tokens.css';
 import './styles/global.css';
 import './styles/app.css';
@@ -13,6 +14,7 @@ import './styles/m5.css';
 import './styles/m6.css';
 import './styles/m7.css';
 import './styles/e2.css';
+import './styles/e3.css';
 
 if ('serviceWorker' in navigator && import.meta.env.PROD) {
   window.addEventListener('load', () => {
