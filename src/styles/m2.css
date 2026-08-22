@@ -38,6 +38,20 @@ math.math-preview {
   font-family: var(--ml-font-ui);
 }
 
+.math-rich-text {
+  display: inline;
+}
+
+.math-rich-text .math-value,
+.math-rich-text > math.math-value,
+.math-rich-text .math-text-fallback {
+  margin-inline: 0.08em;
+}
+
+.math-rich-text .math-preview {
+  font-size: 1.04em;
+}
+
 .answer-math > .math-value,
 .answer-math > math.math-value {
   display: flex;
@@ -169,7 +183,46 @@ math.math-preview {
   font-size: 1.02rem;
 }
 
-/* Practice still accepts plain-source answers, but mathematical answer surfaces should not look like code. */
+/* Practice keeps source-entry controls editable, while prompts and solutions get inline math typesetting. */
+.exercise-prompt {
+  font-size: 1.06rem;
+  line-height: 1.72;
+}
+
+.exercise-prompt .math-preview,
+.hint-stack .math-preview,
+.solution-reveal .math-preview,
+.practice-feedback .math-preview,
+.exam-results .math-preview,
+.practice-choices .math-preview {
+  font-size: 1.08em;
+}
+
+.practice-typeset-answer {
+  min-height: 54px;
+  display: flex;
+  align-items: center;
+  overflow-x: auto;
+  padding: 8px 12px;
+  border: 1px solid var(--ml-line);
+  border-radius: var(--ml-radius-md);
+  background: var(--ml-blue-faint);
+}
+
+.practice-typeset-answer .math-preview,
+.practice-typeset-answer > math.math-value,
+.practice-typeset-answer .math-text-fallback {
+  font-size: clamp(1.2rem, 2vw, 1.55rem);
+}
+
+.solution-reveal .practice-typeset-answer {
+  margin-top: 12px;
+}
+
+.exam-results .practice-typeset-answer {
+  margin: 4px 0 12px;
+}
+
 .practice-page code,
 .solution-reveal code,
 .exam-results code {
@@ -181,11 +234,6 @@ math.math-preview {
   border: 1px solid var(--ml-line);
   border-radius: var(--ml-radius-sm);
   padding: 6px 9px;
-}
-
-.exercise-prompt {
-  font-size: 1.06rem;
-  line-height: 1.72;
 }
 
 .practice-choices button {
@@ -219,5 +267,11 @@ math.math-preview {
   .series-equation .math-preview,
   .series-equation > math.math-value {
     font-size: 1.4rem;
+  }
+
+  .practice-typeset-answer .math-preview,
+  .practice-typeset-answer > math.math-value,
+  .practice-typeset-answer .math-text-fallback {
+    font-size: 1.2rem;
   }
 }
