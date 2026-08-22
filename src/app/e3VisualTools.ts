@@ -1,4 +1,4 @@
-import type { ToolCatalogItem } from './toolCatalog';
+import { TOOL_CATALOG, type ToolCatalogItem } from './toolCatalog';
 
 export const E3_VISUAL_TOOLS: ToolCatalogItem[] = [
   {
@@ -52,3 +52,7 @@ export const E3_VISUAL_TOOLS: ToolCatalogItem[] = [
     example:'S(u,v) := [u, v, u*v]',aliases:['parametric surface','3d parametric','surface mesh','S(u,v)'],specialRoute:'visualize',
   },
 ];
+
+for (const tool of E3_VISUAL_TOOLS) {
+  if (!TOOL_CATALOG.some((existing) => existing.id === tool.id)) TOOL_CATALOG.push(tool);
+}
