@@ -3,7 +3,7 @@ import { rationalToAst, rationalValue, simplifyAst, substituteAst, symbolsIn } f
 import { differentiateAst, evaluateAt, type CalculusStep } from './calculus';
 import { astToPlainText } from './format';
 import { parseMath } from './parser';
-import { ONE, ZERO, add, isZero, mul, sign, sub, type Rational } from './rational';
+import { isZero, mul, sign, sub, type Rational } from './rational';
 import { solveEquation, solveLinearSystem, type SolveStep } from './solve';
 
 export interface MultivariableTransform {
