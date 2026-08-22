@@ -1,5 +1,5 @@
-const SHELL_CACHE = 'mathlab-m6-shell';
-const RUNTIME_CACHE = 'mathlab-m6-runtime';
+const SHELL_CACHE = 'mathlab-m7-shell';
+const RUNTIME_CACHE = 'mathlab-m7-runtime';
 const SHELL = ['./', './index.html', './manifest.webmanifest', './mathlab-mark.svg', './mathlab-icon-192.png', './mathlab-icon-512.png', './mathlab-maskable-512.png'];
 
 self.addEventListener('install', (event) => {
