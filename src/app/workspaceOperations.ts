@@ -17,6 +17,7 @@ const PRIORITY = [
   'solve','solve-inequality','solve-system','simplify','factor','expand',
   'gradient','jacobian','hessian','multivariable-critical-points','second-derivative-test',
   'vector-field-profile','divergence','curl','conservative-field','scalar-potential',
+  'ode-profile','ode-symbolic-solve','ode-equilibria','ode-stability','ode-linearize','ode-to-system','ode-adaptive-solve',
   'function-profile','derivative','differentiate','integrate','zeros','graph','det','rref','rank','inverse','eigen','linear-profile','descriptive-statistics',
   'distribution-profile','evaluate-probability','logic-profile','graph-profile','recurrence-profile','numerical-linear-solve',
   'condition-estimate','set-profile','relation-profile','complexity-profile','inspect-exact','inspect-decimal',
