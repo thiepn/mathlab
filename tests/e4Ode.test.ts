@@ -43,6 +43,11 @@ describe('E4 ODEs & dynamical systems II', () => {
     expect(linear.exactness).toBe('exact');
     expect(linear.sections[0]?.title).toContain('First-order linear');
 
+    const exact = symbolicOdeSolve(ast('exactode(2*x+y,x+2*y)'));
+    expect(exact.exactness).toBe('exact');
+    expect(exact.sections[0]?.title).toBe('Exact differential equation');
+    expect(exact.sections[0]?.facts.some((fact) => fact.label === 'Potential Φ')).toBe(true);
+
     const secondOrder = symbolicOdeSolve(ast('ode2(1,0,1)'));
     expect(secondOrder.exactness).toBe('exact');
     expect(secondOrder.sections[0]?.facts.some((fact) => fact.label === 'Root family')).toBe(true);
