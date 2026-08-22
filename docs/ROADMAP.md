@@ -49,9 +49,9 @@ The post-M7 sequence is defined in detail in `M7_EXPANSION_ROADMAP.md`.
 
 | Phase | Scope | Status |
 |---|---|---|
-| **E1 — Multivariable Calculus Foundation** | Multi-parameter scalar/vector-valued functions; partial/mixed derivatives; gradient/Jacobian/Hessian; directional derivatives; linearization/tangent planes; bounded exact 2D critical-point/Hessian analysis and one-constraint Lagrange stationarity. | **Complete** |
-| **E2 — Vector Calculus & Multivariable Integration** | Double/triple integrals, coordinate transforms, vector fields, div/curl, line/surface integrals, Green/Gauss/Stokes. | Next |
-| **E3 — Visualization 2.0** | Parametric/polar/implicit plots, contours, fields, phase portraits and 3D surfaces. | Planned |
+| **E1 — Multivariable Calculus Foundation** | Multi-parameter scalar/vector-valued functions; partial/mixed derivatives; gradient/Jacobian/Hessian; directional derivatives; linearization/tangent planes; bounded exact 2D critical-point/Hessian analysis and one-constraint Lagrange stationarity. | Complete |
+| **E2 — Vector Calculus & Multivariable Integration** | Exact/approximate bounded double/triple integrals; polar/cylindrical/spherical transforms; 2D/3D vector fields; div/curl/potentials; line/surface/flux integrals; bounded Green/Gauss/Stokes verification. | **Complete** |
+| **E3 — Visualization 2.0** | Parametric/polar/implicit plots, contours, fields, phase portraits and 3D surfaces. | **Next** |
 | **E4 — ODEs & Dynamical Systems II** | Symbolic textbook ODE classes, higher-order/systems, adaptive methods and phase-plane stability. | Planned |
 | **E5 — Numerical Linear Algebra & Optimization** | LU/Cholesky, numerical eigen/SVD, nonlinear systems, multivariable/constrained/linear optimization. | Planned |
 | **E6 — Probability & Statistics II** | Joint distributions, broader inference, ANOVA, multiple regression, nonparametrics and stochastic foundations. | Planned |
@@ -66,8 +66,6 @@ The post-M7 sequence is defined in detail in `M7_EXPANSION_ROADMAP.md`.
 
 The parser and semantic model already represented `f(x,y,...)` definitions and function arity. E1 promotes that dormant structure into the calculus engine rather than inventing a second function representation.
 
-The current split is explicit:
-
 ```text
 Unary f(x)
   → P5 calculus / P6 plots / P9 analysis / P12 scalar numerical calculus
@@ -80,6 +78,25 @@ Vector-valued F(x,y,...)
 ```
 
 See `E1_ACCEPTANCE.md` for the exact solving and optimization boundaries.
+
+## E2 semantic outcome
+
+E2 deliberately reuses those E1 objects rather than adding a competing field syntax:
+
+```text
+Scalar field f(x,y[,z])
+  → iterated integration / coordinate transforms / scalar line & surface integrals
+
+Vector field F(x,y)=[P,Q]
+  → 2D divergence/curl / potential / circulation / Green
+
+Vector field F(x,y,z)=[P,Q,R]
+  → 3D divergence/curl / potential / work / flux / Gauss / Stokes
+```
+
+Curves, iterated bounds, graph surfaces and bounded theorem regions are typed operation inputs. Exact evaluation reuses P5/E1 symbolic calculus; deterministic Simpson cubature is an explicitly approximate fallback for constant rectangular regions.
+
+See `E2_ACCEPTANCE.md` for exact region, surface, topology and numerical boundaries.
 
 ## Architecture rule
 

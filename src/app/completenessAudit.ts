@@ -28,12 +28,13 @@ export const COMPLETENESS_DOMAINS: CompletenessDomain[] = [
   },
   {
     id: 'multivariable-calculus', title: 'Multivariable calculus', level: 3, status: 'partial',
-    evidence: ['First-class scalar and vector-valued multi-parameter function definitions', 'Exact partial and mixed derivatives', 'Gradient, Jacobian and Hessian matrices', 'Directional derivatives, first-order linearization and tangent planes', 'Bounded exact two-variable critical-point solving with Hessian classification', 'Bounded one-constraint Lagrange stationarity workflows'],
-    gaps: ['Multivariable limits, continuity and differentiability theory', 'General nonlinear critical-point systems', 'Multiple constraints and KKT conditions', 'General/global optimization certification', 'Double and triple integration'], nextPhase: 'E2',
+    evidence: ['First-class scalar and vector-valued multi-parameter function definitions', 'Exact partial and mixed derivatives', 'Gradient, Jacobian and Hessian matrices', 'Directional derivatives, first-order linearization and tangent planes', 'Bounded exact two-variable critical-point solving with Hessian classification', 'Bounded one-constraint Lagrange stationarity workflows', 'E2 iterated double/triple integration reuses the same multivariable semantic model'],
+    gaps: ['Multivariable limits, continuity and differentiability theory', 'General nonlinear critical-point systems', 'Multiple constraints and KKT conditions', 'General/global optimization certification'], nextPhase: 'E5',
   },
   {
-    id: 'vector-calculus', title: 'Vector calculus & multivariable integration', level: 0, status: 'missing',
-    evidence: [], gaps: ['Double/triple integrals', 'Vector fields', 'Divergence and curl', 'Line and surface integrals', 'Green, Gauss and Stokes workflows'], nextPhase: 'E2',
+    id: 'vector-calculus', title: 'Vector calculus & multivariable integration', level: 3, status: 'partial',
+    evidence: ['Exact iterated double and triple integrals when supported by the bounded symbolic antiderivative engine', 'Deterministic Simpson fallback on constant rectangular regions', 'Polar/cylindrical/spherical substitutions with Jacobian factors', 'First-class 2D/3D vector-field workflows with divergence, curl, conservative checks and scalar potentials', 'Parameterized scalar/work line integrals and graph-surface scalar/flux integrals', 'Computational Green, Gauss/divergence and Stokes theorem verification on bounded rectangular/graph cases'],
+    gaps: ['General region algebra and automatic order conversion', 'General parametric surfaces and implicit surfaces', 'Arbitrary coordinate transformations and orientation machinery', 'Improper/singular multivariable integrals and stronger cubature/error control', 'Theorem hypotheses/topology certificates beyond the represented bounded cases'], nextPhase: 'E3',
   },
   {
     id: 'visualization', title: 'Mathematical visualization', level: 2, status: 'narrow',

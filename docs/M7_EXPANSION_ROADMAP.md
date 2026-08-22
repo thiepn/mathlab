@@ -13,55 +13,50 @@ Every E-phase must preserve the existing MathLab contracts:
 - mathematical rendering is MathML-first;
 - every phase ships with deterministic regression tests and must pass the existing release gate.
 
-## Next — E1: Multivariable Calculus Foundation
+## E1: Multivariable Calculus Foundation — Complete
 
-This is the highest-priority missing university domain and the architectural prerequisite for several later phases.
-
-### E1 scope
+E1 removed the unary-only calculus assumption and established:
 
 - multi-argument function definitions such as `f(x,y) := x^2 + y^2`;
-- variable-aware partial differentiation;
-- higher/mixed partial derivatives;
-- gradient vectors;
-- Jacobian matrices for vector-valued functions;
-- Hessian matrices;
+- variable-aware partial and mixed derivatives;
+- gradients, Jacobians and Hessians;
 - directional derivatives;
 - tangent planes / first-order linearization;
-- multivariable critical points;
-- second-derivative classification in supported low-dimensional cases;
-- constrained extrema with Lagrange multipliers in bounded deterministic cases;
-- multivariable function semantic profiles;
-- Tools/Reference/Practice integration;
-- domain and assumption handling for multivariable expressions.
+- bounded exact multivariable critical-point classification;
+- bounded one-constraint Lagrange stationarity;
+- scalar and vector-valued multivariable function semantics.
 
-### E1 architectural gate
-
-E1 is not complete until MathLab stops assuming that a function is necessarily unary throughout the semantic/capability/result pipeline.
+See `E1_ACCEPTANCE.md`.
 
 ---
 
-## E2: Vector Calculus & Multivariable Integration
+## E2: Vector Calculus & Multivariable Integration — Complete
 
-Build on E1 rather than duplicating it.
+E2 builds on E1 rather than duplicating its function representation.
 
-- double integrals over rectangular/simple bounded regions;
-- iterated integrals;
-- triple integrals;
-- change of variables and Jacobian determinant in supported transforms;
-- polar/cylindrical/spherical coordinate workflows;
-- vector-field semantic objects;
-- gradient, divergence and curl;
-- conservative-field checks and potentials;
-- line integrals;
-- surface/flux integrals in bounded supported forms;
-- computational Green/Gauss/Stokes verification workflows;
-- region-aware domain descriptions.
+Implemented baseline:
+
+- exact iterated double integrals over rectangular/simple nested bounds where the P5 antiderivative engine applies;
+- exact iterated triple integrals in the same bounded model;
+- deterministic composite Simpson fallback for constant rectangular regions, explicitly marked approximate;
+- polar/cylindrical/spherical coordinate substitutions and Jacobian factors;
+- first-class computational 2D/3D vector-field workflows;
+- divergence and curl;
+- conservative-field checks and exact scalar potentials where supported;
+- scalar line integrals and work/circulation integrals over parameterized curves;
+- scalar and flux graph-surface integrals over rectangular bases;
+- computational Green theorem verification on rectangles;
+- computational Gauss/divergence theorem verification on rectangular boxes;
+- computational Stokes theorem verification on graph surfaces over rectangular bases;
+- region, curve, surface and orientation controls integrated into the normal Tools/Workspace contract.
+
+The accepted boundaries are intentionally narrower than a general geometry engine. See `E2_ACCEPTANCE.md`.
 
 ---
 
-## E3: Visualization 2.0
+## Next — E3: Visualization 2.0
 
-The current P6/M5 engine is an explicit unary 2D plotter. E3 expands the visualization model itself.
+The current P6/M5 engine is an explicit unary 2D plotter. E3 expands the visualization model itself and should consume E1/E2 semantic objects directly.
 
 - parametric curves;
 - polar plots;
@@ -73,7 +68,8 @@ The current P6/M5 engine is an explicit unary 2D plotter. E3 expands the visuali
 - phase portraits;
 - 3D surfaces `z=f(x,y)`;
 - parametric surfaces where feasible;
-- special-point overlays for multivariable critical points;
+- E1 critical-point overlays;
+- E2 vector-field and region overlays;
 - synchronized symbolic ↔ visualization selection;
 - export for new plot types.
 
@@ -153,143 +149,122 @@ Extend P10 from an introductory statistics engine into a useful university stati
 
 - Laplace transforms;
 - inverse Laplace transforms;
-- transform tables with assumptions;
+- shifting/scaling rules;
 - convolution;
-- transform-based ODE solving;
+- transform-based linear ODE workflows;
 - Fourier series coefficients;
-- trigonometric/complex Fourier series;
-- Fourier transform / inverse transform for supported symbolic families;
-- discrete Fourier transform numerical workflow;
-- spectrum visualization.
+- even/odd simplifications;
+- Fourier transforms for supported forms;
+- inverse transforms;
+- discrete/numerical transform foundation where appropriate.
 
 ---
 
 ## E8: Complex Analysis
 
-Complex values already exist incidentally in advanced linear algebra; E8 makes complex analysis a real domain.
-
-- complex-number semantic workflows;
-- complex elementary functions;
-- complex differentiation;
+- complex-valued functions;
+- real/imaginary decomposition;
+- complex differentiability;
 - Cauchy–Riemann checks;
-- analytic-function classification in supported forms;
-- complex sequences/series;
-- contour/path objects;
-- contour integration;
-- Cauchy integral workflows;
-- Laurent series;
-- poles and residues;
-- residue-theorem evaluation in supported cases;
-- complex-plane visualization.
+- elementary complex mappings;
+- complex power and Laurent series;
+- isolated singularities;
+- residues;
+- contour integrals in supported parameterized forms;
+- residue-theorem workflows;
+- domain/branch diagnostics.
 
 ---
 
 ## E9: Discrete Mathematics II, Algorithms & Number Theory
 
 ### Discrete / algorithms
-
-- predicate logic and bounded quantifiers;
-- induction-oriented recurrence/proof workflows;
-- generating functions;
-- broader recurrence solving;
-- dynamic-programming traces;
+- predicate logic and finite-domain quantifiers;
+- stronger recurrence solving and generating functions;
 - max-flow/min-cut;
 - bipartite matching;
-- negative-weight shortest paths with explicit cycle handling;
-- more data-structure analysis.
+- Bellman–Ford / negative weights;
+- dynamic-programming traces;
+- broader algorithm complexity derivations.
 
 ### Number theory
-
-- gcd/extended Euclidean algorithm as user operations;
+- gcd / extended Euclidean algorithm;
 - divisibility;
 - modular arithmetic;
+- modular inverses;
 - linear congruences;
 - Chinese remainder theorem;
-- modular exponentiation;
-- primality/factorization for bounded integers;
-- Diophantine equations in supported classes.
+- prime factorization for bounded integers;
+- Euler phi and elementary arithmetic functions;
+- bounded linear Diophantine equations.
 
 ---
 
 ## E10: PDEs, Abstract Structures & Geometry Foundations
 
-This is intentionally later because each subject requires new semantic models rather than a few isolated operations.
+This is intentionally a foundation phase rather than a claim of completing three enormous subjects.
 
-### PDE foundation
-
+### PDEs
 - PDE semantic objects;
-- first/second-order classification;
-- canonical heat/wave/Laplace equation workflows;
-- separation of variables in bounded textbook cases;
-- boundary/initial-condition representation;
-- basic finite-difference PDE methods.
+- order/linearity classification;
+- common first/second-order form recognition;
+- separation-of-variables templates;
+- canonical heat/wave/Laplace rectangular problems;
+- initial/boundary condition objects.
 
-### Abstract algebra foundation
+### Abstract structures
+- finite group objects and Cayley tables;
+- subgroup/order checks;
+- finite ring/field foundations;
+- homomorphism/kernel/image checks in bounded finite settings.
 
-- finite groups;
-- group properties/subgroups;
-- permutation groups;
-- rings/fields for bounded finite examples;
-- homomorphism/isomorphism checks;
-- quotient structures where representation is deterministic.
-
-### Geometry/topology foundation
-
-- analytic geometry objects;
-- curves/surfaces tied to E3 visualization;
-- metric-space objects;
-- basic open/closed/compact/connected classifications for supported finite/structured examples.
+### Geometry/topology
+- analytic geometry objects needed by other domains;
+- curves/surfaces/regions shared with E2/E3;
+- metric-space foundation;
+- basic open/closed/connected/compact finite or symbolic examples.
 
 ---
 
 ## E11: Proof System II & Upper-Division Reasoning
 
-P13 should remain conservative until the underlying logic model expands.
-
-- predicate logic;
-- variables and quantifiers;
-- explicit theorem/definition registry;
+- predicate syntax and quantifiers;
 - induction templates;
-- proof obligations and subgoals;
-- exact certificates for supported real-analysis statements;
-- exact certificates for supported linear/abstract algebra statements;
-- counterexample generation separated from proof certification;
-- structured proof trees;
-- Practice integration for proof exercises;
-- no natural-language “proof accepted” status unless a formal/deterministic certificate backs it.
+- theorem registry;
+- proof obligations;
+- deterministic theorem application;
+- equality/inequality lemma chaining;
+- analysis proof templates where assumptions can be represented formally;
+- algebra/linear-algebra theorem certificates;
+- counterexample generation remains disproof-only;
+- natural-language explanation may accompany, but never replace, the deterministic certificate.
 
 ---
 
-## E12: Mathematical Integration, Coverage Certification & v2 Gate
+## E12: Mathematical Integration & v2 Certification
 
-After E1–E11:
+Re-run the exact M7 rubric rather than inventing a more favorable metric.
 
-- re-run the 22-domain completeness audit;
-- audit cross-domain semantic consistency;
-- verify every Tools entry against engine behavior;
-- build a representative golden corpus across all supported domains;
-- fuzz parsers and bounded numerical methods;
-- cross-check selected exact/numerical outputs against independent references;
-- browser/device/PWA regression;
-- performance profiling for larger matrices, plots and numerical traces;
-- accessibility pass for expanded mathematical notation;
-- freeze a new v2 mathematical capability contract.
+- re-score all 22 domains with evidence;
+- full engine/capability/catalog consistency audit;
+- large golden mathematical corpus;
+- cross-domain regression testing;
+- exact/approximate/heuristic label audit;
+- Worker timeout/performance audit;
+- browser/device/PWA certification;
+- accessibility audit after the expanded interfaces;
+- documentation and unsupported-boundary audit;
+- remove stale or duplicate operation paths;
+- capability freeze;
+- v2 release-candidate promotion only after the evidence supports it.
 
-## Priority order
+## Expected outcome
 
-The planned order is deliberate:
+The purpose of the E-series is not to make MathLab compete with Mathematica by feature count. It is to turn the current bounded engine into a coherent, honest, broad university-mathematics environment in which:
 
-1. **E1 — Multivariable Calculus Foundation**
-2. **E2 — Vector Calculus & Multivariable Integration**
-3. **E3 — Visualization 2.0**
-4. **E4 — ODEs & Dynamical Systems II**
-5. **E5 — Numerical Linear Algebra & Optimization**
-6. **E6 — Probability & Statistics II**
-7. **E7 — Fourier, Laplace & Transform Methods**
-8. **E8 — Complex Analysis**
-9. **E9 — Discrete Mathematics II, Algorithms & Number Theory**
-10. **E10 — PDEs, Abstract Structures & Geometry Foundations**
-11. **E11 — Proof System II & Upper-Division Reasoning**
-12. **E12 — Mathematical Integration & v2 Certification**
-
-The immediate next phase is therefore **E1 — Multivariable Calculus Foundation**.
+- common undergraduate computations are genuinely supported;
+- exactness boundaries remain visible;
+- numerical methods explain their approximation status;
+- proofs are not fabricated;
+- every tool is discoverable;
+- symbolic work, visualization, verification and practice share the same mathematical objects.

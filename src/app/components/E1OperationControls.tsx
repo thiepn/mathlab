@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import type { SemanticMathObject } from '../../lib/math/types';
+import { E2OperationControls, isE2ControlledOperation } from './E2OperationControls';
 
 export const E1_CONTROLLED_OPERATIONS = new Set([
   'partial-derivative',
@@ -11,7 +12,7 @@ export const E1_CONTROLLED_OPERATIONS = new Set([
 ]);
 
 export function isE1ControlledOperation(operation: string): boolean {
-  return E1_CONTROLLED_OPERATIONS.has(operation);
+  return E1_CONTROLLED_OPERATIONS.has(operation) || isE2ControlledOperation(operation);
 }
 
 interface E1OperationControlsProps {
@@ -46,7 +47,8 @@ export function E1OperationControls({ operation, object, running, onAction }: E1
     setConstraint(parameters.length >= 2 ? `${parameters[0]} + ${parameters[1]} = 1` : 'x + y = 1');
   }, [object.id, object.source]);
 
-  if (!isE1ControlledOperation(operation)) return null;
+  if (isE2ControlledOperation(operation)) return <E2OperationControls operation={operation} object={object} running={running} onAction={onAction} />;
+  if (!E1_CONTROLLED_OPERATIONS.has(operation)) return null;
 
   if (operation === 'partial-derivative') {
     return (
