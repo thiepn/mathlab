@@ -11,8 +11,9 @@ const KNOWN_FUNCTIONS = new Set([
   'sin', 'cos', 'tan', 'sec', 'csc', 'cot',
   'asin', 'acos', 'atan', 'sinh', 'cosh', 'tanh',
   'sqrt', 'ln', 'log', 'exp', 'abs', 'floor', 'ceil',
-  // P10 data/probability constructors and exact probability helpers.
+  // P10 + E6 data/probability constructors and exact probability helpers.
   'data', 'bernoulli', 'binomial', 'geometric', 'poisson', 'uniform', 'normal',
+  'exponential', 'chisquare', 'studentt', 'fdist', 'jointpmf',
   'choose', 'permute', 'conditional', 'bayes', 'unionprob', 'independentjoint', 'complement',
   // P11 logic, finite sets/relations, graphs, recurrences, complexity, and combinatorics.
   'not', 'and', 'or', 'xor', 'implies', 'iff',
