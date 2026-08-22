@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import { capabilitiesFor } from '../../lib/math/capabilities';
 import type { SemanticMathObject } from '../../lib/math/types';
+import { E4_TOOL_CATALOG } from '../e4ToolCatalog';
 import { TOOL_CATALOG, TOOL_CATEGORIES, toolNeedsConfiguration, toolSearchText, type ToolCatalogItem, type ToolCategory } from '../toolCatalog';
 import { MathValue } from './MathValue';
 
@@ -12,28 +13,30 @@ interface ToolsPageProps {
   onTryExample: (tool: ToolCatalogItem) => void;
 }
 
+const ALL_TOOLS: ToolCatalogItem[] = [...TOOL_CATALOG, ...E4_TOOL_CATALOG];
+
 function kindLabel(kind: SemanticMathObject['kind']) {
-  return kind.replace('finite-set', 'set').replace('ode', 'ODE IVP');
+  return kind.replace('finite-set', 'set').replace('ode', 'ODE');
 }
 
 export function ToolsPage({ currentObject, initialToolId = '', onRun, onConfigure, onTryExample }: ToolsPageProps) {
   const [query, setQuery] = useState('');
   const [category, setCategory] = useState<ToolCategory | 'All'>('All');
-  const [selectedId, setSelectedId] = useState(initialToolId || TOOL_CATALOG[0]?.id || '');
+  const [selectedId, setSelectedId] = useState(initialToolId || ALL_TOOLS[0]?.id || '');
   const capabilities = useMemo(() => capabilitiesFor(currentObject), [currentObject]);
 
   useEffect(() => {
     if (!initialToolId) return;
     setSelectedId(initialToolId);
-    const tool = TOOL_CATALOG.find((item) => item.id === initialToolId);
+    const tool = ALL_TOOLS.find((item) => item.id === initialToolId);
     if (tool) setCategory(tool.category);
   }, [initialToolId]);
 
   const normalized = query.trim().toLowerCase();
-  const filtered = TOOL_CATALOG.filter((tool) => (category === 'All' || tool.category === category) && (!normalized || toolSearchText(tool).includes(normalized)));
-  const selected = TOOL_CATALOG.find((tool) => tool.id === selectedId) ?? filtered[0] ?? TOOL_CATALOG[0];
+  const filtered = ALL_TOOLS.filter((tool) => (category === 'All' || tool.category === category) && (!normalized || toolSearchText(tool).includes(normalized)));
+  const selected = ALL_TOOLS.find((tool) => tool.id === selectedId) ?? filtered[0] ?? ALL_TOOLS[0];
   const selectedCapability = selected ? capabilities.find((capability) => capability.id === selected.operation) : undefined;
-  const readyCount = currentObject ? TOOL_CATALOG.filter((tool) => capabilities.some((capability) => capability.id === tool.operation && capability.available)).length : 0;
+  const readyCount = currentObject ? ALL_TOOLS.filter((tool) => capabilities.some((capability) => capability.id === tool.operation && capability.available)).length : 0;
 
   const statusFor = (tool: ToolCatalogItem) => {
     if (tool.specialRoute === 'visualize') return { label: 'Visualization workspace', tone: 'route' };
@@ -67,7 +70,7 @@ export function ToolsPage({ currentObject, initialToolId = '', onRun, onConfigur
       <section className="tool-finder" aria-label="Search mathematical tools">
         <div className="tool-search-box">
           <span aria-hidden="true">⌕</span>
-          <input value={query} onChange={(event) => setQuery(event.target.value)} placeholder="Search eigenvalues, contours, vector fields, Bayes, RREF, RK4…" aria-label="Search tools" />
+          <input value={query} onChange={(event) => setQuery(event.target.value)} placeholder="Search eigenvalues, phase planes, RK45, vector fields, Bayes, RREF…" aria-label="Search tools" />
           {query && <button onClick={() => setQuery('')}>Clear</button>}
         </div>
         <div className="tool-category-strip" role="list" aria-label="Tool categories">
@@ -80,7 +83,7 @@ export function ToolsPage({ currentObject, initialToolId = '', onRun, onConfigur
       <div className="tools-layout">
         <section className="tool-results" aria-label="Tool search results">
           <div className="tool-results-heading"><strong>{category === 'All' ? 'All tools' : category}</strong><span>{filtered.length} result{filtered.length === 1 ? '' : 's'}</span></div>
-          {filtered.length === 0 && <div className="tool-empty">No tool matches that search. Try a mathematical term such as “matrix”, “contour”, “vector field”, “limit”, “probability”, or “proof”.</div>}
+          {filtered.length === 0 && <div className="tool-empty">No tool matches that search. Try a mathematical term such as “matrix”, “phase plane”, “RK45”, “vector field”, “limit”, “probability”, or “proof”.</div>}
           <div className="tool-card-list">
             {filtered.map((tool) => {
               const status = statusFor(tool);
