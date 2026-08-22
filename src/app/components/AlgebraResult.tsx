@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import type { MathResult } from '../../lib/math/types';
 import { astToLatex, astToPlainText } from '../../lib/math/format';
-import { MathPreview } from './MathPreview';
+import { MathValue } from './MathValue';
 
 interface AlgebraResultProps {
   result: MathResult | null;
@@ -56,7 +56,7 @@ export function AlgebraResult({ result, status, error, onClear }: AlgebraResultP
       {result && view === 'answer' && (
         <div className="answer-shell">
           <div className="answer-surface">
-            <div className="answer-math"><MathPreview ast={result.resultAst ?? null} fallback={result.display || 'No symbolic result.'} /></div>
+            <div className="answer-math"><MathValue ast={result.resultAst} source={result.display || 'No symbolic result.'} compact={false} /></div>
             <div className="answer-meta">
               <span>{result.exactness === 'exact' ? 'EXACT' : result.exactness === 'approximate' ? 'APPROX.' : result.exactness.toUpperCase()}</span>
               <span>{result.assumptions.length ? `${result.assumptions.length} assumption${result.assumptions.length === 1 ? '' : 's'}` : 'No added assumptions'}</span>
@@ -72,8 +72,8 @@ export function AlgebraResult({ result, status, error, onClear }: AlgebraResultP
                   <div className="result-facts">
                     {section.facts.map((fact, index) => (
                       <div className={`result-fact fact-${fact.tone ?? 'neutral'}`} key={`${section.id}:${fact.label}:${index}`}>
-                        <span>{fact.label}</span>
-                        {fact.ast ? <MathPreview ast={fact.ast} fallback={fact.display} compact /> : <strong>{fact.display}</strong>}
+                        <span className="result-fact-label"><MathValue source={fact.label} compact /></span>
+                        <strong className="result-fact-value"><MathValue ast={fact.ast} source={fact.display} compact /></strong>
                       </div>
                     ))}
                   </div>
@@ -93,9 +93,9 @@ export function AlgebraResult({ result, status, error, onClear }: AlgebraResultP
                 <div className="step-rule"><strong>{step.rule.replace(/-/g, ' ')}</strong><span className={step.verificationStatus ?? (step.verified ? 'verified' : '')}>{step.verificationStatus ? step.verificationStatus.replace(/-/g, ' ') : step.verified ? 'verified' : 'unchecked'}</span></div>
                 {step.explanation && <p>{step.explanation}</p>}
                 <div className="step-transition">
-                  <div><span>Before</span><MathPreview ast={step.beforeAst ?? null} fallback={step.before} compact /></div>
+                  <div><span>Before</span><MathValue ast={step.beforeAst} source={step.before} compact /></div>
                   <div className="transition-arrow">→</div>
-                  <div><span>After</span><MathPreview ast={step.afterAst ?? null} fallback={step.after} compact /></div>
+                  <div><span>After</span><MathValue ast={step.afterAst} source={step.after} compact /></div>
                 </div>
               </div>
             </article>

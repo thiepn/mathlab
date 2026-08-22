@@ -9,9 +9,9 @@ import {
   type GraphSeriesInput,
   type GraphViewport,
 } from '../../lib/math/visualization';
-import { astToPlainText } from '../../lib/math/format';
 import { domainNotes } from '../../lib/math/calculus';
 import { GraphCanvas } from './GraphCanvas';
+import { MathValue } from './MathValue';
 
 interface VisualizationPageProps {
   objects: SemanticMathObject[];
@@ -144,7 +144,7 @@ export function VisualizationPage({ objects, activeObject, onActivateObject, onO
               <span>Series</span>
               {availableObjects.map((object, index) => {
                 const selected = selectedIds.includes(object.id);
-                return <button key={object.id} className={`plot-series-toggle ${selected ? `is-selected graph-series-${Math.max(0, selectedIds.indexOf(object.id)) % 6}` : ''}`} onClick={() => toggleSeries(object.id)} title={selected || selectedIds.length < 6 ? object.source : 'MathLab displays at most six simultaneous functions for legibility.'}><i>{selected ? '●' : '○'}</i><strong>{object.name ?? `expr ${index + 1}`}</strong><small>{astToPlainText(object.valueAst)}</small></button>;
+                return <button key={object.id} className={`plot-series-toggle ${selected ? `is-selected graph-series-${Math.max(0, selectedIds.indexOf(object.id)) % 6}` : ''}`} onClick={() => toggleSeries(object.id)} title={selected || selectedIds.length < 6 ? object.source : 'MathLab displays at most six simultaneous functions for legibility.'}><i>{selected ? '●' : '○'}</i><strong>{object.name ?? `expr ${index + 1}`}</strong><small><MathValue ast={object.valueAst} source={object.source} compact /></small></button>;
               })}
             </div>
             <div className="plot-toolbar">
@@ -156,8 +156,8 @@ export function VisualizationPage({ objects, activeObject, onActivateObject, onO
           <section className="graph-stage">
             <GraphCanvas ref={svgRef} series={models} viewport={viewport} onViewportChange={setViewport} overlays={overlays} />
             <div className="graph-coordinate-strip">
-              <span>x <strong>{formatNumeric(viewport.xMin)} … {formatNumeric(viewport.xMax)}</strong></span>
-              <span>y <strong>{formatNumeric(viewport.yMin)} … {formatNumeric(viewport.yMax)}</strong></span>
+              <span><MathValue source={`${formatNumeric(viewport.xMin)} <= x <= ${formatNumeric(viewport.xMax)}`} compact /></span>
+              <span><MathValue source={`${formatNumeric(viewport.yMin)} <= y <= ${formatNumeric(viewport.yMax)}`} compact /></span>
               <span>Sampling <strong>{models[0]?.sampleCount ?? 0} points / series</strong></span>
               {exportMessage && <span className="graph-export-message">{exportMessage}</span>}
             </div>
@@ -176,10 +176,10 @@ export function VisualizationPage({ objects, activeObject, onActivateObject, onO
               return (
                 <article className={`visual-series-card graph-series-${index % 6}`} key={model.id}>
                   <header><div><span className="series-swatch" /><strong>{model.name}</strong></div>{objects.some((item) => item.id === sourceObject.id) ? <button onClick={() => onOpenObject(sourceObject.id)}>Open object</button> : <span className="scratch-label">Scratch</span>}</header>
-                  <div className="series-equation">{astToPlainText(model.ast)}</div>
-                  <dl><div><dt>Variable</dt><dd>{model.variable}</dd></div><div><dt>Real-domain notes</dt><dd>{domain.join(' · ') || 'No restriction detected'}</dd></div><div><dt>Rendered branches</dt><dd>{model.segments.length}</dd></div></dl>
+                  <div className="series-equation"><MathValue ast={model.ast} source={model.source} compact={false} /></div>
+                  <dl><div><dt>Variable</dt><dd><MathValue source={model.variable} compact /></dd></div><div><dt>Real-domain notes</dt><dd>{domain.length ? domain.map((note) => <MathValue key={note} source={note} compact />) : 'No restriction detected'}</dd></div><div><dt>Rendered branches</dt><dd>{model.segments.length}</dd></div></dl>
                   <div className="feature-ledger">
-                    {features.length ? features.slice(0, 12).map((feature) => <div key={feature.id}><span>{feature.kind.replace(/-/g, ' ')}</span><strong>{feature.label}</strong><em>{feature.exact ? 'exact' : 'numeric'}</em></div>) : <p>No supported special points detected in the current rule set.</p>}
+                    {features.length ? features.slice(0, 12).map((feature) => <div key={feature.id}><span>{feature.kind.replace(/-/g, ' ')}</span><strong><MathValue source={feature.label} compact /></strong><em>{feature.exact ? 'exact' : 'numeric'}</em></div>) : <p>No supported special points detected in the current rule set.</p>}
                   </div>
                   {model.warnings.map((warning) => <p className="graph-model-warning" key={warning}>{warning}</p>)}
                 </article>

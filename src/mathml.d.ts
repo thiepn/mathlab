@@ -4,6 +4,8 @@ type MathMLIntrinsicProps = HTMLAttributes<HTMLElement> & {
   key?: Key;
   mathvariant?: string;
   display?: 'block' | 'inline' | string;
+  stretchy?: boolean | string;
+  linethickness?: string;
 };
 
 declare module 'react' {
@@ -16,6 +18,8 @@ declare module 'react' {
       mrow: MathMLIntrinsicProps;
       mfrac: MathMLIntrinsicProps;
       msup: MathMLIntrinsicProps;
+      msub: MathMLIntrinsicProps;
+      msubsup: MathMLIntrinsicProps;
       msqrt: MathMLIntrinsicProps;
       mtable: MathMLIntrinsicProps;
       mtr: MathMLIntrinsicProps;
