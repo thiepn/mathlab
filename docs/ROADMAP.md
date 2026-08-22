@@ -1,37 +1,78 @@
-# MathLab Development Roadmap — P0 to P15
+# MathLab Development Roadmap
 
-The roadmap is cumulative: each phase extends the same mathematical-object, workspace, engine and result architecture rather than creating isolated calculator pages.
+MathLab now has three distinct development eras:
+
+1. **P0–P15 — original product and mathematics foundation**
+2. **M1–M7 — deployed-product reconstruction and completeness audit**
+3. **E1–E12 — post-audit mathematical expansion**
+
+The architecture remains cumulative. New phases extend the same mathematical-object, workspace, engine and result system rather than creating disconnected calculator pages.
+
+## P-series — original product foundation
 
 | Phase | Scope | Status |
 |---|---|---|
-| **P0 — Architecture, Design System & Product Skeleton** | React/Vite shell, scientific editorial UI system, hash routing, worker boundary, engine contract, IndexedDB baseline, PWA baseline, responsive product skeleton. | Complete |
-| **P1 — Universal Mathematical Input** | Unicode/LaTeX normalization, lexer/parser, implicit multiplication, AST, diagnostics, MathML/LaTeX/plain serialization, history/autocomplete. | Complete |
-| **P2 — Mathematical Object & Assumption System** | Semantic objects, definitions vs equations, symbol/dependency resolution, domains/shapes/exactness, structured assumptions, capability applicability. | Complete |
-| **P3 — Core Workspace** | Durable named objects vs scratch work, dependency graph, rename/reference rewriting, duplicate/pin/delete, autosave/recovery, import/export, activity model. | Complete |
-| **P4 — Algebra & Equation Engine** | Exact rational arithmetic, simplify/expand/factor/substitute, polynomial division/partial fractions, linear/quadratic equations, linear inequalities, exact linear systems, structured derivations. | Complete |
-| **P5 — Functions & Calculus** | Unary function workflows, evaluation, symbolic derivatives/higher derivatives, bounded elementary integration, definite integrals, limits, zeros, critical points, extrema, monotonicity, concavity, reusable function profiles. | Complete |
-| **P6 — Visualization Engine** | Interactive 2D function plotting driven by P5 profiles/results; multiple functions, domain-aware discontinuities, zeros/extrema/inflection/asymptote overlays, trace/zoom/pan, exact-vs-numeric labels, export, responsive graph workspace. | Complete |
-| **P7 — Linear Algebra Foundation** | Vector/matrix arithmetic, dot/norm, matrix products, row operations, RREF, rank, determinant, inverse, exact linear-system matrix workflow, span/basis/null/column spaces foundations. | Complete |
-| **P8 — Advanced Linear Algebra** | Eigenvalues/eigenvectors, characteristic structure, diagonalization, orthogonality, Gram–Schmidt, projections, QR, least squares, symmetric/Hermitian workflows and selected decompositions. | Complete |
-| **P9 — Analysis** | Sequences and series, convergence tooling, continuity/discontinuity and differentiability, rigorous limit-oriented analysis, Taylor/power series foundations, theorem-aware real-analysis workflows and counterexample-sensitive diagnostics. | Complete |
-| **P10 — Probability & Statistics** | Descriptive statistics, probability models, random variables/distributions, expectation/variance, conditional probability/Bayes, sampling, confidence intervals/tests, regression/correlation, simulation-aware exact/numeric results. | Complete |
-| **P11 — Discrete Math & Algorithms** | Logic/sets/relations, combinatorics, graph structures, recurrences, asymptotics, algorithm tracing/complexity, common data-structure and algorithm-analysis workflows. | Complete |
-| **P12 — Numerical Math & ODEs** | Floating-point/error model, root finding, interpolation, numerical differentiation/integration, pivoted and iterative linear systems, IVP objects plus Euler/Heun/RK4 methods, convergence/error diagnostics. | Complete |
-| **P13 — Verify My Work & Proof Lab** | Step-by-step equivalence checking, equation/derivation validation, assumption/domain checks, proof structure workspace, theorem/definition references, counterexample search and explicit verified/conditional/invalid/not-proven boundaries. | Complete |
-| **P14 — Practice & Courses** | Course/topic organization, reusable reference material, authored and deterministic generated exercise banks/templates, adaptive review, layered hints/solutions, persistent mastery tracking, exam sessions and study workflows built on P13 verification. | Complete |
-| **P15 — Release Hardening** | Full regression and visual audit, test/build certification gates, performance/worker safety, persistence migrations/recovery, accessibility, mobile/input compatibility, offline/PWA hardening, import/export resilience, security/privacy, docs/onboarding and release packaging. | **Release candidate complete** |
+| **P0 — Architecture, Design System & Product Skeleton** | React/Vite shell, routing, Worker boundary, engine contract, storage/PWA baseline. | Complete |
+| **P1 — Universal Mathematical Input** | Normalization, parser, AST, diagnostics, MathML/LaTeX/plain serialization. | Complete |
+| **P2 — Mathematical Object & Assumption System** | Semantic objects, definitions, dependencies, domains/shapes/exactness, assumptions, capability applicability. | Complete |
+| **P3 — Core Workspace** | Persistent objects, dependency graph, lifecycle operations, autosave/recovery/import/export. | Complete |
+| **P4 — Algebra & Equation Engine** | Exact rational/polynomial/rational algebra, supported equations/inequalities/systems. | Complete |
+| **P5 — Functions & Calculus** | Unary functions, symbolic differentiation, bounded integration/limits and function analysis. | Complete |
+| **P6 — Visualization Engine** | Domain-aware explicit 2D unary plotting with feature overlays and export. | Complete |
+| **P7 — Linear Algebra Foundation** | Exact matrix/vector arithmetic, RREF, rank, determinant, inverse, systems and subspaces. | Complete |
+| **P8 — Advanced Linear Algebra** | Bounded spectral analysis, Gram–Schmidt, projections, QR, least squares, Hermitian structure. | Complete |
+| **P9 — Analysis** | Sequences/series, continuity/differentiability, stronger limits, Taylor/power-series and asymptotic workflows. | Complete |
+| **P10 — Probability & Statistics** | Descriptive statistics, common distributions, elementary probability, one-sample inference, simple regression. | Complete |
+| **P11 — Discrete Math & Algorithms** | Logic/sets/relations, graphs, recurrences, combinatorics, common algorithms/asymptotics. | Complete |
+| **P12 — Numerical Math & ODEs** | Roots, finite differences, quadrature, interpolation, linear solves, first-order IVPs. | Complete |
+| **P13 — Verify My Work & Proof Lab** | Deterministic bounded transformation/solution/entailment verification. | Complete |
+| **P14 — Practice & Courses** | Course sessions, authored/generated exercises, adaptive review, exams and mastery tracking. | Complete |
+| **P15 — Release Hardening** | Persistence, Worker safety, PWA/offline, accessibility, release packaging and CI gates. | Complete foundation |
+
+## M-series — deployed-product reconstruction
+
+| Phase | Scope | Status |
+|---|---|---|
+| **M1 — Visual & Typography Reconstruction** | Readable typography, spacing, surfaces and hierarchy. | Complete |
+| **M2 — Mathematical Typesetting Reconstruction** | MathML-first rendering across results, derivations, graphs, Practice and Proof. | Complete |
+| **M3 — Workspace UX Reconstruction** | Clear input → result flow, suggested operations and on-demand advanced tools. | Complete |
+| **M4 — Tools & Feature Discovery** | Searchable real capability catalog integrated with `Ctrl+K`. | Complete |
+| **M5 — Visualization Reconstruction** | Rebuilt plotting workspace, interaction modes, trace, viewport and series controls. | Complete |
+| **M6 — Practice / Proof / Reference Reconstruction** | Dedicated learning, verification and reference workspaces. | Complete |
+| **M7 — Mathematical Completeness Audit** | 22-domain evidence-backed audit, visible coverage boundary and expansion roadmap. | **Complete when merged** |
+
+M7 deliberately concludes that the feature-rich P-series is **not** a complete university mathematics platform. See `M7_MATHEMATICAL_COMPLETENESS_AUDIT.md`.
+
+## E-series — mathematical expansion
+
+The post-M7 sequence is defined in detail in `M7_EXPANSION_ROADMAP.md`.
+
+| Phase | Scope |
+|---|---|
+| **E1 — Multivariable Calculus Foundation** | Multi-argument functions, partial derivatives, gradient/Jacobian/Hessian, directional derivatives, tangent planes, multivariable extrema, Lagrange multipliers. |
+| **E2 — Vector Calculus & Multivariable Integration** | Double/triple integrals, coordinate transforms, vector fields, div/curl, line/surface integrals, Green/Gauss/Stokes. |
+| **E3 — Visualization 2.0** | Parametric/polar/implicit plots, contours, fields, phase portraits and 3D surfaces. |
+| **E4 — ODEs & Dynamical Systems II** | Symbolic textbook ODE classes, higher-order/systems, adaptive methods and phase-plane stability. |
+| **E5 — Numerical Linear Algebra & Optimization** | LU/Cholesky, numerical eigen/SVD, nonlinear systems, multivariable/constrained/linear optimization. |
+| **E6 — Probability & Statistics II** | Joint distributions, broader inference, ANOVA, multiple regression, nonparametrics and stochastic foundations. |
+| **E7 — Fourier, Laplace & Transform Methods** | Laplace/inverse, convolution, Fourier series/transforms and transform-based differential equations. |
+| **E8 — Complex Analysis** | Holomorphic functions, Cauchy–Riemann, contours, Laurent series and residues. |
+| **E9 — Discrete Mathematics II, Algorithms & Number Theory** | Predicate logic, generating functions, advanced graph algorithms, modular arithmetic/CRT/Diophantine workflows. |
+| **E10 — PDEs, Abstract Structures & Geometry Foundations** | PDE foundations, finite abstract algebra and geometry/topology semantic models. |
+| **E11 — Proof System II & Upper-Division Reasoning** | Quantifiers, induction, theorem registry, proof obligations and deterministic upper-division certificates. |
+| **E12 — Mathematical Integration & v2 Certification** | Re-audit coverage, golden corpus, cross-domain QA, performance/accessibility and v2 capability freeze. |
 
 ## Architecture rule
 
-No later phase should bypass the core flow:
+No phase should bypass the core flow:
 
 ```text
 Input → AST → Semantic Object → Capability → MathOperationRequest
       → Worker / Engine → Structured MathResult → Workspace / Visualization / Practice
 ```
 
-This is the main defense against MathLab becoming a collection of disconnected calculators.
+E1 introduces the first major semantic expansion since P2: functions and calculus can no longer assume a single independent variable.
 
-## Release gate
+## Current release/certification note
 
-P15 produces **v1.0.0-rc.2**. Static release audit, strict TypeScript checks, structural source/test compilation, complete 161/161 dependency-independent execution of the existing test corpus, persistence hardening, and package integrity are completed in the available runtime. Final **v1.0.0** promotion remains gated on dependency-backed Vitest/Vite execution and real browser/device certification in an environment where npm dependencies are available.
+Dependency-backed GitHub CI now runs the real Vitest + TypeScript + Vite production path on reconstruction pull requests. The M6 gate passed **184/184 tests across 24 files** before merge. The historical `v1.0.0-rc.2` label predates the M-series reconstruction, so a final stable version should be promoted only after the expanded deployed application receives a fresh browser/device/PWA release certification.
