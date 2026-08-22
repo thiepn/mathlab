@@ -3,6 +3,7 @@ import type { Route } from '../hooks/useHashRoute';
 
 const labels: Record<Route, string> = {
   workspace: 'Workspace',
+  tools: 'Tools',
   visualize: 'Visualize',
   proof: 'Proof Lab',
   practice: 'Practice',
@@ -39,8 +40,8 @@ export function Header({ route, online, onRoute, onCommand, onMobileMenu }: Head
           <i />{online ? 'Local ready' : 'Offline'}
         </span>
         <span className="release-badge" title="MathLab v1.0.0-rc.2 release candidate">v1.0 RC2</span>
-        <button className="command-button" onClick={onCommand} aria-label="Open command palette">
-          <span>Search tools</span><kbd>Ctrl K</kbd>
+        <button className="command-button" onClick={onCommand} aria-label="Search mathematical tools and workspace">
+          <span>Search math</span><kbd>Ctrl K</kbd>
         </button>
       </div>
     </header>
