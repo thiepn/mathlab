@@ -1,0 +1,1 @@
+M6 uses thin route-compatible wrappers (`PracticePage.tsx`, `ProofLabPage.tsx`, `CourseReferencePage.tsx`) that re-export the reconstructed surfaces. This preserves existing App imports and route contracts while keeping the prior UI implementation recoverable from git history. No P4–P14 engine contract is changed.
