@@ -10,6 +10,7 @@ import './styles/m2.css';
 import './styles/m3.css';
 import './styles/m4.css';
 import './styles/m5.css';
+import './styles/m6.css';
 
 if ('serviceWorker' in navigator && import.meta.env.PROD) {
   window.addEventListener('load', () => {
