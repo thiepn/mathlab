@@ -26,6 +26,27 @@ const e1Multivariable: CapabilitySeed[] = [
   { id:'lagrange-multipliers', label:'Lagrange multipliers…', phase:'E1', group:'Multivariable' },
 ];
 
+const e2ScalarField: CapabilitySeed[] = [
+  { id:'coordinate-transform', label:'Coordinate transform…', phase:'E2', group:'Multivariable integration' },
+  { id:'double-integral', label:'Double integral…', phase:'E2', group:'Multivariable integration' },
+  { id:'triple-integral', label:'Triple integral…', phase:'E2', group:'Multivariable integration' },
+  { id:'scalar-line-integral', label:'Scalar line integral…', phase:'E2', group:'Line integrals' },
+  { id:'surface-integral', label:'Scalar surface integral…', phase:'E2', group:'Surface integrals' },
+];
+
+const e2VectorField: CapabilitySeed[] = [
+  { id:'vector-field-profile', label:'Vector-field profile', phase:'E2', group:'Vector calculus' },
+  { id:'divergence', label:'Divergence', phase:'E2', group:'Vector calculus' },
+  { id:'curl', label:'Curl', phase:'E2', group:'Vector calculus' },
+  { id:'conservative-field', label:'Conservative-field test', phase:'E2', group:'Vector calculus' },
+  { id:'scalar-potential', label:'Scalar potential', phase:'E2', group:'Vector calculus' },
+  { id:'line-integral', label:'Work / circulation integral…', phase:'E2', group:'Line integrals' },
+  { id:'flux-integral', label:'Flux through graph surface…', phase:'E2', group:'Surface integrals' },
+  { id:'green-theorem', label:"Green's theorem…", phase:'E2', group:'Integral theorems' },
+  { id:'gauss-theorem', label:"Gauss / divergence theorem…", phase:'E2', group:'Integral theorems' },
+  { id:'stokes-theorem', label:"Stokes' theorem…", phase:'E2', group:'Integral theorems' },
+];
+
 const definitions: Record<SemanticMathObject['kind'], CapabilitySeed[]> = {
   scalar: [
     { id:'inspect-exact', label:'Exact form', phase:'P4', group:'Inspect' },
@@ -37,7 +58,7 @@ const definitions: Record<SemanticMathObject['kind'], CapabilitySeed[]> = {
     { id:'simplify', label:'Simplify', phase:'P4', group:'Algebra' }, { id:'expand', label:'Expand', phase:'P4', group:'Algebra' }, { id:'factor', label:'Factor', phase:'P4', group:'Algebra' },
     { id:'substitute', label:'Substitute…', phase:'P4', group:'Algebra' }, { id:'polynomial-division', label:'Polynomial division', phase:'P4', group:'Algebra' }, { id:'partial-fractions', label:'Partial fractions', phase:'P4', group:'Algebra' },
     { id:'differentiate', label:'Differentiate', phase:'P5', group:'Calculus' }, { id:'higher-derivative', label:'Higher derivative…', phase:'P5', group:'Calculus' }, { id:'integrate', label:'Antiderivative', phase:'P5', group:'Calculus' },
-    { id:'definite-integral', label:'Definite integral…', phase:'P5', group:'Calculus' }, { id:'limit', label:'Limit…', phase:'P5', group:'Calculus' }, ...e1Multivariable,
+    { id:'definite-integral', label:'Definite integral…', phase:'P5', group:'Calculus' }, { id:'limit', label:'Limit…', phase:'P5', group:'Calculus' }, ...e1Multivariable, ...e2ScalarField,
     { id:'graph', label:'Graph', phase:'P6', group:'Visualize' }, { id:'evaluate-linear-algebra', label:'Evaluate linear algebra', phase:'P7', group:'Linear algebra' },
     { id:'continuity-profile', label:'Continuity profile', phase:'P9', group:'Analysis' }, { id:'differentiability-profile', label:'Differentiability profile', phase:'P9', group:'Analysis' }, { id:'differentiability-at', label:'Differentiability at…', phase:'P9', group:'Analysis' }, { id:'continuity-at', label:'Continuity at…', phase:'P9', group:'Analysis' },
     { id:'analysis-limit', label:'Rigorous limit…', phase:'P9', group:'Analysis' }, { id:'taylor-polynomial', label:'Taylor polynomial…', phase:'P9', group:'Series' }, { id:'power-series-profile', label:'Power-series profile…', phase:'P9', group:'Series' }, { id:'asymptotic-profile', label:'Asymptotic profile', phase:'P9', group:'Analysis' }, { id:'analysis-profile', label:'Analysis profile', phase:'P9', group:'Analysis' },
@@ -50,7 +71,7 @@ const definitions: Record<SemanticMathObject['kind'], CapabilitySeed[]> = {
     { id:'evaluate-function', label:'Evaluate…', phase:'P5', group:'Function' }, { id:'function-profile', label:'Full function profile', phase:'P5', group:'Function' }, { id:'zeros', label:'Zeros', phase:'P5', group:'Analyze' },
     { id:'derivative', label:'Derivative', phase:'P5', group:'Analyze' }, { id:'higher-derivative', label:'Higher derivative…', phase:'P5', group:'Analyze' }, { id:'integrate', label:'Antiderivative', phase:'P5', group:'Analyze' }, { id:'definite-integral', label:'Definite integral…', phase:'P5', group:'Analyze' }, { id:'limit', label:'Limit…', phase:'P5', group:'Analyze' },
     { id:'critical-points', label:'Critical points', phase:'P5', group:'Behavior' }, { id:'extrema', label:'Extrema', phase:'P5', group:'Behavior' }, { id:'monotonicity', label:'Monotonicity', phase:'P5', group:'Behavior' }, { id:'concavity', label:'Concavity', phase:'P5', group:'Behavior' },
-    ...e1Multivariable,
+    ...e1Multivariable, ...e2ScalarField, ...e2VectorField,
     { id:'graph', label:'Graph', phase:'P6', group:'Visualize' }, { id:'continuity-profile', label:'Continuity profile', phase:'P9', group:'Analysis' }, { id:'differentiability-profile', label:'Differentiability profile', phase:'P9', group:'Analysis' }, { id:'differentiability-at', label:'Differentiability at…', phase:'P9', group:'Analysis' }, { id:'continuity-at', label:'Continuity at…', phase:'P9', group:'Analysis' },
     { id:'analysis-limit', label:'Rigorous limit…', phase:'P9', group:'Analysis' }, { id:'taylor-polynomial', label:'Taylor polynomial…', phase:'P9', group:'Series' }, { id:'power-series-profile', label:'Power-series profile…', phase:'P9', group:'Series' }, { id:'asymptotic-profile', label:'Asymptotic profile', phase:'P9', group:'Analysis' }, { id:'analysis-profile', label:'Analysis profile', phase:'P9', group:'Analysis' },
     { id:'numerical-root', label:'Numerical root…', phase:'P12', group:'Numerical' }, { id:'numerical-derivative', label:'Numerical derivative…', phase:'P12', group:'Numerical' }, { id:'numerical-integral', label:'Numerical integral…', phase:'P12', group:'Numerical' }, { id:'verify-transition', label:'Verify equivalent function…', phase:'P13', group:'Verify' },
@@ -85,20 +106,35 @@ const definitions: Record<SemanticMathObject['kind'], CapabilitySeed[]> = {
 const E1_IDS = new Set(e1Multivariable.map((item) => item.id));
 const E1_SCALAR_ONLY = new Set(['gradient','hessian','directional-derivative','linearization','tangent-plane','multivariable-critical-points','second-derivative-test','lagrange-multipliers']);
 const E1_TWO_VARIABLE_ONLY = new Set(['tangent-plane','multivariable-critical-points','second-derivative-test','lagrange-multipliers']);
+const E2_IDS = new Set([...e2ScalarField,...e2VectorField].map((item)=>item.id));
+const E2_SCALAR_ONLY = new Set(e2ScalarField.map((item)=>item.id));
+const E2_VECTOR_ONLY = new Set(e2VectorField.map((item)=>item.id));
+const E2_TWO_DIMENSION_ONLY = new Set(['double-integral','green-theorem']);
+const E2_THREE_DIMENSION_ONLY = new Set(['triple-integral','surface-integral','flux-integral','gauss-theorem','stokes-theorem']);
 const UNARY_FUNCTION_OPERATIONS = new Set(['function-profile','zeros','derivative','higher-derivative','integrate','definite-integral','limit','critical-points','extrema','monotonicity','concavity','graph','continuity-profile','continuity-at','differentiability-profile','differentiability-at','analysis-limit','taylor-polynomial','power-series-profile','asymptotic-profile','analysis-profile','numerical-root','numerical-derivative','numerical-integral']);
 
 function itemIsP8Linear(id: string): boolean { return ['projection','transpose','conjugate-transpose','orthogonality-profile','gram-schmidt','project-column-space','qr','least-squares','characteristic-polynomial','eigen','eigenspaces','diagonalize','symmetry-profile'].includes(id); }
 function itemRequiresRealRationalP8(id: string): boolean { return ['projection','project-column-space','least-squares','characteristic-polynomial','eigen','eigenspaces','diagonalize'].includes(id); }
 function itemIsP7Linear(id: string): boolean { return ['evaluate-linear-algebra','norm','dot-product','span-vector','det','rank','inverse','rref','solve-augmented','linear-profile','column-space','null-space','row-space'].includes(id); }
-function e1Dimension(object: SemanticMathObject): number { return object.kind === 'function' ? object.parameters.length : object.variables.length; }
+function multivariableDimension(object: SemanticMathObject): number { return object.kind === 'function' ? object.parameters.length : object.variables.length; }
+function isVectorField(object: SemanticMathObject, dimension:number):boolean{return object.valueAst.type==='matrix'&&object.valueAst.rows.length===1&&object.valueAst.rows[0].length===dimension;}
 
 function applicability(object: SemanticMathObject, id: string): { applicable: boolean; reason?: string } {
   if (E1_IDS.has(id)) {
-    const dimension = e1Dimension(object);
+    const dimension = multivariableDimension(object);
     if (dimension < 2) return { applicable:false, reason:'E1 multivariable calculus requires at least two independent variables.' };
     if (dimension > 6) return { applicable:false, reason:'E1 derivative tensors are bounded to at most six independent variables.' };
     if (E1_SCALAR_ONLY.has(id) && object.valueAst.type === 'matrix') return { applicable:false, reason:'This E1 operation requires a scalar-valued function. Use Jacobian for vector-valued functions.' };
     if (E1_TWO_VARIABLE_ONLY.has(id) && dimension !== 2) return { applicable:false, reason:'This E1 exact workflow is currently bounded to two independent variables.' };
+  }
+  if(E2_IDS.has(id)){
+    const dimension=multivariableDimension(object);
+    if(dimension!==2&&dimension!==3)return{applicable:false,reason:'E2 vector calculus and multivariable integration currently operate in two or three coordinate dimensions.'};
+    const vectorField=isVectorField(object,dimension);
+    if(E2_SCALAR_ONLY.has(id)&&object.valueAst.type==='matrix')return{applicable:false,reason:'This E2 integration workflow requires a scalar field/integrand. Vector-valued fields have dedicated circulation and flux operations.'};
+    if(E2_VECTOR_ONLY.has(id)&&!vectorField)return{applicable:false,reason:`This E2 operation requires a ${dimension}D vector field with ${dimension} components.`};
+    if(E2_TWO_DIMENSION_ONLY.has(id)&&dimension!==2)return{applicable:false,reason:'This E2 workflow is two-dimensional.'};
+    if(E2_THREE_DIMENSION_ONLY.has(id)&&dimension!==3)return{applicable:false,reason:'This E2 workflow is three-dimensional.'};
   }
   if (object.kind === 'proposition' && object.shape.type === 'proposition' && object.shape.variables > 6) return { applicable:false, reason:'P11 exhaustive truth-table workflows are limited to at most 6 proposition variables.' };
   if ((object.kind === 'relation' || object.kind === 'graph' || object.kind === 'recurrence' || object.kind === 'combinatorics') && object.variables.length > 0) return { applicable:false, reason:'This P11 workflow requires all numeric parameters/vertices to resolve exactly before execution.' };
@@ -141,6 +177,6 @@ export function capabilitiesFor(object: SemanticMathObject | null): ObjectCapabi
   if (!object) return [];
   return definitions[object.kind].map((item) => {
     const applicabilityResult = applicability(object, item.id);
-    return { ...item, ...applicabilityResult, available: ['P4','P5','P6','P7','P8','P9','P10','P11','P12','P13','E1'].includes(item.phase) && applicabilityResult.applicable };
+    return { ...item, ...applicabilityResult, available: ['P4','P5','P6','P7','P8','P9','P10','P11','P12','P13','E1','E2'].includes(item.phase) && applicabilityResult.applicable };
   });
 }
