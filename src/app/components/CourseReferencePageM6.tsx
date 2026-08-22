@@ -2,6 +2,12 @@ import { useMemo, useState } from 'react';
 import { PRACTICE_COURSES } from '../../lib/math/practice';
 import { TOOL_CATALOG, TOOL_CATEGORIES, type ToolCatalogItem, type ToolCategory } from '../toolCatalog';
 import { courseAccentIndex, toolsForCourse } from '../learningSurfaces';
+import {
+  COMPLETENESS_DOMAINS,
+  completenessBreadthPercent,
+  domainsByStatus,
+  implementedDomainMaturityPercent,
+} from '../completenessAudit';
 import { MathValue } from './MathValue';
 
 type ReferenceScope = 'all' | string;
@@ -37,13 +43,43 @@ export function CourseReferencePage() {
 
   const groupedTools = useMemo(() => TOOL_CATEGORIES.map((category) => ({ category, tools: filteredTools.filter((tool) => tool.category === category) })).filter((group) => group.tools.length), [filteredTools]);
   const activeCount = filteredTools.length + matchingTopics.length;
+  const breadth = completenessBreadthPercent();
+  const maturity = implementedDomainMaturityPercent();
+  const missingCount = domainsByStatus('missing').length;
 
   return (
     <main className="workspace practice-page reference-page m6-reference-page">
       <section className="m6-reference-hero">
-        <div><span className="section-kicker">Mathematical Reference</span><h1>Understand what MathLab knows—and how to use it.</h1><p>Browse the implemented mathematics by course or capability. Every listed operation maps to the same deterministic engine exposed in the Tools catalog.</p></div>
+        <div><span className="section-kicker">Mathematical Reference</span><h1>Understand what MathLab knows—and how to use it.</h1><p>Browse implemented mathematics by course or capability. M7 now also exposes the major university-math domains that are still partial or completely absent.</p></div>
         <div className="m6-reference-search"><span aria-hidden="true">⌕</span><input value={query} onChange={(event) => setQuery(event.target.value)} placeholder="Search eigenvalues, Taylor, Bayes, RREF, RK4…" aria-label="Search mathematical reference" />{query && <button onClick={() => setQuery('')}>Clear</button>}</div>
       </section>
+
+      {scope === 'all' && !normalizedQuery && (
+        <section className="m7-audit-strip" aria-labelledby="m7-audit-title">
+          <div className="m7-audit-summary">
+            <div><span className="section-kicker">M7 completeness audit</span><h2 id="m7-audit-title">A large Tools catalog is not the same as mathematical completeness.</h2><p>The audit scores 22 broad university-mathematics domains from 0 (missing) to 5 (comprehensive). It counts only first-class deterministic workflows, not incidental internal helpers.</p></div>
+            <div className="m7-audit-metric"><strong>{breadth}/100</strong><span>University-domain breadth index</span></div>
+            <div className="m7-audit-metric"><strong>{maturity}/100</strong><span>Maturity inside implemented domains</span></div>
+          </div>
+          <details className="m7-audit-details">
+            <summary>Show the 22-domain audit</summary>
+            <p>No current domain is rated comprehensive. The strongest areas are algebra, single-variable calculus and core linear algebra; {missingCount} major domains are still entirely absent.</p>
+            <div className="m7-domain-grid">
+              {COMPLETENESS_DOMAINS.map((domain) => (
+                <article className={`m7-domain-card is-${domain.status}`} key={domain.id}>
+                  <header><strong>{domain.title}</strong><span className="m7-domain-level">{domain.level}/5 · {domain.status}</span></header>
+                  <div className="m7-domain-meter" aria-label={`${domain.level} of 5 coverage`}>
+                    {[1,2,3,4,5].map((value) => <i key={value} className={value <= domain.level ? 'is-filled' : ''} />)}
+                  </div>
+                  <p>{domain.evidence[0] ?? `Missing: ${domain.gaps.slice(0, 2).join(' · ')}`}</p>
+                  <footer><span>{domain.gaps.length} major gap{domain.gaps.length === 1 ? '' : 's'} tracked</span>{domain.nextPhase && <strong>{domain.nextPhase}</strong>}</footer>
+                </article>
+              ))}
+            </div>
+          </details>
+          <div className="m7-audit-verdict"><span>Audit verdict</span><p><strong>Current class:</strong> broad lower-division computational workbench with selected upper-division features—not yet a comprehensive university mathematics workbench.</p><a href="#/reference" onClick={(event) => { event.preventDefault(); window.scrollTo({ top: 0, behavior: 'smooth' }); }}>Next: E1 multivariable calculus</a></div>
+        </section>
+      )}
 
       <div className="m6-reference-layout">
         <aside className="m6-reference-nav">
@@ -55,7 +91,7 @@ export function CourseReferencePage() {
 
         <div className="m6-reference-content">
           <header className="m6-reference-scope-head">
-            <div><span className="section-kicker">{selectedCourse ? selectedCourse.phaseRange : 'P4–P13 capability map'}</span><h2>{selectedCourse?.title ?? 'All mathematical capabilities'}</h2><p>{selectedCourse?.description ?? 'The reference combines the course map with the complete implemented Tools catalog so feature discovery and learning use the same vocabulary.'}</p></div>
+            <div><span className="section-kicker">{selectedCourse ? selectedCourse.phaseRange : 'P4–P13 capability map'}</span><h2>{selectedCourse?.title ?? 'All implemented mathematical capabilities'}</h2><p>{selectedCourse?.description ?? 'The implemented reference combines the course map with the complete Tools catalog. The M7 audit above separately tracks university domains that do not yet exist.'}</p></div>
             <div><strong>{activeCount}</strong><span>{normalizedQuery ? 'matches' : 'reference entries'}</span></div>
           </header>
 
@@ -79,7 +115,7 @@ export function CourseReferencePage() {
             <section className="m6-reference-empty"><span className="section-kicker">No matches</span><h2>Nothing in this scope matches “{query}”.</h2><p>Try a broader mathematical term or switch to All capabilities.</p><button onClick={() => { setQuery(''); setScope('all'); }}>Show all capabilities</button></section>
           )}
 
-          <section className="m6-reference-boundary"><div><span className="section-kicker">Deterministic boundary</span><strong>Reference claims are limited to what the current engine can actually compute or verify.</strong></div><p>MathLab does not list unsupported mathematics as though it were implemented. M7 will audit the remaining university-math gaps and define the next expansion roadmap.</p></section>
+          <section className="m6-reference-boundary"><div><span className="section-kicker">Deterministic boundary</span><strong>Reference claims are limited to what the current engine can actually compute or verify.</strong></div><p>M7 found nine completely missing major domains and several partial/narrow ones. The post-M7 expansion sequence starts with E1 multivariable calculus rather than inflating existing feature labels.</p></section>
         </div>
       </div>
     </main>

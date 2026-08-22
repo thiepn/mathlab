@@ -1,0 +1,73 @@
+/* M7 — Mathematical Completeness Audit */
+
+.m7-audit-strip {
+  margin: 0 0 30px;
+  border: 1px solid var(--ml-line-strong);
+  background: linear-gradient(180deg, #fbfcff 0%, #f7f9fc 100%);
+}
+
+.m7-audit-summary {
+  display: grid;
+  grid-template-columns: minmax(0, 1.45fr) repeat(2, minmax(145px, .42fr));
+  align-items: stretch;
+  border-bottom: 1px solid var(--ml-line);
+}
+
+.m7-audit-summary > div { padding: 22px 24px; }
+.m7-audit-summary > div + div { border-left: 1px solid var(--ml-line); }
+.m7-audit-summary h2 { margin: 5px 0 8px; font-size: clamp(1.2rem, 2vw, 1.6rem); letter-spacing: -.025em; }
+.m7-audit-summary p { margin: 0; max-width: 760px; color: var(--ml-muted); line-height: 1.6; }
+.m7-audit-metric { display: flex; flex-direction: column; justify-content: center; }
+.m7-audit-metric strong { font-size: clamp(1.9rem, 4vw, 2.65rem); font-weight: 690; letter-spacing: -.055em; color: var(--ml-ink); }
+.m7-audit-metric span { margin-top: 4px; color: var(--ml-muted); font-size: var(--ml-text-sm); line-height: 1.4; }
+
+.m7-audit-details { padding: 18px 24px 22px; }
+.m7-audit-details > summary { cursor: pointer; font-weight: 700; color: var(--ml-ink); list-style-position: outside; }
+.m7-audit-details > p { margin: 10px 0 18px; color: var(--ml-muted); line-height: 1.6; max-width: 900px; }
+
+.m7-domain-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); border-top: 1px solid var(--ml-line); border-left: 1px solid var(--ml-line); }
+.m7-domain-card { padding: 15px 16px 17px; border-right: 1px solid var(--ml-line); border-bottom: 1px solid var(--ml-line); background: rgba(255,255,255,.72); }
+.m7-domain-card header { display: flex; align-items: flex-start; justify-content: space-between; gap: 14px; }
+.m7-domain-card header strong { font-size: .96rem; line-height: 1.35; }
+.m7-domain-level { flex: 0 0 auto; font-size: .72rem; font-weight: 800; text-transform: uppercase; letter-spacing: .08em; padding: 3px 6px; border: 1px solid var(--ml-line-strong); color: var(--ml-muted); background: white; }
+.m7-domain-card.is-strong .m7-domain-level { color: var(--ml-green); border-color: #bad8ca; background: #f3faf7; }
+.m7-domain-card.is-partial .m7-domain-level { color: #7b5c14; border-color: #e5d49e; background: #fffaf0; }
+.m7-domain-card.is-narrow .m7-domain-level { color: #965b1b; border-color: #ebc69d; background: #fff8f0; }
+.m7-domain-card.is-missing .m7-domain-level { color: var(--ml-red); border-color: #e4b7b7; background: #fff7f7; }
+.m7-domain-meter { display: grid; grid-template-columns: repeat(5, 1fr); gap: 3px; margin: 12px 0; }
+.m7-domain-meter i { height: 4px; background: #e4e9ef; }
+.m7-domain-meter i.is-filled { background: var(--ml-blue); }
+.m7-domain-card.is-missing .m7-domain-meter i.is-filled { background: var(--ml-red); }
+.m7-domain-card p { margin: 0; color: var(--ml-muted); font-size: var(--ml-text-sm); line-height: 1.5; }
+.m7-domain-card footer { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-top: 12px; font-size: var(--ml-text-xs); color: var(--ml-muted); }
+.m7-domain-card footer strong { color: var(--ml-blue); font-size: inherit; }
+
+.m7-audit-verdict {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 18px;
+  padding: 15px 24px;
+  border-top: 1px solid var(--ml-line);
+  background: white;
+}
+.m7-audit-verdict > span { font-size: .71rem; font-weight: 800; letter-spacing: .1em; text-transform: uppercase; color: var(--ml-red); }
+.m7-audit-verdict p { margin: 0; color: var(--ml-ink-soft); line-height: 1.5; }
+.m7-audit-verdict strong { color: var(--ml-ink); }
+.m7-audit-verdict a { color: var(--ml-blue); font-weight: 700; text-decoration: none; white-space: nowrap; }
+
+@media (max-width: 900px) {
+  .m7-audit-summary { grid-template-columns: 1fr 1fr; }
+  .m7-audit-summary > div:first-child { grid-column: 1 / -1; border-bottom: 1px solid var(--ml-line); }
+  .m7-audit-summary > div:nth-child(2) { border-left: 0; }
+  .m7-domain-grid { grid-template-columns: 1fr; }
+}
+
+@media (max-width: 620px) {
+  .m7-audit-summary { grid-template-columns: 1fr; }
+  .m7-audit-summary > div { padding: 18px; }
+  .m7-audit-summary > div + div { border-left: 0; border-top: 1px solid var(--ml-line); }
+  .m7-audit-details { padding: 16px 18px 18px; }
+  .m7-audit-verdict { grid-template-columns: 1fr; gap: 7px; padding: 15px 18px; }
+  .m7-audit-verdict a { white-space: normal; }
+}
