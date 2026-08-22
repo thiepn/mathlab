@@ -51,7 +51,6 @@ const C_AST: AstNode = { type:'symbol', name:'C' };
 function n(value:string|number):AstNode { return {type:'number',value:String(value)}; }
 function s(name:string):AstNode { return {type:'symbol',name}; }
 function b(operator:'+'|'-'|'*'|'/'|'^',left:AstNode,right:AstNode):AstNode { return {type:'binary',operator,left,right}; }
-function u(operator:'+'|'-',operand:AstNode):AstNode { return {type:'unary',operator,operand}; }
 function call(name:string,...args:AstNode[]):AstNode { return {type:'call',name,args}; }
 function matrix(items:AstNode[]):AstNode { return {type:'matrix',rows:[items]}; }
 function equation(left:AstNode,right:AstNode):AstNode { return {type:'equation',left,right}; }
@@ -164,7 +163,7 @@ function profileSections(node:AstNode):MathResultSection[] {
 
 export function odeProfile(node:AstNode):OdeTransform {
   const info=odeShapeInfo(node);if(!info)throw new Error('Not an E4 ODE object.');
-  return{ast:node,display:`${info.order}${info.order===1?'st':info.order===2?'nd':'th'}-order ${info.variables}-state ODE`,exactness:'exact',warnings:[],steps:[],sections:profileSections(node)};
+  return{ast:node,display:`${info.order}${info.order===1?'st':info.order===2?'nd':info.order===3?'rd':'th'}-order ${info.variables}-state ODE`,exactness:'exact',warnings:[],steps:[],sections:profileSections(node)};
 }
 
 function safeIntegral(node:AstNode,variable:string):{ast:AstNode;warnings:string[]} {
@@ -376,7 +375,7 @@ function pointFromSystemResult(resultAst:AstNode,states:string[]):AstNode[]|null
 }
 function approximatePoint(point:AstNode[]):number[]|null {const values=point.map(finiteNumber);return values.some((v)=>v===null)?null:values as number[];}
 function zeroPointIfEquilibrium(spec:FirstOrderSystemSpec):EquilibriumPoint|null {
-  const point=spec.states.map(()=>ZERO_AST);const approx=spec.states.map(()=>0);try{const values=spec.rhs.map((rhs)=>evaluateNumeric(rhs,Object.fromEntries(spec.states.map((name)=>[name,0])));if(values.every((v)=>Math.abs(v)<1e-12))return{ast:point,approx,source:'origin test'};}catch{}return null;
+  const point=spec.states.map(()=>ZERO_AST);const approx=spec.states.map(()=>0);try{const values=spec.rhs.map((rhs)=>evaluateNumeric(rhs,Object.fromEntries(spec.states.map((name)=>[name,0]))));if(values.every((v)=>Math.abs(v)<1e-12))return{ast:point,approx,source:'origin test'};}catch{}return null;
 }
 function uniqueLinearEquilibrium(spec:FirstOrderSystemSpec):EquilibriumPoint|null {
   const system:AstNode={type:'system',items:spec.rhs.map((rhs)=>equation(rhs,ZERO_AST))};const solved=solveLinearSystem(system);if(solved.status!=='unique'||!solved.resultAst)return null;const point=pointFromSystemResult(solved.resultAst,spec.states);if(!point)return null;const approx=approximatePoint(point);return approx?{ast:point,approx,source:'exact linear solve'}:null;
