@@ -20,7 +20,7 @@ interface HeaderProps {
 export function Header({ route, online, onRoute, onCommand, onMobileMenu }: HeaderProps) {
   return (
     <header className="topbar">
-      <button className="icon-button mobile-only" onClick={onMobileMenu} aria-label="Open navigation">☰</button>
+      <button className="icon-button mobile-only" onClick={onMobileMenu} aria-label="Open workspace objects">☰</button>
       <Logo />
       <nav className="topnav" aria-label="Primary navigation">
         {(Object.keys(labels) as Route[]).map((item) => (
