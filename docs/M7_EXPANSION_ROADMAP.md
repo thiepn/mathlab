@@ -120,34 +120,40 @@ See `E4_ACCEPTANCE.md`.
 
 ---
 
-## Next — E5: Numerical Linear Algebra & Optimization
+## E5 — Numerical Linear Algebra & Optimization — Complete
 
-### Numerical linear algebra
+E5 extends existing matrix and multivariable-function objects rather than creating a parallel numerical object language.
 
-- LU with pivoting;
-- Cholesky for supported positive-definite matrices;
-- numerical QR for general floating matrices;
-- numerical eigenvalue/eigenvector workflows;
-- SVD;
-- pseudoinverse;
+Implemented numerical linear algebra baseline:
+
+- partial-pivoting numerical LU with `P`, `L`, `U` and reconstruction diagnostics;
+- numerical Cholesky for real symmetric positive-definite matrices;
+- Householder numerical QR with reconstruction and orthogonality residuals;
+- bounded real-symmetric Jacobi eigenvalue/eigenvector analysis;
+- SVD baseline through the symmetric eigendecomposition of `AᵀA`, with explicit conditioning limitations;
 - tolerance-aware numerical rank;
-- condition/stability diagnostics;
-- iterative methods beyond Jacobi/Gauss–Seidel where justified;
-- nonlinear-system solving.
+- Moore–Penrose pseudoinverse;
+- spectral `κ₂` condition diagnostics;
+- conjugate-gradient solves for numerically SPD systems;
+- damped multivariate Newton for square nonlinear systems.
 
-### Optimization
+Implemented optimization baseline:
 
-- multivariable gradient-based optimization;
-- Newton / quasi-Newton methods;
-- constrained optimization;
-- linear programming;
-- convexity diagnostics for supported functions;
-- convergence traces and stopping criteria;
-- explicit local/global optimum claims.
+- local gradient-descent minimization;
+- local Newton minimization with descent fallback;
+- local BFGS quasi-Newton minimization;
+- backtracking line search and convergence traces;
+- one-equality constrained quadratic-penalty optimization;
+- Hessian-based local/constant-Hessian convexity diagnostics without sampling-based global claims;
+- bounded two-variable linear programming by feasible-vertex enumeration, where a global optimum claim is valid only inside the explicitly represented finite polygon.
+
+E5 keeps floating results approximate. General nonsymmetric Schur/eigen workflows, high-accuracy bidiagonal SVD, sparse linear algebra, inequality-constrained nonlinear optimization, general-dimensional LP/MILP and global nonconvex optimization remain outside the accepted boundary.
+
+See `E5_ACCEPTANCE.md`.
 
 ---
 
-## E6 — Probability & Statistics II
+## Next — E6: Probability & Statistics II
 
 Extend P10 from introductory probability/statistics into a broader university workbench:
 
@@ -290,7 +296,7 @@ Re-run the exact M7 rubric rather than inventing a more favorable metric.
 
 ## Current evidence after E3
 
-The most recent fixed M7 re-score was taken after E3; E4 has not been used to rewrite that historical score outside the scheduled integration audit.
+The most recent fixed M7 re-score was taken after E3; later E-phases have not been used to rewrite that historical score outside the scheduled integration audit.
 
 Under that fixed M7 22-domain rubric:
 
