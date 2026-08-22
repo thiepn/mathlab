@@ -8,7 +8,6 @@ import {
   curl,
   divergence,
   fluxIntegral,
-  integralDisplay,
   integrateIterated,
   lineIntegral,
   parseIteratedBounds,
