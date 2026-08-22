@@ -7,32 +7,40 @@ import {
   implementedDomainMaturityPercent,
 } from '../src/app/completenessAudit';
 
-describe('M7 mathematical completeness audit', () => {
-  it('uses the fixed 22-domain university-math baseline', () => {
+describe('M7/E1 mathematical completeness registry', () => {
+  it('keeps the fixed 22-domain university-math baseline', () => {
     expect(COMPLETENESS_DOMAINS).toHaveLength(22);
     expect(new Set(COMPLETENESS_DOMAINS.map((domain) => domain.id)).size).toBe(22);
   });
 
   it('keeps status labels consistent with the numerical rubric', () => {
-    for (const domain of COMPLETENESS_DOMAINS) {
-      expect(domain.status).toBe(COMPLETENESS_RUBRIC[domain.level]);
-    }
+    for (const domain of COMPLETENESS_DOMAINS) expect(domain.status).toBe(COMPLETENESS_RUBRIC[domain.level]);
   });
 
-  it('reports the conservative M7 headline indices', () => {
-    expect(completenessBreadthPercent()).toBe(35);
-    expect(implementedDomainMaturityPercent()).toBe(58);
+  it('advances the audit only for evidence actually added by E1', () => {
+    expect(completenessBreadthPercent()).toBe(38);
+    expect(implementedDomainMaturityPercent()).toBe(56);
+    expect(domainsByStatus('missing')).toHaveLength(7);
   });
 
-  it('does not claim any comprehensive domain and records nine missing major domains', () => {
-    expect(domainsByStatus('comprehensive')).toHaveLength(0);
-    expect(domainsByStatus('missing')).toHaveLength(9);
-  });
-
-  it('identifies the immediate expansion blocker as multivariable calculus', () => {
+  it('records multivariable calculus as partial rather than complete', () => {
     const domain = COMPLETENESS_DOMAINS.find((item) => item.id === 'multivariable-calculus');
-    expect(domain?.level).toBe(0);
-    expect(domain?.nextPhase).toBe('E1');
+    expect(domain?.level).toBe(3);
+    expect(domain?.status).toBe('partial');
+    expect(domain?.evidence.join(' ')).toContain('Gradient');
+    expect(domain?.gaps.join(' ')).toContain('Double and triple integration');
+    expect(domain?.nextPhase).toBe('E2');
+  });
+
+  it('records optimization only incidentally because E1 Lagrange solving is bounded', () => {
+    const domain = COMPLETENESS_DOMAINS.find((item) => item.id === 'optimization');
+    expect(domain?.level).toBe(1);
+    expect(domain?.status).toBe('incidental');
+    expect(domain?.nextPhase).toBe('E5');
+  });
+
+  it('does not claim any comprehensive domain', () => {
+    expect(domainsByStatus('comprehensive')).toHaveLength(0);
   });
 
   it('preserves strong ratings only for evidence-backed core domains', () => {
