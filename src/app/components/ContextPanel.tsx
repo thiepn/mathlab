@@ -1,10 +1,11 @@
 import { Fragment, useEffect, useMemo, useState } from 'react';
 import { domainSymbol } from '../../lib/math/assumptions';
-import { capabilitiesFor } from '../../lib/math/capabilities';
+import { capabilitiesFor } from '../../lib/math/capabilitiesE5';
 import { shapeLabel } from '../../lib/math/semantic';
 import type { SemanticDiagnostic, SemanticMathObject } from '../../lib/math/types';
 import { operationNeedsControls } from '../workspaceOperations';
 import { E1OperationControls, isE1ControlledOperation } from './E1OperationControls';
+import { E5OperationControls, isE5ControlledOperation } from './E5OperationControls';
 
 interface ContextPanelProps {
   object: SemanticMathObject | null;
@@ -85,6 +86,7 @@ export function ContextPanel({ object, persisted, pinned = false, dependents = [
   const renderControl = (id: string) => {
     if (!object || controlOpen !== id) return null;
     if (isE1ControlledOperation(id)) return <E1OperationControls operation={id} object={object} running={running} onAction={onAction} />;
+    if (isE5ControlledOperation(id)) return <E5OperationControls operation={id} object={object} running={running} onAction={onAction} />;
 
     if (id === 'substitute') return <div className="operation-control"><label><span>Symbol</span><input value={c.subSymbol} onChange={(e)=>set('subSymbol',e.target.value)} placeholder="x" /></label><label><span>Replace with</span><input value={c.subValue} onChange={(e)=>set('subValue',e.target.value)} placeholder="2/3" /></label><button disabled={!c.subSymbol.trim()||!c.subValue.trim()||running} onClick={()=>onAction?.(id,{symbol:c.subSymbol.trim(),value:c.subValue.trim()})}>Apply substitution</button></div>;
     if (id === 'evaluate-function') return <div className="operation-control"><label><span>{functionInputs.length>1?`Input point (${functionInputs.join(', ')})`:'Input'}</span><input value={c.evaluateValue} onChange={(e)=>set('evaluateValue',e.target.value)} placeholder={functionInputs.length>1?functionInputs.map((_,i)=>String(i+1)).join(', '):'2'} /></label><button disabled={!c.evaluateValue.trim()||running} onClick={()=>onAction?.(id,{value:c.evaluateValue.trim()})}>Evaluate function</button></div>;
@@ -131,7 +133,7 @@ export function ContextPanel({ object, persisted, pinned = false, dependents = [
       {groups.map((group)=><section className="context-section" key={group}><h2>{group}</h2>{actions.filter((item)=>item.group===group).map((item)=><Fragment key={item.id}><button className={`context-action ${item.available?'is-available':item.applicable?'is-locked':'is-inapplicable'}`} disabled={!item.available||running} title={item.available?`Run ${item.label}`:item.applicable?`Available in ${item.phase}`:item.reason} onClick={()=>{if(!item.available)return;if(operationNeedsControls(item.id)){setControlOpen((value)=>value===item.id?'':item.id);}else onAction?.(item.id);}}><span>{runningOperation===item.id?'Computing…':item.label}</span><span className="phase-lock">{item.available?item.id==='graph'?'OPEN':'RUN':item.applicable?item.phase:'N/A'}</span></button>{item.available&&renderControl(item.id)}</Fragment>)}</section>)}
 
       {diagnostics.length>0&&<div className="context-diagnostic">{diagnostics[0].message}</div>}
-      <div className="context-footnote">MathLab exposes only operations that match the resolved object. E1 multivariable controls preserve parameter order from the function definition and keep unsupported higher-dimensional workflows explicit.</div>
+      <div className="context-footnote">MathLab exposes only operations that match the resolved object. E5 numerical tools keep tolerances, starting points, convergence state, and local/global claim boundaries explicit.</div>
     </aside>
   );
 }
