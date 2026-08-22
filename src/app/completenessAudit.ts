@@ -33,13 +33,13 @@ export const COMPLETENESS_DOMAINS: CompletenessDomain[] = [
   },
   {
     id: 'vector-calculus', title: 'Vector calculus & multivariable integration', level: 3, status: 'partial',
-    evidence: ['Exact iterated double and triple integrals when supported by the bounded symbolic antiderivative engine', 'Deterministic Simpson fallback on constant rectangular regions', 'Polar/cylindrical/spherical substitutions with Jacobian factors', 'First-class 2D/3D vector-field workflows with divergence, curl, conservative checks and scalar potentials', 'Parameterized scalar/work line integrals and graph-surface scalar/flux integrals', 'Computational Green, Gauss/divergence and Stokes theorem verification on bounded rectangular/graph cases'],
-    gaps: ['General region algebra and automatic order conversion', 'General parametric surfaces and implicit surfaces', 'Arbitrary coordinate transformations and orientation machinery', 'Improper/singular multivariable integrals and stronger cubature/error control', 'Theorem hypotheses/topology certificates beyond the represented bounded cases'], nextPhase: 'E3',
+    evidence: ['Exact iterated double and triple integrals when supported by the bounded symbolic antiderivative engine', 'Deterministic Simpson fallback on constant rectangular regions', 'Polar/cylindrical/spherical substitutions with Jacobian factors', 'First-class 2D/3D vector-field workflows with divergence, curl, conservative checks and scalar potentials', 'Parameterized scalar/work line integrals and graph-surface scalar/flux integrals', 'Computational Green, Gauss/divergence and Stokes theorem verification on bounded rectangular/graph cases', 'E3 directly visualizes parameterized curves, 2D vector fields, scalar fields and graph surfaces'],
+    gaps: ['General region algebra and automatic order conversion', 'General mathematical parametric/implicit surface integration', 'Arbitrary coordinate transformations and orientation machinery', 'Improper/singular multivariable integrals and stronger cubature/error control', 'Theorem hypotheses/topology certificates beyond the represented bounded cases'], nextPhase: 'E10',
   },
   {
-    id: 'visualization', title: 'Mathematical visualization', level: 2, status: 'narrow',
-    evidence: ['Interactive 2D explicit plots for unary functions', 'Pan, zoom, trace and exact/numeric feature overlays'],
-    gaps: ['Parametric plots', 'Polar plots', 'Implicit curves', 'Contour plots', 'Vector fields and phase portraits', '3D surfaces'], nextPhase: 'E3',
+    id: 'visualization', title: 'Mathematical visualization', level: 4, status: 'strong',
+    evidence: ['Interactive explicit Cartesian plots with pan, zoom, trace and symbolic/numeric feature overlays', 'Parameterized and polar curves', 'Marching-squares implicit curves and scalar-field contour maps', 'Sampled scalar fields with E1 exact critical-point overlays', '2D vector fields, exact gradient fields and deterministic phase portraits', 'Rotatable SVG graph surfaces and two-parameter three-component parametric surfaces', 'E2 rectangular-region overlays plus SVG/PNG export across the visualization workspace'],
+    gaps: ['Implicit 3D surfaces and isosurfaces', '3D vector fields and volumetric visualization', 'GPU/WebGL acceleration for very large meshes', 'Complex-plane visualization', 'Deeper linked geometry metadata from theorem/integration results'], nextPhase: 'E12',
   },
   {
     id: 'linear-core', title: 'Linear algebra core', level: 4, status: 'strong',
@@ -87,8 +87,8 @@ export const COMPLETENESS_DOMAINS: CompletenessDomain[] = [
   },
   {
     id: 'ode', title: 'ODEs & dynamical systems', level: 2, status: 'narrow',
-    evidence: ['First-order IVP semantic object', 'Euler, Heun and fixed-step RK4', 'Step-doubling endpoint diagnostics'],
-    gaps: ['Symbolic first-order ODE solving', 'Higher-order ODEs', 'Systems of ODEs', 'Adaptive RK methods', 'Stiff solvers', 'Phase-plane and stability analysis'], nextPhase: 'E4',
+    evidence: ['First-order IVP semantic object', 'Euler, Heun and fixed-step RK4', 'Step-doubling endpoint diagnostics', 'E3 phase portraits visualize supplied two-dimensional autonomous vector fields'],
+    gaps: ['Symbolic first-order ODE solving', 'Higher-order ODEs', 'Systems of ODEs as first-class ODE objects', 'Adaptive RK methods', 'Stiff solvers', 'Equilibrium/stability classification'], nextPhase: 'E4',
   },
   {
     id: 'pde', title: 'Partial differential equations', level: 0, status: 'missing', evidence: [],
