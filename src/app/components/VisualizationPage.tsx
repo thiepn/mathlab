@@ -1,1 +1,1 @@
-export { VisualizationPageE3 as VisualizationPage } from './VisualizationPageE3';
+export { VisualizationPageE4 as VisualizationPage } from './VisualizationPageE4';
