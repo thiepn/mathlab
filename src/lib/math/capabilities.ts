@@ -1,3 +1,4 @@
+import { odeCapabilityInfo } from './e4Ode';
 import type { SemanticMathObject } from './types';
 
 export interface ObjectCapability {
@@ -45,6 +46,16 @@ const e2VectorField: CapabilitySeed[] = [
   { id:'green-theorem', label:"Green's theorem…", phase:'E2', group:'Integral theorems' },
   { id:'gauss-theorem', label:"Gauss / divergence theorem…", phase:'E2', group:'Integral theorems' },
   { id:'stokes-theorem', label:"Stokes' theorem…", phase:'E2', group:'Integral theorems' },
+];
+
+const e4Ode: CapabilitySeed[] = [
+  { id:'ode-profile', label:'ODE / system profile', phase:'E4', group:'ODEs & dynamics' },
+  { id:'ode-symbolic-solve', label:'Solve supported class symbolically', phase:'E4', group:'Symbolic ODEs' },
+  { id:'ode-to-system', label:'Convert higher order to first-order system', phase:'E4', group:'ODEs & dynamics' },
+  { id:'ode-equilibria', label:'Equilibrium points', phase:'E4', group:'Dynamical systems' },
+  { id:'ode-linearize', label:'Jacobian linearization', phase:'E4', group:'Dynamical systems' },
+  { id:'ode-stability', label:'Local stability classification', phase:'E4', group:'Dynamical systems' },
+  { id:'ode-adaptive-solve', label:'Adaptive RK45 trajectory', phase:'E4', group:'Numerical ODEs' },
 ];
 
 const definitions: Record<SemanticMathObject['kind'], CapabilitySeed[]> = {
@@ -98,7 +109,7 @@ const definitions: Record<SemanticMathObject['kind'], CapabilitySeed[]> = {
   graph: [{ id:'graph-profile', label:'Graph profile', phase:'P11', group:'Graph theory' }, { id:'graph-bfs', label:'BFS trace…', phase:'P11', group:'Traversal' }, { id:'graph-dfs', label:'DFS trace…', phase:'P11', group:'Traversal' }, { id:'shortest-path', label:'Shortest path…', phase:'P11', group:'Graph algorithms' }, { id:'topological-sort', label:'Topological sort', phase:'P11', group:'Graph algorithms' }, { id:'minimum-spanning-tree', label:'Minimum spanning tree', phase:'P11', group:'Graph algorithms' }],
   recurrence: [{ id:'recurrence-profile', label:'Recurrence profile', phase:'P11', group:'Recurrences' }, { id:'recurrence-terms', label:'Generate terms…', phase:'P11', group:'Recurrences' }, { id:'recurrence-closed-form', label:'Closed / characteristic form', phase:'P11', group:'Recurrences' }],
   complexity: [{ id:'complexity-profile', label:'Asymptotic complexity', phase:'P11', group:'Algorithms' }], combinatorics: [{ id:'evaluate-combinatorics', label:'Evaluate exactly', phase:'P11', group:'Combinatorics' }],
-  ode: [{ id:'ivp-profile', label:'IVP profile', phase:'P12', group:'ODEs' }, { id:'ode-solve', label:'Solve numerically…', phase:'P12', group:'ODEs' }],
+  ode: [{ id:'ivp-profile', label:'IVP profile', phase:'P12', group:'ODEs' }, { id:'ode-solve', label:'Solve numerically…', phase:'P12', group:'ODEs' }, ...e4Ode],
   sequence: [{ id:'sequence-terms', label:'Preview terms…', phase:'P9', group:'Sequence' }, { id:'sequence-limit', label:'Sequence limit', phase:'P9', group:'Sequence' }, { id:'sequence-convergence', label:'Convergence profile', phase:'P9', group:'Sequence' }, { id:'partial-sum', label:'Partial sum…', phase:'P9', group:'Series' }, { id:'series-convergence', label:'Series convergence', phase:'P9', group:'Series' }, { id:'sequence-series-profile', label:'Sequence + series profile', phase:'P9', group:'Analysis' }],
   unknown: [],
 };
@@ -147,7 +158,18 @@ function applicability(object: SemanticMathObject, id: string): { applicable: bo
   if (object.kind === 'matrix' && object.shape.type === 'matrix' && ['numerical-linear-solve','iterative-linear-solve'].includes(id) && object.shape.columns !== object.shape.rows + 1) return { applicable:false, reason:'P12 numerical system solving expects an n×(n+1) augmented matrix [A|b].' };
   if (object.kind === 'matrix' && object.shape.type === 'matrix' && id === 'condition-estimate' && object.shape.rows !== object.shape.columns) return { applicable:false, reason:'Condition estimation requires a square matrix.' };
   if (object.kind === 'matrix' && ['interpolation-polynomial','numerical-linear-solve','iterative-linear-solve','condition-estimate'].includes(id) && (object.variables.length > 0 || object.domain === 'complex')) return { applicable:false, reason:'P12 numerical matrix workflows require resolved real numeric entries.' };
-  if (object.kind === 'ode' && object.variables.length > 0) return { applicable:false, reason:'P12 IVPs may use internal x and y only; define or substitute any additional external parameters first.' };
+  if (object.kind === 'ode') {
+    if (object.variables.length > 0) return { applicable:false, reason:'Resolve or define external ODE parameters first; state and independent variables are treated intrinsically.' };
+    const info=odeCapabilityInfo(object.valueAst);
+    if(!info)return{applicable:false,reason:'This ODE object does not match a supported E4 constructor.'};
+    if(['ivp-profile','ode-solve'].includes(id)&&info.constructor!=='ivp')return{applicable:false,reason:'The legacy P12 fixed-step workflow is scalar ivp(...) only. Use E4 adaptive/system operations for ODE systems.'};
+    if(id==='ode-symbolic-solve'&&!info.canSymbolicSolve)return{applicable:false,reason:'No verified symbolic solver is available for this ODE class. Use numerical/system analysis instead.'};
+    if(id==='ode-to-system'&&!info.canConvertToSystem)return{applicable:false,reason:'First-order system conversion applies to ode2(...) or oden(...).'};
+    if(id==='ode-equilibria'&&!info.canAnalyzeEquilibria)return{applicable:false,reason:'Equilibrium analysis requires an autonomous first-order system (or an autonomous higher-order equation convertible to one).'};
+    if(id==='ode-linearize'&&!info.canLinearize)return{applicable:false,reason:'Jacobian linearization requires an autonomous system with a certifiable equilibrium.'};
+    if(id==='ode-stability'&&!info.canClassifyStability)return{applicable:false,reason:'Exact E4 stability classification is currently bounded to autonomous two-state systems.'};
+    if(id==='ode-adaptive-solve'&&!info.canAdaptiveSolve)return{applicable:false,reason:'Adaptive RK45 requires encoded finite initial data.'};
+  }
   if ((object.kind === 'matrix' || object.kind === 'vector') && itemIsP8Linear(id) && object.variables.length > 0) return { applicable:false, reason:'P8 advanced linear algebra requires every entry to resolve before the operation can run.' };
   if ((object.kind === 'matrix' || object.kind === 'vector') && itemRequiresRealRationalP8(id) && object.domain === 'complex') return { applicable:false, reason:'This P8 workflow currently requires real rational entries. Complex inner-product, adjoint, Gram–Schmidt and QR workflows are available separately.' };
   if ((object.kind === 'matrix' || object.kind === 'vector') && itemIsP7Linear(id) && object.variables.length > 0) return { applicable:false, reason:'P7 exact linear algebra requires every vector/matrix entry to resolve to an exact scalar. Define or substitute the remaining free symbols first.' };
@@ -177,6 +199,6 @@ export function capabilitiesFor(object: SemanticMathObject | null): ObjectCapabi
   if (!object) return [];
   return definitions[object.kind].map((item) => {
     const applicabilityResult = applicability(object, item.id);
-    return { ...item, ...applicabilityResult, available: ['P4','P5','P6','P7','P8','P9','P10','P11','P12','P13','E1','E2'].includes(item.phase) && applicabilityResult.applicable };
+    return { ...item, ...applicabilityResult, available: ['P4','P5','P6','P7','P8','P9','P10','P11','P12','P13','E1','E2','E4'].includes(item.phase) && applicabilityResult.applicable };
   });
 }
