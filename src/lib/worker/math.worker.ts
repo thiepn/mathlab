@@ -1,7 +1,7 @@
-import { E4MathEngine } from '../math/e4Engine';
+import { E5MathEngine } from '../math/e5Engine';
 import type { MathWorkerRequest, MathWorkerResponse } from './protocol';
 
-const engine = new E4MathEngine();
+const engine = new E5MathEngine();
 const workerScope = self as unknown as {
   onmessage: ((event: MessageEvent<MathWorkerRequest>) => void) | null;
   postMessage: (message: MathWorkerResponse) => void;

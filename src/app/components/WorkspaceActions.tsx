@@ -1,4 +1,4 @@
-import { capabilitiesFor } from '../../lib/math/capabilities';
+import { capabilitiesFor } from '../../lib/math/capabilitiesE5';
 import type { SemanticMathObject } from '../../lib/math/types';
 import { preferredWorkspaceActions } from '../workspaceOperations';
 
