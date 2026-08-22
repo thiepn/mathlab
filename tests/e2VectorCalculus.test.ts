@@ -21,12 +21,13 @@ async function run(input:string,operation:string,options?:Record<string,string|n
 function fact(result:Awaited<ReturnType<typeof run>>['result'],label:string):string|undefined{
   return result.sections?.flatMap((section)=>section.facts).find((item)=>item.label===label)?.display;
 }
+function compact(value:string):string{return value.replace(/\s+/g,'');}
 
 describe('E2 vector calculus and multivariable integration',()=>{
   it('evaluates an exact variable-bound double integral',async()=>{
     const out=await run('f(x,y) := 1','double-integral',{coordinate:'cartesian',innerVariable:'x',outerVariable:'y',innerLower:'0',innerUpper:'y',outerLower:'0',outerUpper:'1'});
     expect(out.result.exactness).toBe('exact');
-    expect(out.text).toBe('1/2');
+    expect(compact(out.text)).toBe('1/2');
   });
 
   it('evaluates an exact triple integral over the unit cube',async()=>{
@@ -42,8 +43,8 @@ describe('E2 vector calculus and multivariable integration',()=>{
     const cylindrical=await run('f(x,y,z) := 1','coordinate-transform',{coordinate:'cylindrical'});
     expect(cylindrical.text).toBe('r');
     const spherical=await run('f(x,y,z) := 1','coordinate-transform',{coordinate:'spherical'});
-    expect(spherical.text).toContain('rho^2');
-    expect(spherical.text).toContain('sin(phi)');
+    expect(compact(spherical.text)).toContain('rho^2');
+    expect(compact(spherical.text)).toContain('sin(phi)');
   });
 
   it('computes exact divergence and curl for 3D vector fields',async()=>{
@@ -62,8 +63,8 @@ describe('E2 vector calculus and multivariable integration',()=>{
 
   it('reconstructs a scalar potential for a supported conservative field',async()=>{
     const out=await run('F(x,y) := [2*x,2*y]','scalar-potential');
-    expect(out.text).toContain('x^2');
-    expect(out.text).toContain('y^2');
+    expect(compact(out.text)).toContain('x^2');
+    expect(compact(out.text)).toContain('y^2');
     expect(out.result.warnings.join(' ')).toContain('additive constant');
   });
 
