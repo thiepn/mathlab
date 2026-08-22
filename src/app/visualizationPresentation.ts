@@ -47,7 +47,7 @@ export function annotationLabel(kind: GraphAnnotationKind): string {
     case 'vertical-asymptote': return 'Vertical asymptote';
     case 'horizontal-asymptote': return 'Horizontal asymptote';
     case 'hole': return 'Hole';
-    default: return kind.replace(/-/g, ' ');
+    default: return String(kind).replace(/-/g, ' ');
   }
 }
 
