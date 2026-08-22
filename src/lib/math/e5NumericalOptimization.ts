@@ -105,7 +105,6 @@ function norm2(v: Vector): number { return Math.hypot(...v); }
 function normInf(v: Vector): number { return Math.max(0, ...v.map(Math.abs)); }
 function frobenius(A: Matrix): number { return Math.sqrt(A.reduce((s, row) => s + row.reduce((r, v) => r + v * v, 0), 0)); }
 function subtractMatrix(A: Matrix, B: Matrix): Matrix { return A.map((row, i) => row.map((v, j) => v - B[i][j])); }
-function maxAbs(A: Matrix): number { return Math.max(0, ...A.flat().map(Math.abs)); }
 function isSquare(A: Matrix): boolean { return A.length === A[0].length; }
 function isSymmetric(A: Matrix, tolerance = 1e-12): boolean { return isSquare(A) && A.every((row, i) => row.every((v, j) => Math.abs(v - A[j][i]) <= tolerance * Math.max(1, Math.abs(v), Math.abs(A[j][i])))); }
 
@@ -154,7 +153,7 @@ export function numericalCholesky(node: AstNode): E5Transform {
     else L[i][j]=sum/L[j][j];
   }
   const residual=frobenius(subtractMatrix(A,matmul(L,transpose(L))));
-  return{ast:matrixAst(L),display:`A ≈ L Lᵀ · residual ${fixed(residual,6)}`,exactness:'approximate',warnings:['Successful Cholesky is a numerical positive-definiteness certificate at the working tolerance, not exact symbolic proof.'],sections:[section('cholesky','Cholesky decomposition',[{label:'L',display:matrixText(L),ast:matrixAst(L)},{label:'Minimum L diagonal',display:fixed(minDiag,10)},{label:'||A-LLᵀ||F',display:fixed(residual,8),tone:residual<1e-8?'positive':'warning'}]) ]};
+  return{ast:matrixAst(L),display:`A ≈ L Lᵀ · residual ${fixed(residual,6)}`,exactness:'approximate',warnings:['Successful Cholesky is a numerical positive-definiteness diagnostic at the working tolerance, not exact symbolic proof.'],sections:[section('cholesky','Cholesky decomposition',[{label:'L',display:matrixText(L),ast:matrixAst(L)},{label:'Minimum L diagonal',display:fixed(minDiag,10)},{label:'||A-LLᵀ||F',display:fixed(residual,8),tone:residual<1e-8?'positive':'warning'}]) ]};
 }
 
 function qrCore(A0: Matrix): { Q: Matrix; R: Matrix } {
@@ -229,7 +228,6 @@ function numericalHessian(f:AstNode,params:string[],x:Vector):Matrix{
 function addVec(a:Vector,b:Vector,scale=1):Vector{return a.map((v,i)=>v+scale*b[i]);}
 function outer(a:Vector,b:Vector):Matrix{return a.map(x=>b.map(y=>x*y));}
 function addMatrix(A:Matrix,B:Matrix,scale=1):Matrix{return A.map((row,i)=>row.map((v,j)=>v+scale*B[i][j]));}
-function scaleMatrix(A:Matrix,s:number):Matrix{return A.map(row=>row.map(v=>s*v));}
 
 export function nonlinearSystemSolve(node:AstNode,source:string,pointSource?:string,tolerance?:number,maxIterations?:number):E5Transform{
   const components=functionComponents(node);if(components.length<2)throw new Error('Nonlinear-system Newton requires a vector-valued function such as F(x,y):=[f,g].');const params=parametersFor(source,node);if(params.length!==components.length||params.length>6)throw new Error('E5 nonlinear Newton requires a square vector system with 2–6 parameters/components.');let x=pointFromSource(pointSource,params.length);const tol=boundedTolerance(tolerance),limit=boundedIterations(maxIterations);const trace:MathResultFact[]=[];let residual=Infinity,iterations=0;
