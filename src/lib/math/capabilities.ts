@@ -12,6 +12,20 @@ export interface ObjectCapability {
 
 type CapabilitySeed = Omit<ObjectCapability,'available'|'applicable'|'reason'>;
 
+const e1Multivariable: CapabilitySeed[] = [
+  { id:'partial-derivative', label:'Partial derivative…', phase:'E1', group:'Multivariable' },
+  { id:'mixed-partial', label:'Mixed partial…', phase:'E1', group:'Multivariable' },
+  { id:'gradient', label:'Gradient', phase:'E1', group:'Multivariable' },
+  { id:'jacobian', label:'Jacobian', phase:'E1', group:'Multivariable' },
+  { id:'hessian', label:'Hessian', phase:'E1', group:'Multivariable' },
+  { id:'directional-derivative', label:'Directional derivative…', phase:'E1', group:'Multivariable' },
+  { id:'linearization', label:'Linearization…', phase:'E1', group:'Multivariable' },
+  { id:'tangent-plane', label:'Tangent plane…', phase:'E1', group:'Multivariable' },
+  { id:'multivariable-critical-points', label:'Multivariable critical points', phase:'E1', group:'Multivariable' },
+  { id:'second-derivative-test', label:'Second-derivative test', phase:'E1', group:'Multivariable' },
+  { id:'lagrange-multipliers', label:'Lagrange multipliers…', phase:'E1', group:'Multivariable' },
+];
+
 const definitions: Record<SemanticMathObject['kind'], CapabilitySeed[]> = {
   scalar: [
     { id:'inspect-exact', label:'Exact form', phase:'P4', group:'Inspect' },
@@ -31,6 +45,7 @@ const definitions: Record<SemanticMathObject['kind'], CapabilitySeed[]> = {
     { id:'integrate', label:'Antiderivative', phase:'P5', group:'Calculus' },
     { id:'definite-integral', label:'Definite integral…', phase:'P5', group:'Calculus' },
     { id:'limit', label:'Limit…', phase:'P5', group:'Calculus' },
+    ...e1Multivariable,
     { id:'graph', label:'Graph', phase:'P6', group:'Visualize' },
     { id:'evaluate-linear-algebra', label:'Evaluate linear algebra', phase:'P7', group:'Linear algebra' },
     { id:'continuity-profile', label:'Continuity profile', phase:'P9', group:'Analysis' },
@@ -73,6 +88,7 @@ const definitions: Record<SemanticMathObject['kind'], CapabilitySeed[]> = {
     { id:'extrema', label:'Extrema', phase:'P5', group:'Behavior' },
     { id:'monotonicity', label:'Monotonicity', phase:'P5', group:'Behavior' },
     { id:'concavity', label:'Concavity', phase:'P5', group:'Behavior' },
+    ...e1Multivariable,
     { id:'graph', label:'Graph', phase:'P6', group:'Visualize' },
     { id:'continuity-profile', label:'Continuity profile', phase:'P9', group:'Analysis' },
     { id:'differentiability-profile', label:'Differentiability profile', phase:'P9', group:'Analysis' },
@@ -209,6 +225,14 @@ const definitions: Record<SemanticMathObject['kind'], CapabilitySeed[]> = {
   unknown: [],
 };
 
+const E1_IDS = new Set(e1Multivariable.map((item) => item.id));
+const E1_SCALAR_ONLY = new Set(['gradient','hessian','directional-derivative','linearization','tangent-plane','multivariable-critical-points','second-derivative-test','lagrange-multipliers']);
+const E1_TWO_VARIABLE_ONLY = new Set(['tangent-plane','multivariable-critical-points','second-derivative-test','lagrange-multipliers']);
+const UNARY_FUNCTION_OPERATIONS = new Set([
+  'function-profile','zeros','derivative','higher-derivative','integrate','definite-integral','limit','critical-points','extrema','monotonicity','concavity','graph',
+  'continuity-profile','continuity-at','differentiability-profile','differentiability-at','analysis-limit','taylor-polynomial','power-series-profile','asymptotic-profile','analysis-profile',
+  'numerical-root','numerical-derivative','numerical-integral',
+]);
 
 function itemIsP8Linear(id: string): boolean {
   return ['projection','transpose','conjugate-transpose','orthogonality-profile','gram-schmidt','project-column-space','qr','least-squares','characteristic-polynomial','eigen','eigenspaces','diagonalize','symmetry-profile'].includes(id);
@@ -222,7 +246,19 @@ function itemIsP7Linear(id: string): boolean {
   return ['evaluate-linear-algebra','norm','dot-product','span-vector','det','rank','inverse','rref','solve-augmented','linear-profile','column-space','null-space','row-space'].includes(id);
 }
 
+function e1Dimension(object: SemanticMathObject): number {
+  if (object.kind === 'function' && object.shape.type === 'function') return object.shape.arity;
+  return object.variables.length;
+}
+
 function applicability(object: SemanticMathObject, id: string): { applicable: boolean; reason?: string } {
+  if (E1_IDS.has(id)) {
+    const dimension = e1Dimension(object);
+    if (dimension < 2) return { applicable:false, reason:'E1 multivariable calculus requires at least two independent variables.' };
+    if (dimension > 6) return { applicable:false, reason:'E1 derivative tensors are bounded to at most six independent variables.' };
+    if (E1_SCALAR_ONLY.has(id) && object.valueAst.type === 'matrix') return { applicable:false, reason:'This E1 operation requires a scalar-valued function. Use Jacobian for vector-valued functions.' };
+    if (E1_TWO_VARIABLE_ONLY.has(id) && dimension !== 2) return { applicable:false, reason:'This E1 exact workflow is currently bounded to two independent variables.' };
+  }
   if (object.kind === 'proposition' && object.shape.type === 'proposition' && object.shape.variables > 6) {
     return { applicable:false, reason:'P11 exhaustive truth-table workflows are limited to at most 6 proposition variables.' };
   }
@@ -312,8 +348,8 @@ function applicability(object: SemanticMathObject, id: string): { applicable: bo
   if (object.kind === 'system' && id === 'solve-system' && object.valueAst.type === 'system' && !object.valueAst.items.every((item) => item.type === 'equation')) {
     return { applicable:false, reason:'P4 system solving currently supports semicolon-separated equations only.' };
   }
-  if (object.kind === 'function' && object.shape.type === 'function' && object.shape.arity !== 1) {
-    return { applicable:false, reason: id === 'graph' ? 'P6 2D graphing supports unary functions only.' : ['continuity-profile','continuity-at','differentiability-profile','differentiability-at','analysis-limit','taylor-polynomial','power-series-profile','asymptotic-profile','analysis-profile'].includes(id) ? 'P9 real-analysis workflows currently support unary functions only.' : 'P5 calculus profiles currently support unary functions only.' };
+  if (object.kind === 'function' && object.shape.type === 'function' && object.shape.arity !== 1 && UNARY_FUNCTION_OPERATIONS.has(id)) {
+    return { applicable:false, reason: id === 'graph' ? 'P6 2D graphing supports unary functions only.' : ['continuity-profile','continuity-at','differentiability-profile','differentiability-at','analysis-limit','taylor-polynomial','power-series-profile','asymptotic-profile','analysis-profile'].includes(id) ? 'P9 real-analysis workflows currently support unary functions only.' : ['numerical-root','numerical-derivative','numerical-integral'].includes(id) ? 'P12 numerical calculus currently supports unary functions only.' : 'P5 calculus profiles currently support unary functions only.' };
   }
   if (object.kind === 'sequence' && object.shape.type === 'sequence') {
     const sequenceIndex = object.shape.index;
@@ -326,6 +362,6 @@ export function capabilitiesFor(object: SemanticMathObject | null): ObjectCapabi
   if (!object) return [];
   return definitions[object.kind].map((item) => {
     const applicabilityResult = applicability(object, item.id);
-    return { ...item, ...applicabilityResult, available: ['P4','P5','P6','P7','P8','P9','P10','P11','P12','P13'].includes(item.phase) && applicabilityResult.applicable };
+    return { ...item, ...applicabilityResult, available: ['P4','P5','P6','P7','P8','P9','P10','P11','P12','P13','E1'].includes(item.phase) && applicabilityResult.applicable };
   });
 }
