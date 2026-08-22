@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { substituteAst } from '../../lib/math/algebra';
 import type { SemanticMathObject } from '../../lib/math/types';
-import { buildGraphSeries, defaultGraphViewport, fitGraphViewport, zoomViewport, type GraphSeriesInput, type GraphViewport } from '../../lib/math/visualization';
+import { buildGraphSeries, fitGraphViewport, zoomViewport, type GraphSeriesInput, type GraphViewport } from '../../lib/math/visualization';
 import { criticalMarkers, sampleContours, sampleGradientField, sampleImplicitCurve, sampleParametricCurve, sampleParametricSurface, samplePhasePortrait, samplePolarCurve, sampleScalarField, sampleSurface, sampleVectorField, type Camera3D } from '../../lib/math/visualization2';
 import { VISUALIZATION_MODES, VISUAL_TOOL_TO_MODE, isVisualizable, visualizationModesFor, visualizationVariables, type VisualizationMode } from '../visualizationModes';
 import { GraphCanvas } from './GraphCanvas';
