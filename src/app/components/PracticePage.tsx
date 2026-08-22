@@ -16,6 +16,8 @@ import {
   type PracticeProgressState,
 } from '../../lib/math/practice';
 import { loadPracticeProgress, resetPracticeProgress, savePracticeProgress } from '../../lib/storage/practice';
+import { MathRichText } from './MathRichText';
+import { MathValue } from './MathValue';
 
 type PracticeTab = 'courses' | 'review' | 'exam' | 'progress';
 type SessionKind = 'course' | 'review' | 'exam';
@@ -32,6 +34,19 @@ interface SessionState {
 
 function percentage(value:number):string { return `${Math.round(value*100)}%`; }
 function difficultyLabel(value:number):string { return ['','Intro','Core','Intermediate','Advanced','Challenge'][value] ?? 'Core'; }
+
+function expectedLabel(exercise: PracticeExercise): string {
+  return exercise.answerType === 'choice'
+    ? exercise.choices?.find((item) => item.id === exercise.expected)?.label ?? exercise.expected
+    : exercise.expected;
+}
+
+function PracticeExpected({ exercise }: { exercise: PracticeExercise }) {
+  const value = expectedLabel(exercise);
+  return exercise.answerType === 'math'
+    ? <MathValue source={value} compact={false} forceMathStyle />
+    : <MathRichText text={value} />;
+}
 
 export function PracticePage() {
   const [tab,setTab]=useState<PracticeTab>('courses');
@@ -101,7 +116,7 @@ export function PracticePage() {
   if(session&&active){
     if(session.kind==='exam'&&session.examSubmitted){
       const correct=session.exercises.filter((exercise)=>session.examGrades[exercise.id]?.correct).length;
-      return <main className="workspace practice-page"><section className="practice-hero"><div><span className="section-kicker">Exam session</span><h1>{session.title}</h1><p>Exam submitted. Results are now recorded in mastery and review scheduling.</p></div><div className="practice-score"><strong>{correct}/{session.exercises.length}</strong><span>{percentage(correct/session.exercises.length)}</span></div></section><section className="exam-results">{session.exercises.map((exercise,index)=><article key={exercise.id} className={session.examGrades[exercise.id]?.correct?'is-correct':'is-wrong'}><div><span>Question {index+1}</span><strong>{exercise.title}</strong><p>{exercise.prompt}</p></div><div><span>Your answer</span><code>{session.answers[exercise.id]||'—'}</code><span>Expected</span><code>{exercise.answerType==='choice'?exercise.choices?.find((item)=>item.id===exercise.expected)?.label??exercise.expected:exercise.expected}</code><p>{exercise.solution}</p></div></article>)}</section><div className="practice-footer-actions"><button className="primary-action" onClick={()=>{setSession(null);resetExerciseUi();}}>Return to Practice</button></div></main>;
+      return <main className="workspace practice-page"><section className="practice-hero"><div><span className="section-kicker">Exam session</span><h1>{session.title}</h1><p>Exam submitted. Results are now recorded in mastery and review scheduling.</p></div><div className="practice-score"><strong>{correct}/{session.exercises.length}</strong><span>{percentage(correct/session.exercises.length)}</span></div></section><section className="exam-results">{session.exercises.map((exercise,index)=><article key={exercise.id} className={session.examGrades[exercise.id]?.correct?'is-correct':'is-wrong'}><div><span>Question {index+1}</span><strong>{exercise.title}</strong><p><MathRichText text={exercise.prompt} /></p></div><div><span>Your answer</span><div className="practice-typeset-answer"><MathValue source={session.answers[exercise.id]||'—'} compact={false} forceMathStyle /></div><span>Expected</span><div className="practice-typeset-answer"><PracticeExpected exercise={exercise} /></div><p><MathRichText text={exercise.solution} /></p></div></article>)}</section><div className="practice-footer-actions"><button className="primary-action" onClick={()=>{setSession(null);resetExerciseUi();}}>Return to Practice</button></div></main>;
     }
 
     const selectedAnswer=session.kind==='exam'?(session.answers[active.id]??answer):answer;
@@ -110,13 +125,13 @@ export function PracticePage() {
       <div className="session-progress"><span style={{width:`${((session.index+1)/session.exercises.length)*100}%`}} /></div>
       <section className="exercise-card">
         <div className="exercise-meta"><span>{active.source==='generated'?'Generated':'Authored'}</span><span>Difficulty · {difficultyLabel(active.difficulty)}</span><span>{PRACTICE_COURSES.find((item)=>item.id===active.courseId)?.title}</span></div>
-        <h2>{active.title}</h2><p className="exercise-prompt">{active.prompt}</p>
-        {active.answerType==='choice'?<div className="practice-choices">{active.choices?.map((choice)=><button key={choice.id} className={selectedAnswer===choice.id?'is-selected':''} disabled={Boolean(grade)&&session.kind!=='exam'} onClick={()=>session.kind==='exam'?saveExamAnswer(choice.id):setAnswer(choice.id)}>{choice.label}</button>)}</div>:<label className="practice-answer"><span>Your answer</span><input value={selectedAnswer} disabled={Boolean(grade)&&session.kind!=='exam'} onChange={(event)=>session.kind==='exam'?saveExamAnswer(event.target.value):setAnswer(event.target.value)} spellCheck={false} placeholder="Enter exact mathematical form" /></label>}
+        <h2>{active.title}</h2><p className="exercise-prompt"><MathRichText text={active.prompt} /></p>
+        {active.answerType==='choice'?<div className="practice-choices">{active.choices?.map((choice)=><button key={choice.id} className={selectedAnswer===choice.id?'is-selected':''} disabled={Boolean(grade)&&session.kind!=='exam'} onClick={()=>session.kind==='exam'?saveExamAnswer(choice.id):setAnswer(choice.id)}><MathRichText text={choice.label} /></button>)}</div>:<label className="practice-answer"><span>Your answer</span><input value={selectedAnswer} disabled={Boolean(grade)&&session.kind!=='exam'} onChange={(event)=>session.kind==='exam'?saveExamAnswer(event.target.value):setAnswer(event.target.value)} spellCheck={false} placeholder="Enter exact mathematical form" /></label>}
 
         {session.kind!=='exam'&&<>
-          <div className="hint-stack">{active.hints.slice(0,hintsShown).map((hint,index)=><div key={`${active.id}-hint-${index}`}><span>Hint {index+1}</span><p>{hint}</p></div>)}</div>
-          {solutionShown&&<div className="solution-reveal"><span>Solution</span><p>{active.solution}</p><code>{active.expected}</code></div>}
-          {grade&&<div className={`practice-feedback ${grade.correct?'is-correct':grade.status==='conditional'?'is-conditional':'is-wrong'}`}><strong>{grade.correct?'Verified':grade.status==='conditional'?'Conditionally valid':'Not correct'}</strong><p>{grade.feedback}</p></div>}
+          <div className="hint-stack">{active.hints.slice(0,hintsShown).map((hint,index)=><div key={`${active.id}-hint-${index}`}><span>Hint {index+1}</span><p><MathRichText text={hint} /></p></div>)}</div>
+          {solutionShown&&<div className="solution-reveal"><span>Solution</span><p><MathRichText text={active.solution} /></p><div className="practice-typeset-answer"><MathValue source={active.expected} compact={false} forceMathStyle /></div></div>}
+          {grade&&<div className={`practice-feedback ${grade.correct?'is-correct':grade.status==='conditional'?'is-conditional':'is-wrong'}`}><strong>{grade.correct?'Verified':grade.status==='conditional'?'Conditionally valid':'Not correct'}</strong><p><MathRichText text={grade.feedback} /></p></div>}
           <div className="exercise-actions">
             {!grade&&<button className="primary-action" onClick={checkAnswer}>Check with MathLab</button>}
             {(!grade||!grade.correct)&&hintsShown<active.hints.length&&<button onClick={()=>setHintsShown((value)=>value+1)}>Reveal hint</button>}
