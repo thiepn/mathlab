@@ -51,8 +51,8 @@ The post-M7 sequence is defined in detail in `M7_EXPANSION_ROADMAP.md`.
 |---|---|---|
 | **E1 — Multivariable Calculus Foundation** | Multi-parameter scalar/vector-valued functions; partial/mixed derivatives; gradient/Jacobian/Hessian; directional derivatives; linearization/tangent planes; bounded exact 2D critical-point/Hessian analysis and one-constraint Lagrange stationarity. | Complete |
 | **E2 — Vector Calculus & Multivariable Integration** | Exact/approximate bounded double/triple integrals; polar/cylindrical/spherical transforms; 2D/3D vector fields; div/curl/potentials; line/surface/flux integrals; bounded Green/Gauss/Stokes verification. | **Complete** |
-| **E3 — Visualization 2.0** | Parametric/polar/implicit plots, contours, fields, phase portraits and 3D surfaces. | **Next** |
-| **E4 — ODEs & Dynamical Systems II** | Symbolic textbook ODE classes, higher-order/systems, adaptive methods and phase-plane stability. | Planned |
+| **E3 — Visualization 2.0** | Parametric/polar curves; implicit/contour plots; scalar/vector/gradient fields; phase portraits; graph and parametric SVG 3D surfaces; E1/E2 overlays; export. | **Complete** |
+| **E4 — ODEs & Dynamical Systems II** | Symbolic textbook ODE classes, higher-order/systems, adaptive methods and phase-plane stability. | **Next** |
 | **E5 — Numerical Linear Algebra & Optimization** | LU/Cholesky, numerical eigen/SVD, nonlinear systems, multivariable/constrained/linear optimization. | Planned |
 | **E6 — Probability & Statistics II** | Joint distributions, broader inference, ANOVA, multiple regression, nonparametrics and stochastic foundations. | Planned |
 | **E7 — Fourier, Laplace & Transform Methods** | Laplace/inverse, convolution, Fourier series/transforms and transform-based differential equations. | Planned |
@@ -98,6 +98,34 @@ Curves, iterated bounds, graph surfaces and bounded theorem regions are typed op
 
 See `E2_ACCEPTANCE.md` for exact region, surface, topology and numerical boundaries.
 
+## E3 semantic outcome
+
+E3 visualizes existing semantic objects directly rather than copying formulas into a separate plotting language:
+
+```text
+Unary scalar f(x)
+  → Cartesian / polar
+
+Unary vector C(t)=[x(t),y(t)]
+  → parametric curve
+
+Equation F(x,y)=0
+  → implicit curve
+
+Scalar field f(x,y)
+  → contours / scalar field / exact-gradient field / z=f(x,y) surface
+
+Vector field F(x,y)=[P,Q]
+  → vector field / phase portrait
+
+Two-parameter S(u,v)=[x,y,z]
+  → parametric 3D surface
+```
+
+E1 exact critical-point analysis supplies certified overlays when supported. E2's bounded rectangular geometry is represented as an optional region overlay. Sampled curves, fields and surfaces are explicitly visualization rather than proof or exact solving.
+
+See `E3_ACCEPTANCE.md` for the renderer, numerical-sampling and 3D boundaries.
+
 ## Architecture rule
 
 No phase should bypass the core flow:
@@ -106,6 +134,8 @@ No phase should bypass the core flow:
 Input → AST → Semantic Object → Capability → MathOperationRequest
       → Worker / Engine → Structured MathResult → Workspace / Visualization / Practice
 ```
+
+Visualization is allowed to consume an existing Semantic Object directly because it is a read-only projection of that object, not a competing computation/persistence path.
 
 ## Current release/certification note
 
