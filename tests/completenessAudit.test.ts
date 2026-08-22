@@ -45,7 +45,7 @@ describe('M7/E1/E2/E3 mathematical completeness registry', () => {
     const domain = COMPLETENESS_DOMAINS.find((item) => item.id === 'visualization');
     expect(domain?.level).toBe(4);
     expect(domain?.status).toBe('strong');
-    expect(domain?.evidence.join(' ')).toContain('Parametric');
+    expect(domain?.evidence.join(' ')).toContain('Parameterized');
     expect(domain?.evidence.join(' ')).toContain('phase portraits');
     expect(domain?.evidence.join(' ')).toContain('3D');
     expect(domain?.gaps.join(' ')).toContain('Implicit 3D');
