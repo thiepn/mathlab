@@ -41,7 +41,7 @@ export type MathShape =
   | { type: 'recurrence'; order: number }
   | { type: 'complexity'; family: string }
   | { type: 'combinatorics' }
-  | { type: 'ode'; variables: 2 }
+  | { type: 'ode'; variables: number }
   | { type: 'equation' }
   | { type: 'inequality' }
   | { type: 'system'; count: number }
