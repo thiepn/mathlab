@@ -53,8 +53,8 @@ The post-M7 sequence is defined in detail in `M7_EXPANSION_ROADMAP.md`.
 | **E2 — Vector Calculus & Multivariable Integration** | Exact/approximate bounded double/triple integrals; polar/cylindrical/spherical transforms; 2D/3D vector fields; div/curl/potentials; line/surface/flux integrals; bounded Green/Gauss/Stokes verification. | **Complete** |
 | **E3 — Visualization 2.0** | Parametric/polar curves; implicit/contour plots; scalar/vector/gradient fields; phase portraits; graph and parametric SVG 3D surfaces; E1/E2 overlays; export. | **Complete** |
 | **E4 — ODEs & Dynamical Systems II** | Symbolic textbook ODE classes, higher-order/systems, adaptive methods and phase-plane stability. | **Complete** |
-| **E5 — Numerical Linear Algebra & Optimization** | LU/Cholesky, numerical eigen/SVD, nonlinear systems, multivariable/constrained/linear optimization. | **Next** |
-| **E6 — Probability & Statistics II** | Joint distributions, broader inference, ANOVA, multiple regression, nonparametrics and stochastic foundations. | Planned |
+| **E5 — Numerical Linear Algebra & Optimization** | Pivoted LU; Cholesky; Householder QR; symmetric numerical eigenanalysis; SVD/pseudoinverse/rank/conditioning; CG; nonlinear Newton; local unconstrained/equality-constrained optimization; bounded 2D LP; convexity diagnostics. | **Complete** |
+| **E6 — Probability & Statistics II** | Joint distributions, broader inference, ANOVA, multiple regression, nonparametrics and stochastic foundations. | **Next** |
 | **E7 — Fourier, Laplace & Transform Methods** | Laplace/inverse, convolution, Fourier series/transforms and transform-based differential equations. | Planned |
 | **E8 — Complex Analysis** | Holomorphic functions, Cauchy–Riemann, contours, Laurent series and residues. | Planned |
 | **E9 — Discrete Mathematics II, Algorithms & Number Theory** | Predicate logic, generating functions, advanced graph algorithms, modular arithmetic/CRT/Diophantine workflows. | Planned |
