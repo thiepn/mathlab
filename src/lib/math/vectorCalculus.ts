@@ -70,7 +70,6 @@ function unique<T>(values: T[]): T[] { return [...new Set(values)]; }
 function addAst(left: AstNode, right: AstNode): AstNode { return simplifyAst(b('+', left, right)); }
 function subAst(left: AstNode, right: AstNode): AstNode { return simplifyAst(b('-', left, right)); }
 function mulAst(left: AstNode, right: AstNode): AstNode { return simplifyAst(b('*', left, right)); }
-function divAst(left: AstNode, right: AstNode): AstNode { return simplifyAst(b('/', left, right)); }
 function negAst(value: AstNode): AstNode { return simplifyAst(u('-', value)); }
 function sameAst(left: AstNode, right: AstNode): boolean { return JSON.stringify(simplifyAst(left)) === JSON.stringify(simplifyAst(right)); }
 function isZeroAst(node: AstNode): boolean { const value = rationalValue(simplifyAst(node)); return Boolean(value && isZero(value)); }
