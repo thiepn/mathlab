@@ -59,8 +59,8 @@ The post-M7 sequence is defined in detail in `M7_EXPANSION_ROADMAP.md`.
 | **E8 — Complex Analysis** | Rectangular complex decomposition; point mappings; complex derivatives/Cauchy–Riemann checks; branch diagnostics; rational power/Laurent series; singularity/residue analysis; numerical contour integrals; bounded residue-theorem workflows. | **Complete** |
 | **E9 — Discrete Mathematics II, Algorithms & Number Theory** | Finite quantifiers; generating functions and stronger recurrence solutions; Bellman–Ford; max-flow/min-cut; bipartite matching; DP traces; bounded exact factorization, arithmetic functions, modular arithmetic, CRT and Diophantine workflows. | **Complete** |
 | **E10 — PDEs, Abstract Structures & Geometry Foundations** | Canonical heat/wave/Laplace PDE objects and finite modal solutions; finite groups/rings/fields/homomorphisms; finite metric/topological spaces; exact point-set/affine geometry; owned region/curve/surface objects. | **Complete** |
-| **E11 — Proof System II & Upper-Division Reasoning** | Quantifiers, induction, theorem registry, proof obligations and deterministic upper-division certificates. | **Next** |
-| **E12 — Mathematical Integration & v2 Certification** | Re-audit coverage, golden corpus, cross-domain QA, performance/accessibility and v2 capability freeze. | Planned |
+| **E11 — Proof System II & Upper-Division Reasoning** | Checker-backed theorem registry; exact lemma rewrites and order consequences; nested finite quantifier certificates; recurrence-backed induction; analysis, linear-algebra and finite-group theorem certificates; Proof Lab integration. | **Complete** |
+| **E12 — Mathematical Integration & v2 Certification** | Re-audit coverage, golden corpus, cross-domain QA, performance/accessibility, browser/device/PWA certification and v2 capability freeze. | **Next** |
 
 ## E1 semantic outcome
 
@@ -139,4 +139,4 @@ Visualization is allowed to consume an existing Semantic Object directly because
 
 ## Current release/certification note
 
-GitHub CI runs the real Vitest + TypeScript + Vite production path on expansion pull requests. The historical `v1.0.0-rc.2` label predates the M/E-series work, so a new stable version should be promoted only after the expanded deployed application receives a fresh browser/device/PWA release certification.
+GitHub CI runs the real Vitest + TypeScript + Vite production path on expansion pull requests. The historical `v1.0.0-rc.2` label predates the M/E-series work, so a new stable version should be promoted only after the expanded deployed application receives the E12 integration and browser/device/PWA release certification.
