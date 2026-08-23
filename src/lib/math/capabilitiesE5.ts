@@ -1,6 +1,7 @@
 import { capabilitiesFor as baseCapabilitiesFor, type ObjectCapability } from './capabilities';
 import { e6CapabilitiesForObject, filterBaseCapabilitiesForE6 } from './capabilitiesE6';
 import { e7CapabilitiesForObject } from './capabilitiesE7';
+import { e8CapabilitiesForObject } from './capabilitiesE8';
 import type { SemanticMathObject } from './types';
 
 type Seed = Omit<ObjectCapability,'applicable'|'available'|'reason'>;
@@ -59,7 +60,7 @@ function functionCapabilities(object:SemanticMathObject):ObjectCapability[]{
 export function capabilitiesFor(object:SemanticMathObject|null):ObjectCapability[]{
   if(!object)return[];
   const inherited=[...baseCapabilitiesFor(object),...matrixCapabilities(object),...functionCapabilities(object)];
-  return [...filterBaseCapabilitiesForE6(object,inherited),...e6CapabilitiesForObject(object),...e7CapabilitiesForObject(object)];
+  return [...filterBaseCapabilitiesForE6(object,inherited),...e6CapabilitiesForObject(object),...e7CapabilitiesForObject(object),...e8CapabilitiesForObject(object)];
 }
 
 export type { ObjectCapability };
