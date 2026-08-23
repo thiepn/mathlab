@@ -26,6 +26,7 @@ const FUNCTION_TOOLS: Seed[] = [
   {id:'constrained-optimize',label:'Equality-constrained optimization…',phase:'E5',group:'Optimization'},
   {id:'convexity-diagnostic',label:'Convexity / Hessian diagnostic…',phase:'E5',group:'Optimization'},
 ];
+const E10_KINDS = new Set<SemanticMathObject['kind']>(['pde','finite-group','finite-ring','homomorphism','metric-space','topology','point-set','geometry']);
 
 function blocked(seed:Seed,reason:string):ObjectCapability{return{...seed,applicable:false,available:false,reason};}
 function ready(seed:Seed):ObjectCapability{return{...seed,applicable:true,available:true};}
@@ -61,7 +62,8 @@ function functionCapabilities(object:SemanticMathObject):ObjectCapability[]{
 
 export function capabilitiesFor(object:SemanticMathObject|null):ObjectCapability[]{
   if(!object)return[];
-  const inherited=[...baseCapabilitiesFor(object),...matrixCapabilities(object),...functionCapabilities(object)];
+  const base=E10_KINDS.has(object.kind)?[]:baseCapabilitiesFor(object);
+  const inherited=[...base,...matrixCapabilities(object),...functionCapabilities(object)];
   return [...filterBaseCapabilitiesForE6(object,inherited),...e6CapabilitiesForObject(object),...e7CapabilitiesForObject(object),...e8CapabilitiesForObject(object),...e9CapabilitiesForObject(object),...e10CapabilitiesForObject(object)];
 }
 
