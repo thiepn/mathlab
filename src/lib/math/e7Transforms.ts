@@ -11,7 +11,6 @@ import {
 } from './algebra';
 import { parseMath } from './parser';
 import {
-  add,
   div,
   isZero,
   mul,
