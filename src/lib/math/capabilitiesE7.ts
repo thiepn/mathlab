@@ -34,12 +34,16 @@ export function e7CapabilitiesForObject(object: SemanticMathObject): ObjectCapab
       : blocked(seed, 'E7 scalar transform workflows require exactly one independent variable.'));
   }
   if (object.kind === 'vector' && object.shape.type === 'vector') {
-    return VECTOR.map(seed => object.variables.length === 0 && object.domain !== 'complex' && object.shape.length >= 2 && object.shape.length <= 256
+    const length = object.shape.length;
+    const compatible = object.variables.length === 0 && object.domain !== 'complex' && length >= 2 && length <= 256;
+    return VECTOR.map(seed => compatible
       ? ready(seed)
       : blocked(seed, 'E7 DFT requires a resolved real vector with 2–256 samples.'));
   }
   if (object.kind === 'matrix' && object.shape.type === 'matrix') {
-    return MATRIX.map(seed => object.variables.length === 0 && object.domain !== 'complex' && object.shape.columns === 2 && object.shape.rows >= 2 && object.shape.rows <= 256
+    const { rows, columns } = object.shape;
+    const compatible = object.variables.length === 0 && object.domain !== 'complex' && columns === 2 && rows >= 2 && rows <= 256;
+    return MATRIX.map(seed => compatible
       ? ready(seed)
       : blocked(seed, 'E7 inverse DFT expects a resolved real n×2 matrix of [real, imaginary] coefficient pairs, with 2–256 rows.'));
   }
