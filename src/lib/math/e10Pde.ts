@@ -5,7 +5,6 @@ import { compareRat, exactRational, exactVector, b, call, n, rationalAst, s, sec
 import { ZERO, type Rational } from './rational';
 import type { E10Transform } from './e10Types';
 
-type PdeFamily = 'heatpde' | 'wavepde' | 'laplacepde';
 interface HeatSpec { family: 'heatpde'; L: Rational; alpha: Rational; coefficients: Rational[] }
 interface WaveSpec { family: 'wavepde'; L: Rational; c: Rational; displacement: Rational[]; velocity: Rational[] }
 interface LaplaceSpec { family: 'laplacepde'; L: Rational; H: Rational; coefficients: Rational[] }
