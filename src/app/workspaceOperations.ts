@@ -14,13 +14,15 @@ export const OPERATIONS_REQUIRING_CONTROLS = new Set([
   'numerical-eigen','numerical-svd','pseudoinverse','numerical-rank','spectral-condition','conjugate-gradient',
   'nonlinear-system-solve','numerical-optimize','constrained-optimize','convexity-diagnostic','linear-program',
   'affine-rv-transform','two-sample-mean-inference','paired-mean-inference','two-proportion-inference','chi-square-goodness','bootstrap-mean','markov-step',
+  'convolution','fourier-series','numerical-fourier-transform','numerical-inverse-fourier-transform',
 ]);
 
 const PRIORITY = [
   'solve','solve-inequality','solve-system','simplify','factor','expand',
   'gradient','jacobian','hessian','multivariable-critical-points','second-derivative-test',
   'vector-field-profile','divergence','curl','conservative-field','scalar-potential',
-  'ode-profile','ode-symbolic-solve','ode-equilibria','ode-stability','ode-linearize','ode-to-system','ode-adaptive-solve',
+  'ode-profile','ode-symbolic-solve','laplace-ode-solve','ode-equilibria','ode-stability','ode-linearize','ode-to-system','ode-adaptive-solve',
+  'laplace-transform','inverse-laplace-transform','fourier-transform','inverse-fourier-transform','discrete-fourier-transform','inverse-discrete-fourier-transform',
   'numerical-lu','numerical-cholesky','numerical-qr','numerical-eigen','numerical-svd','pseudoinverse','numerical-rank','spectral-condition','conjugate-gradient','numerical-optimize','nonlinear-system-solve',
   'joint-distribution-profile','covariance-correlation-matrix','chi-square-independence','one-way-anova','multiple-linear-regression','regression-diagnostics','mann-whitney','wilcoxon-signed-rank','markov-profile',
   'function-profile','derivative','differentiate','integrate','zeros','graph','det','rref','rank','inverse','eigen','linear-profile','descriptive-statistics',
