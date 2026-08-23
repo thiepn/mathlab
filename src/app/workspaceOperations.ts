@@ -16,6 +16,8 @@ export const OPERATIONS_REQUIRING_CONTROLS = new Set([
   'affine-rv-transform','two-sample-mean-inference','paired-mean-inference','two-proportion-inference','chi-square-goodness','bootstrap-mean','markov-step',
   'convolution','fourier-series','numerical-fourier-transform','numerical-inverse-fourier-transform',
   'complex-map','complex-series','singularity-profile','complex-residue','complex-contour-integral','residue-theorem',
+  'finite-quantifier-profile','extended-master-theorem','bellman-ford','max-flow-min-cut','knapsack-dp',
+  'extended-gcd','modular-inverse','linear-congruence','linear-diophantine',
 ]);
 
 const PRIORITY = [
@@ -23,6 +25,7 @@ const PRIORITY = [
   'gradient','jacobian','hessian','multivariable-critical-points','second-derivative-test',
   'vector-field-profile','divergence','curl','conservative-field','scalar-potential',
   'complex-decompose','complex-derivative','cauchy-riemann','branch-diagnostics',
+  'number-theory-profile','recurrence-generating-function','recurrence-closed-form-e9','bipartite-matching','longest-increasing-subsequence','chinese-remainder',
   'ode-profile','ode-symbolic-solve','laplace-ode-solve','ode-equilibria','ode-stability','ode-linearize','ode-to-system','ode-adaptive-solve',
   'laplace-transform','inverse-laplace-transform','fourier-transform','inverse-fourier-transform','discrete-fourier-transform','inverse-discrete-fourier-transform',
   'numerical-lu','numerical-cholesky','numerical-qr','numerical-eigen','numerical-svd','pseudoinverse','numerical-rank','spectral-condition','conjugate-gradient','numerical-optimize','nonlinear-system-solve',

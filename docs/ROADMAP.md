@@ -57,8 +57,8 @@ The post-M7 sequence is defined in detail in `M7_EXPANSION_ROADMAP.md`.
 | **E6 — Probability & Statistics II** | Extended distributions; joint PMFs; covariance/correlation matrices; broader two-sample/categorical inference; ANOVA; multiple regression/diagnostics; nonparametrics; bootstrap; finite Markov chains. | **Complete** |
 | **E7 — Fourier, Laplace & Transform Methods** | Exact bounded Laplace/inverse rules; convolution; initialized `ode2` transform solving; numerical Fourier series; exact Gaussian Fourier pair; finite-window Fourier evaluation; DFT/IDFT. | **Complete** |
 | **E8 — Complex Analysis** | Rectangular complex decomposition; point mappings; complex derivatives/Cauchy–Riemann checks; branch diagnostics; rational power/Laurent series; singularity/residue analysis; numerical contour integrals; bounded residue-theorem workflows. | **Complete** |
-| **E9 — Discrete Mathematics II, Algorithms & Number Theory** | Predicate logic, generating functions, advanced graph algorithms, modular arithmetic/CRT/Diophantine workflows. | **Next** |
-| **E10 — PDEs, Abstract Structures & Geometry Foundations** | PDE foundations, finite abstract algebra and geometry/topology semantic models. | Planned |
+| **E9 — Discrete Mathematics II, Algorithms & Number Theory** | Finite quantifiers; generating functions and stronger recurrence solutions; Bellman–Ford; max-flow/min-cut; bipartite matching; DP traces; bounded exact factorization, arithmetic functions, modular arithmetic, CRT and Diophantine workflows. | **Complete** |
+| **E10 — PDEs, Abstract Structures & Geometry Foundations** | PDE foundations, finite abstract algebra and geometry/topology semantic models. | **Next** |
 | **E11 — Proof System II & Upper-Division Reasoning** | Quantifiers, induction, theorem registry, proof obligations and deterministic upper-division certificates. | Planned |
 | **E12 — Mathematical Integration & v2 Certification** | Re-audit coverage, golden corpus, cross-domain QA, performance/accessibility and v2 capability freeze. | Planned |
 
