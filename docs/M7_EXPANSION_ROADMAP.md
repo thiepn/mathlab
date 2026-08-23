@@ -200,22 +200,44 @@ See `E6_ACCEPTANCE.md`.
 
 ---
 
-## Next — E7: Fourier, Laplace & Transform Methods
+## E7 — Fourier, Laplace & Transform Methods — Complete
 
-- Laplace transforms;
-- inverse Laplace transforms;
-- shifting/scaling rules;
-- convolution;
-- transform-based linear ODE workflows;
-- Fourier-series coefficients;
-- even/odd simplifications;
-- Fourier transforms for supported forms;
-- inverse transforms;
-- discrete/numerical transform foundation where appropriate.
+E7 extends existing unary expressions/functions, vectors/matrices and `ode2(...)` objects rather than introducing a parallel transform-object language.
+
+Implemented Laplace baseline:
+
+- exact unilateral transforms for constants, bounded nonnegative integer powers, exponentials, trigonometric and hyperbolic textbook forms;
+- exact linearity and constant-multiple handling;
+- exact exponential shift theorem for supported factors;
+- bounded exact inverse transforms for linear combinations and proper rational transforms with denominator degree at most two;
+- exact unilateral convolution representation and transform-product verification;
+- closed time-domain convolution reconstruction when the bounded inverse table applies;
+- exact Laplace-domain solving of constant-coefficient initialized `ode2(...)` problems at `t0=0`, with time-domain inversion when the supported inverse table closes.
+
+Implemented Fourier baseline:
+
+- configured-period Fourier-series coefficients through deterministic composite Simpson integration;
+- structural even/odd recognition with exact elimination of the corresponding zero coefficient family;
+- exact bilateral Gaussian Fourier transform and inverse transform under the documented angular-frequency convention;
+- explicit refusal of distribution-valued exact cases such as pure sinusoids until Dirac-delta semantics exist;
+- finite-window numerical forward and inverse Fourier evaluation with separate real/imaginary output and explicit truncation/quadrature warnings.
+
+Implemented discrete-transform baseline:
+
+- direct `O(N²)` DFT for resolved real vectors with 2–256 samples;
+- inverse DFT from `N×2` `[real, imaginary]` coefficient matrices;
+- standard `1/N` inverse normalization;
+- complex-bin/magnitude reporting and deterministic reconstruction.
+
+E7 keeps exact table transforms distinct from numerical quadrature and binary64 DFT results. It does not claim general Laplace region-of-convergence solving, distribution semantics, Bromwich inversion, a general symbolic bilateral Fourier table, FFT performance, multidimensional transforms, Z transforms, wavelets or general transform-based PDE/ODE solving.
+
+E7 tools participate in the same cumulative capability registry and global Tools/`Ctrl+K` discovery path as earlier expansion phases.
+
+See `E7_ACCEPTANCE.md`.
 
 ---
 
-## E8 — Complex Analysis
+## Next — E8: Complex Analysis
 
 - complex-valued functions;
 - real/imaginary decomposition;
@@ -322,7 +344,7 @@ Re-run the exact M7 rubric rather than inventing a more favorable metric.
 
 ## Current evidence after E3
 
-The most recent fixed M7 re-score was taken after E3; E4–E6 have not been used to rewrite that historical score outside the scheduled integration audit.
+The most recent fixed M7 re-score was taken after E3; E4–E7 have not been used to rewrite that historical score outside the scheduled integration audit.
 
 Under that fixed M7 22-domain rubric:
 

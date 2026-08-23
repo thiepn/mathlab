@@ -55,8 +55,8 @@ The post-M7 sequence is defined in detail in `M7_EXPANSION_ROADMAP.md`.
 | **E4 — ODEs & Dynamical Systems II** | Symbolic textbook ODE classes, higher-order/systems, adaptive methods and phase-plane stability. | **Complete** |
 | **E5 — Numerical Linear Algebra & Optimization** | Pivoted LU; Cholesky; Householder QR; symmetric numerical eigenanalysis; SVD/pseudoinverse/rank/conditioning; CG; nonlinear Newton; local unconstrained/equality-constrained optimization; bounded 2D LP; convexity diagnostics. | **Complete** |
 | **E6 — Probability & Statistics II** | Extended distributions; joint PMFs; covariance/correlation matrices; broader two-sample/categorical inference; ANOVA; multiple regression/diagnostics; nonparametrics; bootstrap; finite Markov chains. | **Complete** |
-| **E7 — Fourier, Laplace & Transform Methods** | Laplace/inverse, convolution, Fourier series/transforms and transform-based differential equations. | **Next** |
-| **E8 — Complex Analysis** | Holomorphic functions, Cauchy–Riemann, contours, Laurent series and residues. | Planned |
+| **E7 — Fourier, Laplace & Transform Methods** | Exact bounded Laplace/inverse rules; convolution; initialized `ode2` transform solving; numerical Fourier series; exact Gaussian Fourier pair; finite-window Fourier evaluation; DFT/IDFT. | **Complete** |
+| **E8 — Complex Analysis** | Holomorphic functions, Cauchy–Riemann, contours, Laurent series and residues. | **Next** |
 | **E9 — Discrete Mathematics II, Algorithms & Number Theory** | Predicate logic, generating functions, advanced graph algorithms, modular arithmetic/CRT/Diophantine workflows. | Planned |
 | **E10 — PDEs, Abstract Structures & Geometry Foundations** | PDE foundations, finite abstract algebra and geometry/topology semantic models. | Planned |
 | **E11 — Proof System II & Upper-Division Reasoning** | Quantifiers, induction, theorem registry, proof obligations and deterministic upper-division certificates. | Planned |
