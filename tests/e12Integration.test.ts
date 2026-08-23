@@ -17,8 +17,9 @@ describe('E12 mathematical integration invariants',()=>{
       expect(tool.label.trim().length).toBeGreaterThan(0);
       expect(tool.description.trim().length).toBeGreaterThan(0);
       expect(tool.example.trim().length).toBeGreaterThan(0);
-      const objectIndependent=tool.id==='theorem-registry';
-      expect(tool.objectKinds.length>0||objectIndependent).toBe(true);
+      // Dedicated Proof Lab route tools may be object-independent because their
+      // grammar owns a proof session rather than one Workspace semantic object.
+      expect(tool.objectKinds.length>0||tool.specialRoute==='proof').toBe(true);
     }
   });
 
