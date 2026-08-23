@@ -1,10 +1,10 @@
 # Post-M7 Mathematics Expansion Roadmap
 
-M7 established that completing the original P0–P15 roadmap did not make MathLab mathematically comprehensive. The E-series therefore expands the same semantic-object, engine, workspace, visualization and verification architecture rather than adding disconnected calculators.
+M7 established that completing the original P0–P15 roadmap did not make MathLab mathematically comprehensive. The E-series therefore expanded the same semantic-object, engine, workspace, visualization and verification architecture rather than adding disconnected calculators.
 
 ## Expansion principles
 
-Every E-phase must preserve the existing MathLab contracts:
+Every E-phase preserves the existing MathLab contracts:
 
 - exact / approximate / heuristic status remains explicit;
 - unsupported mathematics fails honestly;
@@ -124,90 +124,75 @@ See `E10_ACCEPTANCE.md`.
 
 E11 extends P13's exact transition/chain/entailment verifier into a bounded theorem-application system without introducing a free-form proof generator.
 
-### Checker-backed theorem registry
+Implemented baseline:
 
-The accepted registry contains only rules with deterministic checkers, including substitution of equals, positive order scaling, finite-domain quantifier semantics, recurrence-backed ordinary induction, differentiability implies continuity, rank–nullity, bounded invertible-matrix equivalences, the Hermitian spectral theorem, and Lagrange's theorem.
+- checker-backed theorem registry only for rules with deterministic prerequisite/application checkers;
+- exact AST-subtree equality substitution;
+- bounded one-way rational-polynomial inequality consequences;
+- one- and two-level finite `∀`/`∃` proof obligations with witnesses/counterexamples;
+- recurrence-backed ordinary induction with separate base/hypothesis/recurrence/successor obligations;
+- differentiability ⇒ continuity, rank–nullity, invertible-matrix, Hermitian spectral and finite-group Lagrange certificates;
+- cumulative Worker, Workspace, Tools/`Ctrl+K` and Proof Lab integration.
 
-### Lemma and inequality reasoning
-
-- exact AST-subtree equality substitution, forward/reverse and first/all occurrence modes;
-- proposed targets must contain no hidden extra step;
-- bounded exact one-variable rational-polynomial inequality implications by positive rational scaling;
-- strict-to-nonstrict weakening is supported, but non-strict-to-strict strengthening and negative scaling are refused.
-
-### Quantified proof obligations
-
-- one or two nested `∀`/`∃` quantifiers over explicit finite sets;
-- exact arithmetic predicates and existing Boolean connectives;
-- exhaustive witnesses/counterexamples;
-- at most 256 values per domain and at most 4096 nested assignments;
-- no finite result is extrapolated to an infinite domain.
-
-### Ordinary induction
-
-- natural sequence/function claims such as `S(n)=F(n)`;
-- explicit base fact and recurrence premise;
-- separate base, induction-hypothesis, recurrence-compatibility, hypothesis-substitution and successor-algebra obligations;
-- the final conclusion is explicitly conditional on the represented recurrence premise/definition and verified base fact.
-
-### Upper-division theorem certificates
-
-- differentiability ⇒ continuity at a point only after the P9 differentiability prerequisite is established;
-- exact rank–nullity certificates;
-- square rational-matrix determinant/full-rank/nullity-zero equivalence checks;
-- Hermitian spectral-theorem application only after exact `A*=A` certification;
-- Lagrange theorem only after exact E10 finite-group and subgroup certification.
-
-If a prerequisite is not discharged, E11 reports that state and asserts no theorem conclusion. Failure to prove is not treated as proof of negation.
-
-E11 integrates with the cumulative Worker/engine chain, capability registry, Workspace controls, global Tools/`Ctrl+K`, and an extended Proof Lab that retains all P13 modes while adding induction, finite quantifiers, lemma application and theorem-registry inspection.
-
-E11 does not claim a general first-order theorem prover, SAT/SMT, a proof-assistant kernel, prose-proof formalization, theorem discovery from language similarity, general nonlinear inequality proving, quantifier elimination, strong/structural/well-founded/transfinite induction, epsilon–delta proof synthesis, arbitrary abstract-algebra/topology theorem proving, or proof from numerical sampling.
+E11 does not claim a general theorem prover, SAT/SMT system, proof-assistant kernel, prose-proof formalizer, quantifier elimination, advanced induction systems, arbitrary theorem discovery or proof from numerical sampling.
 
 See `E11_ACCEPTANCE.md`.
 
 ---
 
-## Next — E12: Mathematical Integration & v2 Certification
+## E12 — Mathematical Integration & v2 Certification — Complete
 
-E12 will re-run the exact M7 rubric rather than inventing a more favorable metric.
+E12 closes the planned E-series. It introduces no new mathematics domain; it certifies the cumulative architecture and fixes the release boundary.
 
-- re-score all 22 domains with evidence;
-- full engine/capability/catalog consistency audit;
-- representative golden mathematical corpus;
-- cross-domain regression testing;
-- exact/approximate/heuristic label audit;
-- visualization sampling/performance audit;
-- Worker timeout/performance audit;
-- browser/device/PWA certification;
-- accessibility audit across expanded mathematical interfaces;
-- documentation and unsupported-boundary audit;
-- remove stale or duplicate operation paths;
-- capability freeze;
-- v2 release-candidate promotion only after the evidence supports it.
+Implemented baseline:
 
-## Current evidence after E3
+- re-runs the exact original M7 22-domain rubric against E1–E11 production evidence;
+- updates the live completeness registry while preserving the historical M7 checkpoint;
+- adds a 22-domain cumulative golden corpus through the production E11 engine/visualization paths;
+- certifies golden operation discovery and capability routing;
+- certifies Workspace controlled-operation discovery coverage;
+- validates main-parser tool examples while preserving dedicated Proof Lab grammar ownership;
+- requires explicit exact/approximate/heuristic provenance in the golden corpus;
+- adds `npm run audit:e12` and makes both PR CI and Pages deployment run it;
+- promotes the source identity to **`v2.0.0-rc.1`** only after the pre-promotion integration head passes all tests, strict TypeScript and Vite build;
+- explicitly withholds stable `v2.0.0` pending real browser/device/PWA/accessibility evidence.
 
-The most recent fixed M7 re-score was taken after E3; **E4–E11 have not been used to rewrite that historical score outside the scheduled E12 integration audit.**
+See `E12_ACCEPTANCE.md`, `E12_MATHEMATICAL_REAUDIT.md`, and `RELEASE_CERTIFICATION.md`.
 
-Under that fixed M7 22-domain rubric:
+---
 
-- university-domain breadth: **43/100**;
-- implemented-domain maturity: **59/100**;
-- visualization: **4/5 strong**;
-- vector calculus & multivariable integration: **3/5 partial**;
-- multivariable calculus: **3/5 partial**;
-- six major domains remained completely missing at that historical checkpoint;
-- no domain is rated comprehensive merely because its UI is polished.
+## Historical M7 checkpoint vs E12 re-audit
 
-## Intended E-series outcome
+The original fixed-rubric post-E3 checkpoint remains historical evidence:
 
-The E-series is not designed to compete with Mathematica by raw feature count. Its purpose is to produce a coherent, honest, broad university-mathematics environment in which:
+- breadth: **43/100**;
+- implemented-domain maturity: **59/100**.
 
-- common undergraduate computations are genuinely supported;
+E12 applies the **same** rubric to the completed E1–E11 product:
+
+- breadth: **66/100**;
+- implemented-domain maturity: **66/100**;
+- 9 strong domains;
+- 11 partial domains;
+- 2 narrow domains;
+- 0 missing/incidental domains;
+- **0 comprehensive domains**.
+
+Zero missing domains means the expansion roadmap successfully established a first-class workflow in every audited area. It does not mean the mathematics is comprehensive.
+
+## E-series outcome
+
+The E-series was not designed to compete with Mathematica by raw feature count. Its completed outcome is a coherent, honest, broad university-mathematics environment in which:
+
+- common undergraduate computations are genuinely supported across the 22 audited areas;
 - exactness boundaries remain visible;
 - numerical methods expose approximation status;
 - sampled visualization is not confused with proof;
-- proofs are not fabricated;
+- proofs are checker-backed rather than fabricated;
 - tools remain discoverable;
-- symbolic work, visualization, verification and practice share the same mathematical objects.
+- symbolic work, visualization, verification and practice share the same mathematical objects;
+- unsupported upper-division/general-CAS boundaries remain explicit.
+
+## Roadmap closure
+
+There is no automatic E13. Future development begins only from concrete post-RC defects, measured performance/security/accessibility findings, real-user UX evidence, or a separately defined new roadmap.

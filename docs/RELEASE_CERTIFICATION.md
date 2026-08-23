@@ -1,93 +1,80 @@
-# MathLab v1.0.0-rc.2 — v1.0 Certification / Promotion Record
+# MathLab v2.0.0-rc.1 — E12 Release Certification Record
 
 ## Decision
 
-**RC2 accepted. Final `v1.0.0` promotion is not certified in this runtime.**
+**`v2.0.0-rc.1` source release candidate: CERTIFIABLE after the final exact-head E12 CI gate.**
 
-The P0–P14 product surface remains frozen. This certification pass found and corrected release-toolchain/security defects, expanded deterministic regression from a representative subset to the complete existing test suite, and re-ran the source/persistence/PWA/package audits. The only remaining blockers are dependency-backed bundling/test execution and real built-application browser/device QA.
+**Stable `v2.0.0`: NOT CERTIFIED.**
 
-## Corrections made during the promotion pass
+E12 is the final P/M/E integration pass. The repository now has real dependency-backed GitHub CI and a deployed GitHub Pages workflow, so the old v1-era record about unavailable npm/GitHub infrastructure is obsolete.
 
-- Upgraded and pinned Vite from `7.1.3` to security-patched `7.3.5`.
-- Upgraded and pinned Vitest from `3.2.4` to security-patched `3.2.5`.
-- Pinned every top-level runtime/dev dependency to an exact version so a release checkout does not silently float to a different top-level toolchain.
-- Declared the Node runtime floor required by Vite 7: `^20.19.0 || >=22.12.0`.
-- Disabled production source-map emission in `vite.config.ts`.
-- Explicitly bound Vite dev and preview servers to `127.0.0.1` by default.
-- Added a stable relative PWA manifest `id` and language metadata.
-- Added `no-referrer` document policy metadata.
-- Extended `npm run audit:release` to reject known-vulnerable Vite/Vitest versions, floating top-level dependency ranges, source-map re-enablement, non-loopback Vite defaults, and PWA identity regression.
+## Mathematical evidence
 
-## Security review basis
+E12 re-runs the unchanged M7 22-domain rubric against the actual E1–E11 implementation.
 
-The Vite 7.1.3 release used by RC1 is inside the affected range of multiple 2026 Vite dev-server file-access advisories. Vite 7.3.5 is the 7.x patched release for the June 2026 Windows alternate-path `server.fs.deny` bypass and also includes the earlier 7.3.2 fixes.
+Current result:
 
-Vitest 3.2.4 is inside the affected range of 2026 Vitest browser/UI server advisories. Version 3.2.5 contains the patch for the relevant 3.x browser-mode issue. MathLab's configured test environment is Node, not browser mode, but a release toolchain should not intentionally retain a known-vulnerable test runner.
+- breadth: **66/100**;
+- implemented-domain maturity: **66/100**;
+- 9 strong domains;
+- 11 partial domains;
+- 2 narrow domains;
+- 0 missing/incidental domains;
+- 0 comprehensive domains.
 
-React Server Component advisories affecting React 19.x target the `react-server-dom-*` packages. MathLab declares only client-side `react` and `react-dom` and does not include an RSC framework/package, so those specific advisories do not apply to the shipped application architecture.
+See `E12_MATHEMATICAL_REAUDIT.md`.
 
-## Certification gates passed in this runtime
+The release candidate therefore represents a broad university-mathematics environment, not a claim of comprehensive mathematics coverage.
 
-- Dependency-free P15/RC2 release audit: **PASS**.
-- Strict TypeScript — all `src/lib` main-thread math/storage/Worker-client code: **PASS**.
-- Strict TypeScript — Worker entry under WebWorker libraries: **PASS**.
-- Complete source + tests TS/TSX structural compile with temporary dependency declarations: **PASS**.
-- Complete existing test-suite execution through a temporary assertion-compatible runner: **161/161 PASS across 19 test files**.
-- PWA icon dimensions: **PASS** (`192×192`, `512×512`, `512×512` maskable, `180×180` Apple touch).
-- Workspace/practice migration, import and recovery tests included in the 161-test pass: **PASS**.
-- Static dynamic-code/network-source scan: **PASS**.
-- Package forbidden-artifact scan after temporary certification files are removed: **PASS required before archive**.
+## E12 automated source gates
 
-### What the 161/161 run means
+The promotion branch must pass all of the following on the **same exact head SHA** before merge:
 
-The temporary compatibility runner executes the project's existing test files and assertion bodies without modifying their mathematical content. It is useful independent evidence that every existing test passes after the RC2 changes.
+1. `npm run audit:release`
+2. `npm run audit:e12`
+3. dependency installation under Node 22
+4. complete `npm run test`
+5. strict TypeScript through `npm run build`
+6. Vite production build
+7. fixed 22-domain score/status invariants
+8. 22-domain cumulative golden corpus
+9. tool/catalog/capability/control consistency
+10. explicit exactness-provenance checks
+11. inherited P15 static PWA/security/persistence contracts
 
-It is **not** reported as a genuine Vitest run because the actual `vitest` npm package cannot be installed in this container.
+The pre-promotion E12 implementation already demonstrated **45/45 test files and 432/432 tests** plus strict TypeScript and a successful production build before the RC identity/docs/workflow promotion. The final promoted head receives the same full gate again before merge.
 
-## Dependency-backed gate — BLOCKED BY ENVIRONMENT
+## Release-candidate identity
 
-A fresh install was attempted with retries disabled:
+The E12 candidate is intentionally prerelease-only:
 
-```text
-npm install --prefer-offline --no-audit --no-fund --fetch-retries=0 --fetch-timeout=10000
-```
+- package: `2.0.0-rc.1`
+- UI badge: `v2.0 RC1`
+- stable `2.0.0` is rejected by the release/certification policy at this stage.
 
-The command fails before package resolution with:
+## External stable-release gates
 
-```text
-EAI_AGAIN registry.npmjs.org
-```
+Repository CI cannot honestly certify real interaction on every target browser/device. Stable `v2.0.0` remains blocked until actual deployed evidence covers:
 
-No `node_modules` directory or generated lockfile is retained.
+1. current Chromium desktop smoke test;
+2. current Firefox desktop smoke test;
+3. Android Chrome smoke test;
+4. iOS Safari/WebKit smoke test;
+5. PWA install from the real deployment path;
+6. installed/offline reload and return-online refresh;
+7. service-worker upgrade behavior;
+8. migration from a real existing browser workspace/practice state;
+9. keyboard-only navigation and dialogs;
+10. screen-reader spot checks for navigation, math input/results, Proof Lab and Practice status;
+11. visual regression at representative phone/tablet/desktop widths;
+12. dependency-advisory review appropriate to the final stable release.
 
-Therefore the following commands cannot be honestly certified here:
+Until those gates are actually run, **do not tag or describe the product as stable `v2.0.0`**.
 
-```text
-npm run test
-npm run build
-```
+## Known non-blocking observations
 
-This is a network/DNS limitation of the execution environment, not a passing or failing result for MathLab.
+Current CI installation reports one low-severity npm advisory. The Vite build also reports the existing >500 kB minified chunk warning. Neither currently violates the automated RC gate, but both remain valid performance/security-maintenance items for stable-release hardening.
 
-## GitHub CI fallback check
+## Merge policy
 
-The connected GitHub account was inspected for an existing MathLab repository. None exists, so there is no project CI environment to use as a legitimate substitute for the blocked local npm registry. Unrelated repositories were not repurposed for certification.
-
-## Final `v1.0.0` promotion gate
-
-Do **not** change the package to `1.0.0` until a dependency-enabled checkout passes all of the following on the RC2 source:
-
-1. `npm install`
-2. `npm run test`
-3. `npm run build`
-4. `npm run audit:release`
-5. Serve the built `dist/` and smoke-test current Chromium and Firefox desktop.
-6. Smoke-test Android Chrome and iOS Safari/WebKit.
-7. Install the PWA from the real deployment path; verify first load, install, offline reload, online refresh, and service-worker upgrade.
-8. Verify IndexedDB migration from a real P14 browser state for both workspace and practice data.
-9. Keyboard-only check: skip link, global shortcuts, command palette trap/restore, Workspace, Proof Lab, Practice, import flow.
-10. Screen-reader spot check for navigation, input labels, result status, Proof Lab verification status, Practice feedback, and dialogs.
-11. Visual regression at 320, 375, 768, 1024, and 1440 CSS px widths, including zoom/pan visualization and long mathematical results.
-12. Confirm no high/critical dependency advisories are introduced by the generated lockfile.
-
-Only after all twelve gates pass should RC2 be promoted unchanged to **MathLab v1.0.0**.
+Only the exact E12 branch head that passes both audits, the complete test suite, strict TypeScript and Vite production build may be merged. Any source or documentation change after a green gate invalidates that certification and requires a fresh run.

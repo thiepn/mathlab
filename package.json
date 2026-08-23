@@ -1,7 +1,7 @@
 {
   "name": "mathlab",
   "private": true,
-  "version": "1.0.0-rc.2",
+  "version": "2.0.0-rc.1",
   "type": "module",
   "scripts": {
     "dev": "vite",
@@ -12,7 +12,8 @@
     "test:watch": "vitest",
     "check": "npm run typecheck && npm run test && npm run build",
     "audit:release": "node scripts/release-audit.mjs",
-    "check:release": "npm run audit:release && npm run check"
+    "audit:e12": "node scripts/e12-audit.mjs",
+    "check:release": "npm run audit:release && npm run audit:e12 && npm run check"
   },
   "dependencies": {
     "react": "19.1.1",

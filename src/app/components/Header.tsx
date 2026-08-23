@@ -39,7 +39,7 @@ export function Header({ route, online, onRoute, onCommand, onMobileMenu }: Head
         <span className={`release-connectivity ${online ? 'is-online' : 'is-offline'}`} role="status" aria-live="polite">
           <i />{online ? 'Local ready' : 'Offline'}
         </span>
-        <span className="release-badge" title="MathLab v1.0.0-rc.2 release candidate">v1.0 RC2</span>
+        <span className="release-badge" title="MathLab v2.0.0-rc.1 release candidate">v2.0 RC1</span>
         <button className="command-button" onClick={onCommand} aria-label="Search mathematical tools and workspace">
           <span>Search math</span><kbd>Ctrl K</kbd>
         </button>
