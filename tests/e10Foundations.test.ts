@@ -68,6 +68,13 @@ describe('E10 PDEs, Abstract Structures & Geometry Foundations',()=>{
     expect(fact(result,'Metric')).toBe('Yes');expect(fact(result,'Diameter')).toBe('2');expect(fact(result,'Compact')).toContain('Yes');expect(fact(result,'Connected')).toBe('No');
   });
 
+  it('preserves exact fractional metric values in profiles and balls',async()=>{
+    const input='metricspace([[0,1/10],[1/10,0]])';
+    const profile=await run(input,'metric-space-profile');
+    const ball=await run(input,'metric-ball',{center:1,radius:'1/10',closed:true});
+    expect(fact(profile,'Diameter')).toBe('1/10');expect(fact(profile,'Minimum positive separation')).toBe('1/10');expect(fact(ball,'Radius')).toBe('1/10');expect(fact(ball,'Points')).toBe('{1, 2}');
+  });
+
   it('computes exact open and closed metric balls',async()=>{
     const input='metricspace([[0,1,2],[1,0,1],[2,1,0]])';
     const open=await run(input,'metric-ball',{center:2,radius:'1',closed:false});
