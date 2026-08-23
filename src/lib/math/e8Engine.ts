@@ -6,7 +6,6 @@ import {
   cauchyRiemann,
   complexDecompose,
   complexDerivative,
-  complexMapping,
   complexSeries,
   contourIntegral,
   residueAt,
@@ -14,6 +13,7 @@ import {
   singularityProfile,
   type E8Transform,
 } from './e8ComplexAnalysis';
+import { complexMapping } from './e8ComplexMapping';
 import type { MathOperationRequest, MathResult } from './types';
 
 const E8_OPERATIONS = new Set([
