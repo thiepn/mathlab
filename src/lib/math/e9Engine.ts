@@ -1,24 +1,12 @@
 import type { AstNode } from './ast';
 import { E8MathEngine } from './e8Engine';
 import { substituteBindings } from './e5NumericalOptimization';
-import {
-  bellmanFord,
-  bipartiteMatching,
-  chineseRemainder,
-  extendedGcd,
-  extendedMasterTheorem,
-  knapsackTrace,
-  linearDiophantine,
-  longestIncreasingSubsequence,
-  maxFlowMinCut,
-  modularInverse,
-  numberTheoryProfile,
-  recurrenceClosedFormE9,
-  recurrenceGeneratingFunction,
-  solveLinearCongruence,
-  type E9Transform,
-} from './e9DiscreteNumberTheory';
+import { bellmanFord, bipartiteMatching, maxFlowMinCut } from './e9GraphAlgorithms';
+import { knapsackTrace, longestIncreasingSubsequence } from './e9DynamicProgramming';
+import { chineseRemainder, extendedGcd, linearDiophantine, modularInverse, numberTheoryProfile, solveLinearCongruence } from './e9NumberTheory';
+import { recurrenceClosedFormE9, recurrenceGeneratingFunction, extendedMasterTheorem } from './e9RecurrenceComplexity';
 import { finiteQuantifierOnSet } from './e9Quantifiers';
+import type { E9Transform } from './e9Types';
 import type { MathOperationRequest, MathResult } from './types';
 
 const E9_OPERATIONS = new Set([
