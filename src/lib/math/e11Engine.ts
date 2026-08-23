@@ -1,6 +1,7 @@
 import type { AstNode } from './ast';
 import { E10MathEngine } from './e10Engine';
 import { substituteBindings } from './e5NumericalOptimization';
+import { parseMath } from './parser';
 import {
   analysisTheoremCertificate,
   finiteGroupTheoremCertificate,
@@ -20,8 +21,9 @@ const E11_OPERATIONS=new Set([
 ]);
 
 function requestAst(request:MathOperationRequest):AstNode{
-  if(!request.ast)throw new Error('This E11 proof operation requires a resolved mathematical object.');
-  const ast=request.ast.type==='definition'?request.ast.right:request.ast;
+  let source=request.ast;
+  if(!source){const parsed=parseMath(request.input);const error=parsed.diagnostics.find(item=>item.severity==='error');if(!parsed.ast||error)throw new Error(error?.message??'Could not parse the E11 proof input.');source=parsed.ast;}
+  const ast=source.type==='definition'?source.right:source;
   return substituteBindings(ast,request.bindings??[],[]);
 }
 function text(request:MathOperationRequest,name:string,fallback=''):string{const raw=request.options?.[name];return raw===undefined?fallback:String(raw).trim();}
