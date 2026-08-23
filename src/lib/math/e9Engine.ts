@@ -7,7 +7,6 @@ import {
   chineseRemainder,
   extendedGcd,
   extendedMasterTheorem,
-  finiteQuantifierProfile,
   knapsackTrace,
   linearDiophantine,
   longestIncreasingSubsequence,
@@ -19,6 +18,7 @@ import {
   solveLinearCongruence,
   type E9Transform,
 } from './e9DiscreteNumberTheory';
+import { finiteQuantifierOnSet } from './e9Quantifiers';
 import type { MathOperationRequest, MathResult } from './types';
 
 const E9_OPERATIONS = new Set([
@@ -43,6 +43,10 @@ function requestAst(request: MathOperationRequest): AstNode {
   if (!request.ast) throw new Error('E9 requires a resolved mathematical object.');
   const ast = request.ast.type === 'definition' ? request.ast.right : request.ast;
   return substituteBindings(ast, request.bindings ?? [], []);
+}
+function textOption(request: MathOperationRequest, name: string, fallback = ''): string {
+  const raw = request.options?.[name];
+  return raw === undefined ? fallback : String(raw).trim();
 }
 function numberOption(request: MathOperationRequest, name: string, fallback: number): number {
   const raw = request.options?.[name];
@@ -85,7 +89,11 @@ export class E9MathEngine extends E8MathEngine {
     if (!E9_OPERATIONS.has(request.operation)) return super.execute(request);
     const ast = requestAst(request);
     switch (request.operation) {
-      case 'finite-quantifier-profile': return result(request, finiteQuantifierProfile(ast));
+      case 'finite-quantifier-profile': {
+        const quantifier = textOption(request, 'quantifier', 'forall');
+        if (quantifier !== 'forall' && quantifier !== 'exists') throw new Error('quantifier must be forall or exists.');
+        return result(request, finiteQuantifierOnSet(ast, textOption(request, 'boundVariable', 'x') || 'x', textOption(request, 'predicate', 'x=x') || 'x=x', quantifier));
+      }
       case 'recurrence-generating-function': return result(request, recurrenceGeneratingFunction(ast));
       case 'recurrence-closed-form-e9': return result(request, recurrenceClosedFormE9(ast));
       case 'extended-master-theorem': return result(request, extendedMasterTheorem(ast, integerOption(request, 'logPower', 1)));
