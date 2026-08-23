@@ -38,7 +38,7 @@ export const E12_GOLDEN_CORPUS: E12GoldenCase[] = [
   { domainId:'pde', label:'Finite heat modal solution', runner:'engine', input:'heatpde(1,1,[1])', operation:'pde-modal-solution', expectedExactness:'exact', expectedDisplayIncludes:'exp' },
   { domainId:'optimization', label:'Local BFGS', runner:'engine', input:'f(x,y) := (x-1)^2 + 2*(y+2)^2', operation:'numerical-optimize', options:{method:'bfgs',point:'[0,0]',tolerance:1e-9,maxIterations:200}, expectedExactness:'approximate' },
   { domainId:'transforms', label:'Laplace transform', runner:'engine', input:'f(t) := t^2 + 3*sin(2*t)', operation:'laplace-transform', expectedExactness:'exact', expectedDisplayIncludes:'s' },
-  { domainId:'number-theory', label:'Arithmetic functions', runner:'engine', input:'360', operation:'number-theory-profile', expectedExactness:'exact', expectedDisplayIncludes:'360' },
+  { domainId:'number-theory', label:'Arithmetic functions', runner:'engine', input:'360', operation:'number-theory-profile', expectedExactness:'exact', expectedDisplayIncludes:'2^3' },
   { domainId:'abstract-algebra', label:'Finite group profile', runner:'engine', input:'group([[1,2,3],[2,3,1],[3,1,2]])', operation:'finite-group-profile', expectedExactness:'exact' },
   { domainId:'geometry-topology', label:'Finite topology profile', runner:'engine', input:'topology([[0,0],[1,0],[0,1],[1,1]])', operation:'finite-topology-profile', expectedExactness:'exact' },
   { domainId:'proof', label:'Ordinary induction', runner:'engine', input:'S(n) = n*(n+1)/2', operation:'induction-certificate', options:{index:'n',stepVariable:'k',base:1,baseFact:'S(1)=1',recurrence:'S(k+1)=S(k)+(k+1)'}, expectedExactness:'exact', expectedDisplayIncludes:'INDUCTION CERTIFIED' },
