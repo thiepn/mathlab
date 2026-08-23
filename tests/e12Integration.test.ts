@@ -56,7 +56,8 @@ describe('E12 mathematical integration invariants',()=>{
   });
 
   it('requires explicit exactness provenance for the complete golden corpus',()=>{
-    expect(E12_GOLDEN_CORPUS.every((entry)=>entry.expectedExactness!=='unknown')).toBe(true);
+    const allowed=new Set(['exact','approximate','heuristic']);
+    expect(E12_GOLDEN_CORPUS.every((entry)=>allowed.has(entry.expectedExactness))).toBe(true);
     expect(E12_GOLDEN_CORPUS.some((entry)=>entry.expectedExactness==='exact')).toBe(true);
     expect(E12_GOLDEN_CORPUS.some((entry)=>entry.expectedExactness==='approximate')).toBe(true);
   });
