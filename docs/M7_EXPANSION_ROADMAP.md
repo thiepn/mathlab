@@ -71,17 +71,7 @@ See `E6_ACCEPTANCE.md`.
 
 ## E7 — Fourier, Laplace & Transform Methods — Complete
 
-E7 reuses unary expressions/functions, vectors/matrices and initialized `ode2(...)` objects.
-
-Implemented baseline:
-
-- bounded exact unilateral Laplace transform/inverse tables;
-- linearity, shifts and convolution;
-- bounded transform-based constant-coefficient `ode2` solving;
-- configured-period Fourier-series coefficients with exact structural parity zeros;
-- exact Gaussian bilateral Fourier pair under the documented convention;
-- finite-window numerical Fourier/inverse-Fourier evaluation;
-- direct bounded `O(N²)` DFT/IDFT.
+E7 reuses unary expressions/functions, vectors/matrices and initialized `ode2(...)` objects. It adds bounded exact unilateral Laplace/inverse tables, convolution and transform ODE solving, numerical Fourier-series coefficients, the exact Gaussian bilateral Fourier pair, finite-window Fourier evaluation, and direct bounded DFT/IDFT.
 
 E7 does not claim general ROC solving, distribution semantics, Bromwich inversion, FFT performance, multidimensional transforms, Z transforms, wavelets or general transform-based PDE solving.
 
@@ -91,20 +81,7 @@ See `E7_ACCEPTANCE.md`.
 
 ## E8 — Complex Analysis — Complete
 
-E8 extends unary scalar expressions/functions and the existing complex constant `i` rather than introducing a parallel complex language.
-
-Implemented baseline:
-
-- exact `z=x+iy` real/imaginary decomposition;
-- exact complex derivatives and Cauchy–Riemann residual certification for supported forms;
-- explicit non-holomorphic refusals and branch-local derivative warnings;
-- binary64 complex point mappings;
-- bounded exact rational power/Laurent series around real rational centers;
-- rational regular/removable/pole classification and exact residues;
-- numerical small-circle residue fallback for supported single-valued cases;
-- deterministic circle/line contour integration;
-- bounded circular residue-theorem automation;
-- logarithm/square-root/argument/non-integer-power branch diagnostics.
+E8 extends unary scalar expressions/functions and the existing complex constant `i` with exact rectangular decomposition, complex derivatives/Cauchy–Riemann checks, branch diagnostics, bounded rational power/Laurent series, singularity/residue analysis, deterministic contour integration, and bounded residue-theorem workflows.
 
 E8 does not claim general analytic continuation, Riemann surfaces, arbitrary Laurent expansions or pole discovery, essential-singularity theory, rigorous contour error bounds, argument-principle/Rouché workflows, or a complete complex-plane visualization system.
 
@@ -116,50 +93,9 @@ See `E8_ACCEPTANCE.md`.
 
 E9 reuses finite-set, recurrence, complexity, graph, vector/matrix and exact integer-scalar objects. Its accepted mathematical outputs are exact and deterministic.
 
-### Predicate logic
-
-- configurable `∀` / `∃` predicates over explicit finite-set objects;
-- exact exhaustive evaluation of every represented domain element;
-- exact arithmetic equations/comparisons and existing Boolean connectives;
-- witness/counterexample reporting;
-- bounded to at most 256 represented elements.
-
-### Recurrences and complexity
-
-- exact ordinary generating functions for `linrec` and `linrec2`;
-- stronger exact characteristic-root closed forms for supported first/second-order constant-coefficient recurrences;
-- real, repeated and complex-conjugate roots;
-- explicit refusal of the degenerate double-zero representation gap;
-- bounded Master-theorem extension for `Θ(n^k(log n)^j)` tolls.
-
-### Graph algorithms
-
-- exact-rational Bellman–Ford for weighted graphs, including negative edges;
-- reachable negative-cycle detection and refusal;
-- deterministic Edmonds–Karp maximum flow on weighted directed graphs;
-- exact residual minimum-cut certificate and max-flow/min-cut equality;
-- bipartiteness certification and deterministic maximum-cardinality bipartite matching.
-
-### Dynamic programming
-
-- deterministic exact `O(n²)` longest strictly increasing subsequence for vectors up to 256 elements;
-- bounded exact 0/1 knapsack for up to 100 items and integer capacity up to 500;
-- inspectable DP traces.
-
-### Number theory
-
-- deterministic exact trial factorization for nonzero `|n|≤10^12`;
-- primality signal;
-- Euler `φ`, divisor count `τ`, divisor sum `σ`, and Möbius `μ`;
-- exact extended Euclidean algorithm with Bézout certificate;
-- modular inverses with gcd obstruction checks;
-- complete linear-congruence residue classes;
-- generalized CRT for 1–20 compatible congruences, including non-coprime moduli;
-- complete integer solution families for two-variable linear Diophantine equations.
+Implemented baseline includes finite quantifiers, generating functions and stronger recurrence closed forms, an extended Master-theorem workflow, Bellman–Ford, max-flow/min-cut, bipartite matching, inspectable dynamic-programming traces, bounded exact factorization/arithmetic functions, extended GCD, modular inverses, linear congruences, generalized CRT and bounded linear Diophantine solving.
 
 E9 does not claim infinite-domain first-order theorem proving, general SAT/SMT, arbitrary recurrence/generating-function solving, Akra–Bazzi, advanced flow variants, weighted/general graph matching, general combinatorial optimization, cryptographic factorization, discrete logarithms, algebraic number theory, general polynomial congruences, or nonlinear/higher-dimensional Diophantine solving.
-
-E9 participates in the cumulative Worker/engine chain, capability registry, inspector controls, Workspace actions, and global Tools/`Ctrl+K` discovery.
 
 See `E9_ACCEPTANCE.md`.
 
@@ -167,63 +103,72 @@ See `E9_ACCEPTANCE.md`.
 
 ## E10 — PDEs, Abstract Structures & Geometry Foundations — Complete
 
-E10 is intentionally a foundation phase rather than a claim to complete three very large subjects. It introduces first-class structures only where earlier semantic objects could not cleanly own the mathematical data.
-
-### PDEs
+E10 is intentionally a foundation phase rather than a claim to complete three very large subjects.
 
 Implemented baseline:
 
-- first-class `heatpde`, `wavepde`, and `laplacepde` semantic problem objects;
-- canonical family/order/linearity classification and explicit ownership of represented initial/boundary data;
-- exact separation-of-variables templates for the supported interval/rectangle problems;
-- exact finite modal heat, wave, and rectangular Laplace solutions from explicitly supplied mode coefficients;
-- conservative warnings that finite modal solutions do not imply arbitrary-function recovery or infinite-series convergence theorems.
+- first-class canonical heat/wave/rectangular-Laplace problem objects, separation templates and exact finite modal solutions;
+- bounded exact finite groups, subgroups, rings/fields and group homomorphisms;
+- finite metric spaces and metric balls;
+- finite topologies with open/closed/clopen, T0/T1, connectedness, compactness, interior, closure and boundary certificates;
+- exact 2D/3D point-set and affine geometry;
+- semantic ownership for rectangular regions, parameterized curves and graph surfaces.
 
-### Abstract algebra
-
-Implemented baseline:
-
-- bounded exact finite-group validation from Cayley tables;
-- associativity, identity, inverse, abelian/cyclic structure and element-order certificates;
-- exact subgroup checking for configured subsets;
-- bounded finite-ring validation from addition and multiplication tables;
-- multiplicative identity, units, zero divisors, commutativity and finite-field certification;
-- exact finite group-homomorphism operation-preservation checks with kernel/image, injectivity, surjectivity and isomorphism certificates.
-
-### Geometry and topology
-
-Implemented baseline:
-
-- exact finite metric-space validation, diameter/minimum-separation reporting, and exact open/closed metric balls;
-- finite topology objects represented by explicit open-set incidence rows;
-- exact topology validation, discrete/indiscrete, T0/T1, connectedness, compactness, clopen-set, interior, closure and boundary certificates;
-- exact 2D/3D point-set centroid, bounds, affine dimension, collinearity/coplanarity, symbolic Euclidean distance matrices and affine-hull reconstruction;
-- first-class semantic ownership for rectangular regions, bounded parameterized curves and graph surfaces for later E2/E3 reuse.
-
-E10 does not claim general PDE parsing/solving, arbitrary boundary-value PDEs, weak solutions, finite-element/finite-difference PDE solvers, infinite or symbolic group/ring theory, quotient structures, modules, ideals, general algebraic geometry, general metric/topological theorem proving, manifolds, differential geometry, or arbitrary computational topology.
-
-E10 participates in the cumulative Worker/engine chain, semantic-kind/capability registries, inspector controls, Workspace actions and global Tools/`Ctrl+K` discovery. Its accepted baseline is exact and deterministic.
+E10 does not claim general PDE solving, weak/numerical PDE theory, infinite abstract algebra, manifolds/differential geometry, or general topological theorem proving.
 
 See `E10_ACCEPTANCE.md`.
 
 ---
 
-## Next — E11: Proof System II & Upper-Division Reasoning
+## E11 — Proof System II & Upper-Division Reasoning — Complete
 
-- predicate syntax and quantifiers;
-- induction templates;
-- theorem registry;
-- proof obligations;
-- deterministic theorem application;
-- equality/inequality lemma chaining;
-- analysis proof templates where assumptions can be represented formally;
-- algebra/linear-algebra theorem certificates;
-- counterexample generation remains disproof-only;
-- natural-language explanation may accompany, but never replace, a deterministic certificate.
+E11 extends P13's exact transition/chain/entailment verifier into a bounded theorem-application system without introducing a free-form proof generator.
+
+### Checker-backed theorem registry
+
+The accepted registry contains only rules with deterministic checkers, including substitution of equals, positive order scaling, finite-domain quantifier semantics, recurrence-backed ordinary induction, differentiability implies continuity, rank–nullity, bounded invertible-matrix equivalences, the Hermitian spectral theorem, and Lagrange's theorem.
+
+### Lemma and inequality reasoning
+
+- exact AST-subtree equality substitution, forward/reverse and first/all occurrence modes;
+- proposed targets must contain no hidden extra step;
+- bounded exact one-variable rational-polynomial inequality implications by positive rational scaling;
+- strict-to-nonstrict weakening is supported, but non-strict-to-strict strengthening and negative scaling are refused.
+
+### Quantified proof obligations
+
+- one or two nested `∀`/`∃` quantifiers over explicit finite sets;
+- exact arithmetic predicates and existing Boolean connectives;
+- exhaustive witnesses/counterexamples;
+- at most 256 values per domain and at most 4096 nested assignments;
+- no finite result is extrapolated to an infinite domain.
+
+### Ordinary induction
+
+- natural sequence/function claims such as `S(n)=F(n)`;
+- explicit base fact and recurrence premise;
+- separate base, induction-hypothesis, recurrence-compatibility, hypothesis-substitution and successor-algebra obligations;
+- the final conclusion is explicitly conditional on the represented recurrence premise/definition and verified base fact.
+
+### Upper-division theorem certificates
+
+- differentiability ⇒ continuity at a point only after the P9 differentiability prerequisite is established;
+- exact rank–nullity certificates;
+- square rational-matrix determinant/full-rank/nullity-zero equivalence checks;
+- Hermitian spectral-theorem application only after exact `A*=A` certification;
+- Lagrange theorem only after exact E10 finite-group and subgroup certification.
+
+If a prerequisite is not discharged, E11 reports that state and asserts no theorem conclusion. Failure to prove is not treated as proof of negation.
+
+E11 integrates with the cumulative Worker/engine chain, capability registry, Workspace controls, global Tools/`Ctrl+K`, and an extended Proof Lab that retains all P13 modes while adding induction, finite quantifiers, lemma application and theorem-registry inspection.
+
+E11 does not claim a general first-order theorem prover, SAT/SMT, a proof-assistant kernel, prose-proof formalization, theorem discovery from language similarity, general nonlinear inequality proving, quantifier elimination, strong/structural/well-founded/transfinite induction, epsilon–delta proof synthesis, arbitrary abstract-algebra/topology theorem proving, or proof from numerical sampling.
+
+See `E11_ACCEPTANCE.md`.
 
 ---
 
-## E12 — Mathematical Integration & v2 Certification
+## Next — E12: Mathematical Integration & v2 Certification
 
 E12 will re-run the exact M7 rubric rather than inventing a more favorable metric.
 
@@ -243,7 +188,7 @@ E12 will re-run the exact M7 rubric rather than inventing a more favorable metri
 
 ## Current evidence after E3
 
-The most recent fixed M7 re-score was taken after E3; **E4–E10 have not been used to rewrite that historical score outside the scheduled E12 integration audit.**
+The most recent fixed M7 re-score was taken after E3; **E4–E11 have not been used to rewrite that historical score outside the scheduled E12 integration audit.**
 
 Under that fixed M7 22-domain rubric:
 

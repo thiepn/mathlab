@@ -19,6 +19,7 @@ export const OPERATIONS_REQUIRING_CONTROLS = new Set([
   'finite-quantifier-profile','extended-master-theorem','bellman-ford','max-flow-min-cut','knapsack-dp',
   'extended-gcd','modular-inverse','linear-congruence','linear-diophantine',
   'subgroup-check','metric-ball','topology-subset-profile',
+  'lemma-rewrite','inequality-consequence','finite-quantifier-proof','induction-certificate','analysis-theorem-certificate','linear-algebra-theorem-certificate','finite-group-theorem-certificate',
 ]);
 
 const PRIORITY = [

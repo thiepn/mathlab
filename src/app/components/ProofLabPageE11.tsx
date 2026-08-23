@@ -1,0 +1,42 @@
+import { useEffect, useRef, useState } from 'react';
+import type { MathResult } from '../../lib/math/types';
+import { MathWorkerClient } from '../../lib/worker/client';
+import { AlgebraResult } from './AlgebraResult';
+import { MathValue } from './MathValue';
+import { ProofLabPage as P13ProofLabPage } from './ProofLabPageM6';
+
+type E11Mode='induction'|'quantifier'|'lemma'|'theorems';
+interface Props{initialSource?:string;}
+const MODES:Record<E11Mode,{label:string;description:string}>={
+  induction:{label:'Induction','description':'Discharge explicit base and successor obligations for a recursively defined sequence.'},
+  quantifier:{label:'Finite quantifiers','description':'Exhaustively certify one or two nested ∀/∃ statements over explicit finite sets.'},
+  lemma:{label:'Lemma application','description':'Apply equality substitution to an exact mathematical subtree; hidden extra steps are rejected.'},
+  theorems:{label:'Theorem registry','description':'Inspect only theorem rules backed by deterministic E11 checkers.'},
+};
+
+export function ProofLabPage({initialSource=''}:Props){
+  const [mode,setMode]=useState<E11Mode>('induction');const [result,setResult]=useState<MathResult|null>(null);const [status,setStatus]=useState<'idle'|'running'|'error'|'done'>('idle');const [error,setError]=useState('');const worker=useRef<MathWorkerClient|null>(null);
+  const [claim,setClaim]=useState(initialSource&&initialSource.includes('=')?initialSource:'S(n) = n*(n+1)/2');const [baseFact,setBaseFact]=useState('S(1) = 1');const [recurrence,setRecurrence]=useState('S(k+1) = S(k) + (k+1)');const [index,setIndex]=useState('n');const [stepVariable,setStepVariable]=useState('k');const [base,setBase]=useState('1');
+  const [domain,setDomain]=useState('set(1,2,3)');const [variable,setVariable]=useState('x');const [predicate,setPredicate]=useState('x^2 >= 0');const [quantifier,setQuantifier]=useState<'forall'|'exists'>('forall');const [secondSet,setSecondSet]=useState('');const [secondVariable,setSecondVariable]=useState('y');const [secondQuantifier,setSecondQuantifier]=useState<'forall'|'exists'>('forall');
+  const [source,setSource]=useState(initialSource||'x*(y+z)');const [lemma,setLemma]=useState('y+z = z+y');const [target,setTarget]=useState('x*(z+y)');const [direction,setDirection]=useState<'forward'|'reverse'>('forward');const [occurrence,setOccurrence]=useState<'first'|'all'>('first');
+  useEffect(()=>()=>worker.current?.dispose(),[]);useEffect(()=>{if(initialSource){setSource(initialSource);if(initialSource.includes('='))setClaim(initialSource);}},[initialSource]);
+  const clear=()=>{setResult(null);setStatus('idle');setError('');};
+  const execute=async(operation:string,input:string,options:Record<string,string|number|boolean>={})=>{if(!worker.current)worker.current=new MathWorkerClient();setStatus('running');setError('');setResult(null);try{const next=await worker.current.execute({id:`e11-proof-${Date.now()}`,operation,input,options});setResult(next);setStatus('done');}catch(caught){setStatus('error');setError(caught instanceof Error?caught.message:'E11 proof operation failed.');}};
+  const run=()=>{if(mode==='induction')return execute('induction-certificate',claim,{baseFact,recurrence,index,stepVariable,base:Number(base)});if(mode==='quantifier')return execute('finite-quantifier-proof',domain,{variable,predicate,quantifier,secondSet,secondVariable,secondQuantifier});if(mode==='lemma')return execute('lemma-rewrite',source,{lemma,target,direction,occurrence});return execute('theorem-registry','0');};
+  return <>
+    <P13ProofLabPage initialSource={initialSource}/>
+    <main className="workspace proof-lab-page m6-proof-page e11-proof-extension">
+      <section className="m6-proof-hero"><div><span className="section-kicker">E11 · Proof System II</span><h1>Discharge theorem obligations explicitly.</h1><p>These modes extend P13 from equivalence checking into bounded theorem application. Every positive verdict is tied to a deterministic checker; unsupported reasoning remains unproved.</p></div></section>
+      <nav className="m6-proof-modes" aria-label="E11 proof mode">{(Object.keys(MODES) as E11Mode[]).map(item=><button key={item} className={mode===item?'is-active':''} onClick={()=>{setMode(item);clear();}}><strong>{MODES[item].label}</strong><small>{MODES[item].description}</small></button>)}</nav>
+      <section className="m6-proof-editor"><header><div><span className="section-kicker">{MODES[mode].label}</span><h2>{MODES[mode].description}</h2></div><button onClick={clear} disabled={!result&&status==='idle'}>Clear result</button></header>
+        {mode==='induction'&&<div className="m6-chain-editor"><label><span>Claim</span><textarea rows={3} value={claim} onChange={e=>setClaim(e.target.value)}/><div className="m6-proof-preview"><MathValue source={claim} forceMathStyle/></div></label><div><label><span>Base fact</span><input value={baseFact} onChange={e=>setBaseFact(e.target.value)}/></label><label><span>Recurrence premise</span><input value={recurrence} onChange={e=>setRecurrence(e.target.value)}/></label><label><span>Claim index</span><input value={index} onChange={e=>setIndex(e.target.value)}/></label><label><span>Step variable</span><input value={stepVariable} onChange={e=>setStepVariable(e.target.value)}/></label><label><span>Base integer</span><input value={base} inputMode="numeric" onChange={e=>setBase(e.target.value)}/></label></div></div>}
+        {mode==='quantifier'&&<div className="m6-entailment-editor"><div><label><span>Outer finite set</span><input value={domain} onChange={e=>setDomain(e.target.value)}/></label><label><span>Outer quantifier / variable</span><select value={quantifier} onChange={e=>setQuantifier(e.target.value as typeof quantifier)}><option value="forall">∀</option><option value="exists">∃</option></select><input value={variable} onChange={e=>setVariable(e.target.value)}/></label><label><span>Predicate</span><input value={predicate} onChange={e=>setPredicate(e.target.value)}/></label></div><div><label><span>Optional inner finite set</span><input value={secondSet} onChange={e=>setSecondSet(e.target.value)} placeholder="Leave blank for one quantifier"/></label>{secondSet.trim()&&<><label><span>Inner quantifier</span><select value={secondQuantifier} onChange={e=>setSecondQuantifier(e.target.value as typeof secondQuantifier)}><option value="forall">∀</option><option value="exists">∃</option></select></label><label><span>Inner variable</span><input value={secondVariable} onChange={e=>setSecondVariable(e.target.value)}/></label></>}</div></div>}
+        {mode==='lemma'&&<div className="m6-transition-editor"><label><span>Source</span><textarea rows={3} value={source} onChange={e=>setSource(e.target.value)}/></label><div><label><span>Equality lemma</span><input value={lemma} onChange={e=>setLemma(e.target.value)}/></label><label><span>Direction</span><select value={direction} onChange={e=>setDirection(e.target.value as typeof direction)}><option value="forward">Left → right</option><option value="reverse">Right → left</option></select></label><label><span>Occurrences</span><select value={occurrence} onChange={e=>setOccurrence(e.target.value as typeof occurrence)}><option value="first">First</option><option value="all">All</option></select></label></div><label><span>Target</span><textarea rows={3} value={target} onChange={e=>setTarget(e.target.value)}/></label></div>}
+        {mode==='theorems'&&<p>The registry contains only checker-backed E11 rules. Run it to inspect the currently accepted theorem set and their deterministic application boundaries.</p>}
+        <div className="m6-proof-actions"><button className="primary-action" disabled={status==='running'||(mode==='induction'&&(!claim.trim()||!baseFact.trim()||!recurrence.trim()||!Number.isSafeInteger(Number(base))))||(mode==='quantifier'&&(!domain.trim()||!predicate.trim()))||(mode==='lemma'&&(!source.trim()||!lemma.trim()||!target.trim()))} onClick={()=>void run()}>{status==='running'?'Checking…':mode==='theorems'?'Load theorem registry':'Run deterministic certificate'}</button><span>No theorem is inferred from numerical resemblance or natural-language wording.</span></div>
+        {status==='error'&&<div className="engine-error m6-proof-error"><strong>Certificate could not be issued.</strong><p>{error}</p></div>}
+      </section>
+      {result&&<section className="m6-proof-result"><AlgebraResult result={result} status={status} error={error} onClear={clear}/></section>}
+    </main>
+  </>;
+}
