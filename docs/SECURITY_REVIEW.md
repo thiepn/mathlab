@@ -1,36 +1,50 @@
-# MathLab RC2 Security Review
+# MathLab v2.0.0-rc.1 Security Review
 
 ## Application boundary
 
-MathLab is a client-only, local-first application. There is no application analytics, telemetry, account backend, remote mathematics service, `eval`, dynamic `Function`, or application-layer network fetch path. The only runtime `fetch` calls are inside the service worker and are restricted to same-origin GET caching.
+MathLab remains a client-only, local-first application. There is no application analytics, telemetry, account backend, remote mathematics service, `eval`, dynamic `Function`, or application-layer network fetch path. Runtime `fetch` is confined to the service worker and same-origin caching behavior.
 
-## Toolchain corrections
+## Toolchain
 
 ### Vite
 
-RC1 declared Vite `7.1.3`. The v1 promotion audit identified 2026 Vite advisories whose affected ranges include this version. RC2 pins `7.3.5`, the patched 7.x release covering the June 2026 alternate-path file-access issue and earlier April 2026 7.3.2 security fixes.
-
-The dev and preview servers also default explicitly to loopback (`127.0.0.1`) rather than network exposure.
+MathLab pins Vite `7.3.5`, the patched 7.x line selected during release hardening. Dev and preview servers default explicitly to loopback (`127.0.0.1`). Production source maps remain disabled.
 
 ### Vitest
 
-RC1 declared Vitest `3.2.4`. RC2 pins `3.2.5` because 3.2.4 falls inside affected browser/UI-server advisory ranges and 3.2.5 carries the applicable 3.x patch. MathLab itself runs tests in Node mode, but retaining a known-vulnerable development dependency is unnecessary release risk.
+MathLab pins Vitest `3.2.7` and executes the complete regression suite in Node mode through GitHub Actions.
 
 ### React
 
-MathLab declares client-side `react` and `react-dom`; it does not declare any `react-server-dom-*` package or an RSC framework. The published React Server Component vulnerabilities therefore do not describe MathLab's shipped architecture.
+MathLab declares client-side `react` and `react-dom`; it does not declare `react-server-dom-*` or an RSC framework. React Server Component vulnerability classes therefore do not describe the shipped MathLab architecture.
 
-## Build information exposure
+## Browser/PWA metadata
 
-RC2 disables production source maps. The source archive still contains readable source code by design, but a normal production build no longer emits `.map` files by default.
-
-## Browser metadata
-
-- PWA `id`, `start_url`, and `scope` remain relative for subpath deployment.
+- PWA `id`, `start_url`, and `scope` remain relative for `/mathlab/` subpath deployment.
 - Referrer policy is `no-referrer`.
-- Service-worker caches accept same-origin GET requests only and cache only successful `basic` responses.
-- Old MathLab cache generations are removed at activation.
+- Service-worker runtime caching rejects cross-origin requests and caches only successful basic same-origin responses.
+- Navigation fallback is explicit.
+- old MathLab cache generations are removed during activation.
+- release icons and manifest artifacts remain part of the static release audit.
 
-## Remaining security gate
+## Persistence and execution hardening
 
-A real dependency installation and generated lockfile must still be checked for high/critical transitive advisories before final v1 promotion. The current container cannot resolve `registry.npmjs.org`, so that lockfile-level audit cannot be performed here.
+The inherited P15 release audit continues to enforce:
+
+- top-level error boundary;
+- Worker crash listener and 30-second timeout;
+- workspace/practice recovery snapshots;
+- workspace import-size guard;
+- no application `eval` / dynamic `Function`;
+- no application-layer `fetch` / `XMLHttpRequest` path;
+- no generated build/cache artifacts inside the source release tree.
+
+E12 does not weaken any of these controls while expanding the release identity to v2 RC1.
+
+## Current dependency evidence
+
+GitHub Actions performs a real npm dependency installation for every E12 pull-request gate. At the E12 certification checkpoint, npm reports **one low-severity advisory** and no high/critical advisory in the install summary. This is a non-blocking RC maintenance item, not evidence that future installs are permanently vulnerability-free.
+
+## Stable-release security boundary
+
+`v2.0.0-rc.1` is a source release candidate. Stable `v2.0.0` still requires a fresh final dependency-advisory review together with real browser/device/PWA validation. Security claims must remain scoped to the exact dependency graph and source SHA actually certified.
