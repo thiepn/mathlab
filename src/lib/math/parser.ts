@@ -22,6 +22,10 @@ const KNOWN_FUNCTIONS = new Set([
   'multinomial', 'starsbars', 'derangements', 'stirling2', 'bell', 'pigeonhole',
   // P12 numerical IVP + E4 ODE/dynamical-system constructors.
   'ivp', 'odesys', 'separable', 'linearode', 'exactode', 'ode2', 'oden',
+  // E10 PDE, finite algebra, topology, metric, and owned geometry constructors.
+  'heatpde', 'wavepde', 'laplacepde',
+  'group', 'ring', 'grouphom',
+  'metricspace', 'topology', 'pointset', 'rectregion', 'paramcurve', 'graphsurface',
 ]);
 
 const SINGLE_CHAR_TOKENS: Record<string, MathTokenKind> = {
