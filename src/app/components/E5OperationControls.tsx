@@ -5,6 +5,7 @@ import { E7OperationControls, isE7ControlledOperation } from './E7OperationContr
 import { E8OperationControls, isE8ControlledOperation } from './E8OperationControls';
 import { E9OperationControls, isE9ControlledOperation } from './E9OperationControls';
 import { E10OperationControls, isE10ControlledOperation } from './E10OperationControls';
+import { E11OperationControls, isE11ControlledOperation } from './E11OperationControls';
 
 interface Props {
   operation: string;
@@ -18,9 +19,10 @@ const CONTROLLED = new Set([
   'nonlinear-system-solve','numerical-optimize','constrained-optimize','convexity-diagnostic','linear-program',
 ]);
 
-export function isE5ControlledOperation(operation: string): boolean { return CONTROLLED.has(operation) || isE6ControlledOperation(operation) || isE7ControlledOperation(operation) || isE8ControlledOperation(operation) || isE9ControlledOperation(operation) || isE10ControlledOperation(operation); }
+export function isE5ControlledOperation(operation: string): boolean { return CONTROLLED.has(operation) || isE6ControlledOperation(operation) || isE7ControlledOperation(operation) || isE8ControlledOperation(operation) || isE9ControlledOperation(operation) || isE10ControlledOperation(operation) || isE11ControlledOperation(operation); }
 
 export function E5OperationControls({ operation, object, running, onAction }: Props) {
+  if (isE11ControlledOperation(operation)) return <E11OperationControls operation={operation} object={object} running={running} onAction={onAction} />;
   if (isE10ControlledOperation(operation)) return <E10OperationControls operation={operation} object={object} running={running} onAction={onAction} />;
   if (isE9ControlledOperation(operation)) return <E9OperationControls operation={operation} object={object} running={running} onAction={onAction} />;
   if (isE8ControlledOperation(operation)) return <E8OperationControls operation={operation} object={object} running={running} onAction={onAction} />;
