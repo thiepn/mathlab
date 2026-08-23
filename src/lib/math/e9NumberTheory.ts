@@ -1,6 +1,5 @@
 import type { AstNode } from './ast';
 import { simplifyAst } from './algebra';
-import { astToPlainText } from './format';
 import { b, bigintAbs, egcd, exactInteger, gcdBig, matrix, n, normalizeMod, section } from './e9Exact';
 import type { E9Transform } from './e9Types';
 
