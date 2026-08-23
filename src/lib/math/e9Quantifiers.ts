@@ -2,7 +2,7 @@ import type { AstNode } from './ast';
 import { rationalValue, simplifyAst } from './algebra';
 import { astToPlainText } from './format';
 import { parseMath } from './parser';
-import type { E9Transform } from './e9DiscreteNumberTheory';
+import type { E9Transform } from './e9Types';
 import type { MathResultFact, MathResultSection } from './types';
 
 type Quantifier = 'forall' | 'exists';
