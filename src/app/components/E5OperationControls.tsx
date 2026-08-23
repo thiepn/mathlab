@@ -2,6 +2,7 @@ import { useState } from 'react';
 import type { SemanticMathObject } from '../../lib/math/types';
 import { E6OperationControls, isE6ControlledOperation } from './E6OperationControls';
 import { E7OperationControls, isE7ControlledOperation } from './E7OperationControls';
+import { E8OperationControls, isE8ControlledOperation } from './E8OperationControls';
 
 interface Props {
   operation: string;
@@ -15,9 +16,10 @@ const CONTROLLED = new Set([
   'nonlinear-system-solve','numerical-optimize','constrained-optimize','convexity-diagnostic','linear-program',
 ]);
 
-export function isE5ControlledOperation(operation: string): boolean { return CONTROLLED.has(operation) || isE6ControlledOperation(operation) || isE7ControlledOperation(operation); }
+export function isE5ControlledOperation(operation: string): boolean { return CONTROLLED.has(operation) || isE6ControlledOperation(operation) || isE7ControlledOperation(operation) || isE8ControlledOperation(operation); }
 
 export function E5OperationControls({ operation, object, running, onAction }: Props) {
+  if (isE8ControlledOperation(operation)) return <E8OperationControls operation={operation} object={object} running={running} onAction={onAction} />;
   if (isE7ControlledOperation(operation)) return <E7OperationControls operation={operation} object={object} running={running} onAction={onAction} />;
   if (isE6ControlledOperation(operation)) return <E6OperationControls operation={operation} object={object} running={running} onAction={onAction} />;
   const dimension = object.kind === 'function' ? object.parameters.length : object.variables.length;
