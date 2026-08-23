@@ -10,8 +10,12 @@ const section=(id:string,title:string,facts:MathResultFact[],description?:string
 const n=(value:number|string):AstNode=>({type:'number',value:String(value)});
 function requireEquation(node:AstNode,label:string):Extract<AstNode,{type:'equation'}>{if(node.type!=='equation')throw new Error(`${label} must be an equation.`);return node;}
 
+function isStepReference(node:AstNode,functionName:string,stepVariable:string):boolean{
+  if(node.type==='call'&&node.name===functionName&&node.args.length===1&&node.args[0].type==='symbol'&&node.args[0].name===stepVariable)return true;
+  return node.type==='binary'&&node.operator==='*'&&node.implicit===true&&node.left.type==='symbol'&&node.left.name===functionName&&node.right.type==='symbol'&&node.right.name===stepVariable;
+}
 function rewriteRecursiveTerm(node:AstNode,functionName:string,stepVariable:string,replacement:AstNode,state:{count:number}):AstNode{
-  if(node.type==='call'&&node.name===functionName&&node.args.length===1&&node.args[0].type==='symbol'&&node.args[0].name===stepVariable){state.count+=1;return replacement;}
+  if(isStepReference(node,functionName,stepVariable)){state.count+=1;return replacement;}
   if(node.type==='number'||node.type==='symbol')return node;
   if(node.type==='unary')return{...node,operand:rewriteRecursiveTerm(node.operand,functionName,stepVariable,replacement,state)};
   if(node.type==='binary')return{...node,left:rewriteRecursiveTerm(node.left,functionName,stepVariable,replacement,state),right:rewriteRecursiveTerm(node.right,functionName,stepVariable,replacement,state)};
