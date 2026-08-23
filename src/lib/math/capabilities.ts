@@ -111,6 +111,14 @@ const definitions: Record<SemanticMathObject['kind'], CapabilitySeed[]> = {
   complexity: [{ id:'complexity-profile', label:'Asymptotic complexity', phase:'P11', group:'Algorithms' }], combinatorics: [{ id:'evaluate-combinatorics', label:'Evaluate exactly', phase:'P11', group:'Combinatorics' }],
   ode: [{ id:'ivp-profile', label:'IVP profile', phase:'P12', group:'ODEs' }, { id:'ode-solve', label:'Solve numerically…', phase:'P12', group:'ODEs' }, ...e4Ode],
   sequence: [{ id:'sequence-terms', label:'Preview terms…', phase:'P9', group:'Sequence' }, { id:'sequence-limit', label:'Sequence limit', phase:'P9', group:'Sequence' }, { id:'sequence-convergence', label:'Convergence profile', phase:'P9', group:'Sequence' }, { id:'partial-sum', label:'Partial sum…', phase:'P9', group:'Series' }, { id:'series-convergence', label:'Series convergence', phase:'P9', group:'Series' }, { id:'sequence-series-profile', label:'Sequence + series profile', phase:'P9', group:'Analysis' }],
+  pde: [],
+  'finite-group': [],
+  'finite-ring': [],
+  homomorphism: [],
+  'metric-space': [],
+  topology: [],
+  'point-set': [],
+  geometry: [],
   unknown: [],
 };
 
