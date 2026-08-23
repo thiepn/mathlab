@@ -16,7 +16,6 @@ import {
   div,
   isZero,
   mul,
-  neg,
   parseRational,
   pow,
   rat,
