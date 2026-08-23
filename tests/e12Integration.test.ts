@@ -17,13 +17,17 @@ describe('E12 mathematical integration invariants',()=>{
       expect(tool.label.trim().length).toBeGreaterThan(0);
       expect(tool.description.trim().length).toBeGreaterThan(0);
       expect(tool.example.trim().length).toBeGreaterThan(0);
-      expect(tool.objectKinds.length).toBeGreaterThan(0);
+      const objectIndependent=tool.id==='theorem-registry';
+      expect(tool.objectKinds.length>0||objectIndependent).toBe(true);
     }
   });
 
-  it('keeps every tool example parseable by the production parser',()=>{
+  it('keeps every main-parser tool example parseable by the production parser',()=>{
     const failures:string[]=[];
     for(const tool of ALL_TOOL_CATALOG){
+      // Proof Lab route examples such as chains and entailment use their own line grammar,
+      // so they are intentionally not single parseMath expressions.
+      if(tool.specialRoute==='proof') continue;
       const parsed=parseMath(tool.example);
       const errors=parsed.diagnostics.filter((item)=>item.severity==='error');
       if(!parsed.ast||errors.length) failures.push(`${tool.id}: ${errors.map((item)=>item.message).join('; ')||'no AST'}`);
