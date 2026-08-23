@@ -3,7 +3,7 @@ import type { SemanticMathObject } from './types';
 
 type Seed = Omit<ObjectCapability, 'applicable' | 'available' | 'reason'>;
 
-const QUANTIFIER: Seed = { id: 'finite-quantifier-profile', label: 'Evaluate finite quantifier', phase: 'E9', group: 'Predicate logic' };
+const QUANTIFIER: Seed = { id: 'finite-quantifier-profile', label: 'Evaluate finite quantifier…', phase: 'E9', group: 'Predicate logic' };
 const RECURRENCE: Seed[] = [
   { id: 'recurrence-generating-function', label: 'Ordinary generating function', phase: 'E9', group: 'Recurrences' },
   { id: 'recurrence-closed-form-e9', label: 'Extended recurrence closed form', phase: 'E9', group: 'Recurrences' },
@@ -31,10 +31,7 @@ function ready(seed: Seed): ObjectCapability { return { ...seed, applicable: tru
 function blocked(seed: Seed, reason: string): ObjectCapability { return { ...seed, applicable: false, available: false, reason }; }
 
 export function e9CapabilitiesForObject(object: SemanticMathObject): ObjectCapability[] {
-  if (object.kind === 'proposition') {
-    const finite = object.valueAst.type === 'call' && (object.valueAst.name === 'forall' || object.valueAst.name === 'exists');
-    return [finite ? ready(QUANTIFIER) : blocked(QUANTIFIER, 'E9 finite-domain evaluation applies to forall(x,set(...),predicate) or exists(...).')];
-  }
+  if (object.kind === 'finite-set') return [ready(QUANTIFIER)];
   if (object.kind === 'recurrence') return RECURRENCE.map(ready);
   if (object.kind === 'complexity') {
     const master = object.valueAst.type === 'call' && object.valueAst.name === 'master';
