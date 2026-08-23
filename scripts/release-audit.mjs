@@ -7,7 +7,7 @@ const pass = (condition, message) => { if (!condition) failures.push(message); }
 const text = (path) => readFileSync(join(root, path), 'utf8');
 
 const pkg = JSON.parse(text('package.json'));
-pass(pkg.version === '1.0.0-rc.2', 'package version must be 1.0.0-rc.2');
+pass(pkg.version === '2.0.0-rc.1', 'package version must be 2.0.0-rc.1');
 pass(pkg.engines?.node === '^20.19.0 || >=22.12.0', 'Node engine must match the supported Vite 7 runtime floor');
 pass(pkg.devDependencies?.vite === '7.3.5', 'Vite must stay pinned to the security-patched 7.3.5 release');
 pass(pkg.devDependencies?.vitest === '3.2.7', 'Vitest must stay pinned to the security-patched 3.2.7 release');
@@ -48,7 +48,8 @@ const app = text('src/app/App.tsx');
 pass(app.includes('skip-link'), 'app lacks keyboard skip link');
 pass(app.includes('navigator.onLine'), 'app lacks online/offline state');
 const header = text('src/app/components/Header.tsx');
-pass(header.includes('v1.0 RC2'), 'header must identify the build as RC2 rather than final v1.0');
+pass(header.includes('v2.0 RC1'), 'header must identify the build as v2.0 RC1 rather than stable v2.0');
+pass(header.includes('v2.0.0-rc.1'), 'header release-candidate title must match the package version');
 
 const main = text('src/main.tsx');
 pass(main.includes('AppErrorBoundary'), 'app lacks top-level error boundary');
@@ -97,4 +98,4 @@ if (failures.length) {
   for (const failure of failures) console.error(`- ${failure}`);
   process.exit(1);
 }
-console.log('MathLab P15 release audit: PASS');
+console.log('MathLab release audit: PASS');
