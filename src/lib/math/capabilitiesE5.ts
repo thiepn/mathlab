@@ -3,6 +3,7 @@ import { e6CapabilitiesForObject, filterBaseCapabilitiesForE6 } from './capabili
 import { e7CapabilitiesForObject } from './capabilitiesE7';
 import { e8CapabilitiesForObject } from './capabilitiesE8';
 import { e9CapabilitiesForObject } from './capabilitiesE9';
+import { e10CapabilitiesForObject } from './capabilitiesE10';
 import type { SemanticMathObject } from './types';
 
 type Seed = Omit<ObjectCapability,'applicable'|'available'|'reason'>;
@@ -25,6 +26,7 @@ const FUNCTION_TOOLS: Seed[] = [
   {id:'constrained-optimize',label:'Equality-constrained optimization…',phase:'E5',group:'Optimization'},
   {id:'convexity-diagnostic',label:'Convexity / Hessian diagnostic…',phase:'E5',group:'Optimization'},
 ];
+const E10_KINDS = new Set<SemanticMathObject['kind']>(['pde','finite-group','finite-ring','homomorphism','metric-space','topology','point-set','geometry']);
 
 function blocked(seed:Seed,reason:string):ObjectCapability{return{...seed,applicable:false,available:false,reason};}
 function ready(seed:Seed):ObjectCapability{return{...seed,applicable:true,available:true};}
@@ -60,8 +62,9 @@ function functionCapabilities(object:SemanticMathObject):ObjectCapability[]{
 
 export function capabilitiesFor(object:SemanticMathObject|null):ObjectCapability[]{
   if(!object)return[];
-  const inherited=[...baseCapabilitiesFor(object),...matrixCapabilities(object),...functionCapabilities(object)];
-  return [...filterBaseCapabilitiesForE6(object,inherited),...e6CapabilitiesForObject(object),...e7CapabilitiesForObject(object),...e8CapabilitiesForObject(object),...e9CapabilitiesForObject(object)];
+  const base=E10_KINDS.has(object.kind)?[]:baseCapabilitiesFor(object);
+  const inherited=[...base,...matrixCapabilities(object),...functionCapabilities(object)];
+  return [...filterBaseCapabilitiesForE6(object,inherited),...e6CapabilitiesForObject(object),...e7CapabilitiesForObject(object),...e8CapabilitiesForObject(object),...e9CapabilitiesForObject(object),...e10CapabilitiesForObject(object)];
 }
 
 export type { ObjectCapability };

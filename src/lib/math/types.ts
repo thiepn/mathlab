@@ -23,6 +23,14 @@ export type MathObjectKind =
   | 'complexity'
   | 'combinatorics'
   | 'ode'
+  | 'pde'
+  | 'finite-group'
+  | 'finite-ring'
+  | 'homomorphism'
+  | 'metric-space'
+  | 'topology'
+  | 'point-set'
+  | 'geometry'
   | 'unknown';
 
 export type MathShape =
@@ -42,6 +50,14 @@ export type MathShape =
   | { type: 'complexity'; family: string }
   | { type: 'combinatorics' }
   | { type: 'ode'; variables: number }
+  | { type: 'pde'; family: string; modes: number }
+  | { type: 'finite-group'; order: number }
+  | { type: 'finite-ring'; order: number }
+  | { type: 'homomorphism'; sourceOrder: number; targetOrder: number }
+  | { type: 'metric-space'; size: number }
+  | { type: 'topology'; points: number; opens: number }
+  | { type: 'point-set'; points: number; dimension: number }
+  | { type: 'geometry'; family: string; dimension: number }
   | { type: 'equation' }
   | { type: 'inequality' }
   | { type: 'system'; count: number }

@@ -4,6 +4,9 @@ import { classifyParsed } from './classify';
 import { assumptionsForSubject, domainFromAssumptions } from './assumptions';
 import { finiteSetShapeInfo, graphShapeInfo, relationShapeInfo, recurrenceShapeInfo } from './discreteAlgorithms';
 import { isOdeConstructorCall, odeIntrinsicSymbols, odeShapeInfo } from './e4Ode';
+import { e10PdeIntrinsicSymbols, e10PdeShapeInfo, isE10PdeConstructorCall } from './e10Pde';
+import { e10FiniteAlgebraShapeInfo, isE10FiniteAlgebraConstructorCall } from './e10FiniteAlgebra';
+import { e10GeometryIntrinsicSymbols, e10GeometryShapeInfo, isE10GeometryConstructorCall } from './e10GeometryTopology';
 import type {
   Exactness,
   MathAssumption,
@@ -26,7 +29,8 @@ function isStructuredObjectCall(node: AstNode): boolean {
   return node.type === 'call' && (
     node.name === 'data' || DISTRIBUTIONS.has(node.name) || P10_PROBABILITY_CALLS.has(node.name) ||
     P11_LOGIC_CALLS.has(node.name) || node.name === 'set' || node.name === 'relation' || P11_GRAPH_CALLS.has(node.name) ||
-    node.name === 'linrec' || node.name === 'linrec2' || node.name === 'complexity' || node.name === 'master' || P11_COMBINATORICS_CALLS.has(node.name) || isOdeConstructorCall(node)
+    node.name === 'linrec' || node.name === 'linrec2' || node.name === 'complexity' || node.name === 'master' || P11_COMBINATORICS_CALLS.has(node.name) ||
+    isOdeConstructorCall(node) || isE10PdeConstructorCall(node) || isE10FiniteAlgebraConstructorCall(node) || isE10GeometryConstructorCall(node)
   );
 }
 
@@ -126,8 +130,6 @@ function getDefinition(parsed: ParsedMath): { name?: string; parameters: string[
   if (ast.type === 'equation' && ast.left.type === 'symbol' && (ast.right.type === 'matrix' || isStructuredObjectCall(ast.right))) {
     return { name: ast.left.name, parameters: [], valueAst: ast.right, style: 'natural' };
   }
-  // P9: permit conventional sequence definitions such as a_n = 1/n without
-  // reclassifying ordinary equations like x = 2 as definitions.
   if (ast.type === 'equation' && ast.left.type === 'symbol' && ast.left.name.includes('_n') && collectSymbols(ast.right).includes('n')) {
     return { name: ast.left.name, parameters: [], valueAst: ast.right, style: 'natural' };
   }
@@ -203,6 +205,14 @@ function shapeFor(kind: MathObjectKind, valueAst: AstNode, parameters: string[],
   if (kind === 'complexity' && valueAst.type === 'call') return { type: 'complexity', family: valueAst.name };
   if (kind === 'combinatorics') return { type: 'combinatorics' };
   if (kind === 'ode') return { type: 'ode', variables: odeShapeInfo(valueAst)?.variables ?? 1 };
+  if (kind === 'pde') { const info=e10PdeShapeInfo(valueAst); return { type:'pde', family:info?.family??'pde', modes:info?.modes??0 }; }
+  if (kind === 'finite-group') { const info=e10FiniteAlgebraShapeInfo(valueAst); return { type:'finite-group', order:info?.order??0 }; }
+  if (kind === 'finite-ring') { const info=e10FiniteAlgebraShapeInfo(valueAst); return { type:'finite-ring', order:info?.order??0 }; }
+  if (kind === 'homomorphism') { const info=e10FiniteAlgebraShapeInfo(valueAst); return { type:'homomorphism', sourceOrder:info?.order??0, targetOrder:info?.targetOrder??0 }; }
+  if (kind === 'metric-space') { const info=e10GeometryShapeInfo(valueAst); return { type:'metric-space', size:info?.size??0 }; }
+  if (kind === 'topology') { const info=e10GeometryShapeInfo(valueAst); return { type:'topology', points:info?.size??0, opens:info?.opens??0 }; }
+  if (kind === 'point-set') { const info=e10GeometryShapeInfo(valueAst); return { type:'point-set', points:info?.size??0, dimension:info?.dimension??0 }; }
+  if (kind === 'geometry') { const info=e10GeometryShapeInfo(valueAst); return { type:'geometry', family:info?.family??'geometry', dimension:info?.dimension??0 }; }
   if (valueAst.type === 'symbol') {
     const dependency = objects.find((item) => item.name === valueAst.name);
     if (dependency) return dependency.shape;
@@ -228,6 +238,14 @@ function inferKind(parsed: ParsedMath, valueAst: AstNode, name: string | undefin
   if (valueAst.type === 'call' && (valueAst.name === 'complexity' || valueAst.name === 'master')) return 'complexity';
   if (valueAst.type === 'call' && P11_COMBINATORICS_CALLS.has(valueAst.name)) return 'combinatorics';
   if (isOdeConstructorCall(valueAst)) return 'ode';
+  if (isE10PdeConstructorCall(valueAst)) return 'pde';
+  if (valueAst.type==='call'&&valueAst.name==='group') return 'finite-group';
+  if (valueAst.type==='call'&&valueAst.name==='ring') return 'finite-ring';
+  if (valueAst.type==='call'&&valueAst.name==='grouphom') return 'homomorphism';
+  if (valueAst.type==='call'&&valueAst.name==='metricspace') return 'metric-space';
+  if (valueAst.type==='call'&&valueAst.name==='topology') return 'topology';
+  if (valueAst.type==='call'&&valueAst.name==='pointset') return 'point-set';
+  if (valueAst.type==='call'&&['rectregion','paramcurve','graphsurface'].includes(valueAst.name)) return 'geometry';
   if (valueAst.type === 'matrix') return valueAst.rows.length === 1 ? 'vector' : 'matrix';
   const linear = inferLinearShape(valueAst, objects);
   if (linear?.usesCollection && linear.shape.type === 'vector') return 'vector';
@@ -247,8 +265,6 @@ function inferKind(parsed: ParsedMath, valueAst: AstNode, name: string | undefin
 }
 
 function exactnessFor(node: AstNode): Exactness {
-  // P2 records representation exactness only. Numerical approximation is a later-engine concern.
-  // Finite decimal literals are exact mathematical literals in the local AST.
   if (node.type === 'call' && ['floor','ceil'].includes(node.name)) return 'exact';
   return 'exact';
 }
@@ -275,7 +291,7 @@ export function resolveSemanticObject(
   }
 
   const symbols = collectSymbols(valueAst).filter((symbol) => !CONSTANTS.has(symbol));
-  const intrinsicParameters = odeIntrinsicSymbols(valueAst);
+  const intrinsicParameters = [...new Set([...odeIntrinsicSymbols(valueAst),...e10PdeIntrinsicSymbols(valueAst),...e10GeometryIntrinsicSymbols(valueAst)])];
   const variables = symbols.filter((symbol) => !parameters.includes(symbol) && !intrinsicParameters.includes(symbol) && !objects.some((item) => item.name === symbol));
   const dependencies = symbols.filter((symbol) => !intrinsicParameters.includes(symbol) && objects.some((item) => item.name === symbol));
   if (name && (variables.includes(name) || dependencies.includes(name))) {
@@ -296,7 +312,7 @@ export function resolveSemanticObject(
 
   let domain = name ? (domainFromAssumptions(assumptions, name) ?? inferDomain(valueAst, objects, assumptions)) : inferDomain(valueAst, objects, assumptions);
   if (kind === 'proposition') domain = 'boolean';
-  else if ((kind === 'matrix' || kind === 'vector' || kind === 'function' || kind === 'sequence' || kind === 'dataset' || kind === 'distribution' || kind === 'probability' || kind === 'finite-set' || kind === 'relation' || kind === 'graph' || kind === 'recurrence' || kind === 'complexity' || kind === 'combinatorics' || kind === 'ode') && domain !== 'complex') domain = 'real';
+  else if ((kind === 'matrix' || kind === 'vector' || kind === 'function' || kind === 'sequence' || kind === 'dataset' || kind === 'distribution' || kind === 'probability' || kind === 'finite-set' || kind === 'relation' || kind === 'graph' || kind === 'recurrence' || kind === 'complexity' || kind === 'combinatorics' || kind === 'ode' || kind === 'pde' || kind === 'finite-group' || kind === 'finite-ring' || kind === 'homomorphism' || kind === 'metric-space' || kind === 'topology' || kind === 'point-set' || kind === 'geometry') && domain !== 'complex') domain = 'real';
 
   const object: SemanticMathObject = {
     id: existing?.id ?? stableId(`${name ?? 'anonymous'}:${now}:${parsed.normalizedSource}`),
@@ -354,6 +370,14 @@ export function shapeLabel(shape: MathShape): string {
     case 'complexity': return `Complexity · ${shape.family}`;
     case 'combinatorics': return 'Discrete combinatorics';
     case 'ode': return `ODE · ${shape.variables} state${shape.variables === 1 ? '' : 's'}`;
+    case 'pde': return `PDE · ${shape.family} · ${shape.modes} mode${shape.modes===1?'':'s'}`;
+    case 'finite-group': return `Finite group · order ${shape.order || '?'}`;
+    case 'finite-ring': return `Finite ring · order ${shape.order || '?'}`;
+    case 'homomorphism': return `Group homomorphism · ${shape.sourceOrder || '?'} → ${shape.targetOrder || '?'}`;
+    case 'metric-space': return `Metric space · ${shape.size || '?'} points`;
+    case 'topology': return `Topology · ${shape.points || '?'} points · ${shape.opens} open sets`;
+    case 'point-set': return `Point set · ${shape.points || '?'} points in R^${shape.dimension || '?'}`;
+    case 'geometry': return `Geometry · ${shape.family} · dimension ${shape.dimension || '?'}`;
     case 'equation': return 'Equation';
     case 'inequality': return 'Inequality';
     case 'system': return `System · ${shape.count} relations`;

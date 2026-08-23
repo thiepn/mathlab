@@ -18,12 +18,15 @@ export const OPERATIONS_REQUIRING_CONTROLS = new Set([
   'complex-map','complex-series','singularity-profile','complex-residue','complex-contour-integral','residue-theorem',
   'finite-quantifier-profile','extended-master-theorem','bellman-ford','max-flow-min-cut','knapsack-dp',
   'extended-gcd','modular-inverse','linear-congruence','linear-diophantine',
+  'subgroup-check','metric-ball','topology-subset-profile',
 ]);
 
 const PRIORITY = [
   'solve','solve-inequality','solve-system','simplify','factor','expand',
   'gradient','jacobian','hessian','multivariable-critical-points','second-derivative-test',
   'vector-field-profile','divergence','curl','conservative-field','scalar-potential',
+  'pde-profile','pde-modal-solution','pde-separation-template',
+  'finite-group-profile','finite-ring-profile','group-homomorphism-profile','metric-space-profile','finite-topology-profile','point-set-profile','affine-hull-profile','geometry-profile',
   'complex-decompose','complex-derivative','cauchy-riemann','branch-diagnostics',
   'number-theory-profile','recurrence-generating-function','recurrence-closed-form-e9','bipartite-matching','longest-increasing-subsequence','chinese-remainder',
   'ode-profile','ode-symbolic-solve','laplace-ode-solve','ode-equilibria','ode-stability','ode-linearize','ode-to-system','ode-adaptive-solve',

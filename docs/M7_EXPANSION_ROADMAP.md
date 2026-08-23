@@ -165,36 +165,50 @@ See `E9_ACCEPTANCE.md`.
 
 ---
 
-## Next — E10: PDEs, Abstract Structures & Geometry Foundations
+## E10 — PDEs, Abstract Structures & Geometry Foundations — Complete
 
-E10 is intentionally a foundation phase rather than a claim to complete three very large subjects.
+E10 is intentionally a foundation phase rather than a claim to complete three very large subjects. It introduces first-class structures only where earlier semantic objects could not cleanly own the mathematical data.
 
 ### PDEs
 
-- PDE semantic objects;
-- order/linearity classification;
-- common first/second-order form recognition;
-- separation-of-variables templates;
-- canonical heat/wave/Laplace rectangular problems;
-- initial/boundary-condition objects.
+Implemented baseline:
 
-### Abstract structures
+- first-class `heatpde`, `wavepde`, and `laplacepde` semantic problem objects;
+- canonical family/order/linearity classification and explicit ownership of represented initial/boundary data;
+- exact separation-of-variables templates for the supported interval/rectangle problems;
+- exact finite modal heat, wave, and rectangular Laplace solutions from explicitly supplied mode coefficients;
+- conservative warnings that finite modal solutions do not imply arbitrary-function recovery or infinite-series convergence theorems.
 
-- finite-group objects and Cayley tables;
-- subgroup/order checks;
-- finite ring/field foundations;
-- bounded finite homomorphism/kernel/image checks.
+### Abstract algebra
 
-### Geometry/topology
+Implemented baseline:
 
-- analytic-geometry objects needed by other domains;
-- stronger shared curve/surface/region ownership building on E2/E3;
-- metric-space foundation;
-- basic open/closed/connected/compact finite or supported symbolic examples.
+- bounded exact finite-group validation from Cayley tables;
+- associativity, identity, inverse, abelian/cyclic structure and element-order certificates;
+- exact subgroup checking for configured subsets;
+- bounded finite-ring validation from addition and multiplication tables;
+- multiplicative identity, units, zero divisors, commutativity and finite-field certification;
+- exact finite group-homomorphism operation-preservation checks with kernel/image, injectivity, surjectivity and isomorphism certificates.
+
+### Geometry and topology
+
+Implemented baseline:
+
+- exact finite metric-space validation, diameter/minimum-separation reporting, and exact open/closed metric balls;
+- finite topology objects represented by explicit open-set incidence rows;
+- exact topology validation, discrete/indiscrete, T0/T1, connectedness, compactness, clopen-set, interior, closure and boundary certificates;
+- exact 2D/3D point-set centroid, bounds, affine dimension, collinearity/coplanarity, symbolic Euclidean distance matrices and affine-hull reconstruction;
+- first-class semantic ownership for rectangular regions, bounded parameterized curves and graph surfaces for later E2/E3 reuse.
+
+E10 does not claim general PDE parsing/solving, arbitrary boundary-value PDEs, weak solutions, finite-element/finite-difference PDE solvers, infinite or symbolic group/ring theory, quotient structures, modules, ideals, general algebraic geometry, general metric/topological theorem proving, manifolds, differential geometry, or arbitrary computational topology.
+
+E10 participates in the cumulative Worker/engine chain, semantic-kind/capability registries, inspector controls, Workspace actions and global Tools/`Ctrl+K` discovery. Its accepted baseline is exact and deterministic.
+
+See `E10_ACCEPTANCE.md`.
 
 ---
 
-## E11 — Proof System II & Upper-Division Reasoning
+## Next — E11: Proof System II & Upper-Division Reasoning
 
 - predicate syntax and quantifiers;
 - induction templates;
@@ -229,7 +243,7 @@ E12 will re-run the exact M7 rubric rather than inventing a more favorable metri
 
 ## Current evidence after E3
 
-The most recent fixed M7 re-score was taken after E3; **E4–E9 have not been used to rewrite that historical score outside the scheduled E12 integration audit.**
+The most recent fixed M7 re-score was taken after E3; **E4–E10 have not been used to rewrite that historical score outside the scheduled E12 integration audit.**
 
 Under that fixed M7 22-domain rubric:
 
