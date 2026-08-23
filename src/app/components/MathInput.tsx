@@ -17,6 +17,8 @@ const labels = {
   scalar: 'Scalar', expression: 'Expression', equation: 'Equation', inequality: 'Inequality', system: 'System', function: 'Function',
   vector: 'Vector', matrix: 'Matrix', sequence: 'Sequence', dataset: 'Dataset', distribution: 'Distribution', probability: 'Probability',
   proposition: 'Proposition', 'finite-set': 'Finite set', relation: 'Relation', graph: 'Graph', recurrence: 'Recurrence', complexity: 'Complexity', combinatorics: 'Combinatorics', ode: 'ODE IVP',
+  pde: 'PDE problem', 'finite-group': 'Finite group', 'finite-ring': 'Finite ring', homomorphism: 'Group homomorphism',
+  'metric-space': 'Metric space', topology: 'Topology', 'point-set': 'Point set', geometry: 'Geometry object',
   unknown: 'Unresolved input',
 };
 
