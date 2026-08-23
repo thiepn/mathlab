@@ -237,24 +237,46 @@ See `E7_ACCEPTANCE.md`.
 
 ---
 
-## Next — E8: Complex Analysis
+## E8 — Complex Analysis — Complete
 
-- complex-valued functions;
-- real/imaginary decomposition;
-- complex differentiability;
-- Cauchy–Riemann checks;
-- elementary complex mappings;
-- complex power and Laurent series;
-- isolated singularities;
-- residues;
-- contour integrals in supported parameterized forms;
-- residue-theorem workflows;
-- branch/domain diagnostics;
-- later connection to complex-plane visualization.
+E8 extends existing unary scalar expressions/functions and the existing complex constant `i`; it does not introduce a parallel complex-expression language.
+
+Implemented complex-function/differentiability baseline:
+
+- exact substitution `z=x+iy` and rectangular `u(x,y)+iv(x,y)` decomposition for supported arithmetic and elementary forms;
+- exact symbolic complex derivatives for supported holomorphic elementary expressions;
+- explicit refusal of structural non-holomorphic forms such as `abs` for global derivative claims;
+- exact Cauchy–Riemann residual construction and certification when both identities simplify to zero;
+- branch-local derivative warnings for logarithm/square-root style functions rather than global single-valued claims;
+- binary64 complex point mappings with rectangular/polar output and a local derivative signal;
+- algebraic integer-power evaluation at the origin rather than a spurious `log(0)` path.
+
+Implemented series/singularity/residue baseline:
+
+- exact rational power/Laurent coefficient recurrence around configured real rational centers;
+- exact rational regular/removable/pole classification;
+- exact pole order and Laurent residue extraction;
+- nearest-pole radius estimate where bounded denominator root discovery applies;
+- numerical small-circle residue fallback for supported single-valued cases outside the exact path;
+- explicit refusal to assign ordinary residues at unresolved branch points.
+
+Implemented contour/branch baseline:
+
+- deterministic numerical contour integration over circles and line segments;
+- bounded circular residue-theorem automation for rational functions with real rational coefficients and denominator degree at most two;
+- simple-pole requirement and pole-on-contour refusal;
+- logarithm, square-root, argument and non-integer-power branch diagnostics with principal-branch conventions;
+- exact/approximate provenance maintained across every workflow.
+
+E8 does not claim general analytic continuation, Riemann surfaces, arbitrary complex-center/transcendental Laurent expansions, essential-singularity series generation, general symbolic pole discovery, arbitrary residue algebra, rigorous contour error bounds, the argument principle, Rouché's theorem, or a full conformal-mapping/complex-plane visualization system.
+
+E8 tools participate in the cumulative Worker/engine chain, capability registry, shared inspector controls, Workspace actions, and global Tools/`Ctrl+K` discovery.
+
+See `E8_ACCEPTANCE.md`.
 
 ---
 
-## E9 — Discrete Mathematics II, Algorithms & Number Theory
+## Next — E9: Discrete Mathematics II, Algorithms & Number Theory
 
 ### Discrete mathematics and algorithms
 
@@ -344,7 +366,7 @@ Re-run the exact M7 rubric rather than inventing a more favorable metric.
 
 ## Current evidence after E3
 
-The most recent fixed M7 re-score was taken after E3; E4–E7 have not been used to rewrite that historical score outside the scheduled integration audit.
+The most recent fixed M7 re-score was taken after E3; E4–E8 have not been used to rewrite that historical score outside the scheduled integration audit.
 
 Under that fixed M7 22-domain rubric:
 

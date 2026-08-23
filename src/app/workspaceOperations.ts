@@ -15,12 +15,14 @@ export const OPERATIONS_REQUIRING_CONTROLS = new Set([
   'nonlinear-system-solve','numerical-optimize','constrained-optimize','convexity-diagnostic','linear-program',
   'affine-rv-transform','two-sample-mean-inference','paired-mean-inference','two-proportion-inference','chi-square-goodness','bootstrap-mean','markov-step',
   'convolution','fourier-series','numerical-fourier-transform','numerical-inverse-fourier-transform',
+  'complex-map','complex-series','singularity-profile','complex-residue','complex-contour-integral','residue-theorem',
 ]);
 
 const PRIORITY = [
   'solve','solve-inequality','solve-system','simplify','factor','expand',
   'gradient','jacobian','hessian','multivariable-critical-points','second-derivative-test',
   'vector-field-profile','divergence','curl','conservative-field','scalar-potential',
+  'complex-decompose','complex-derivative','cauchy-riemann','branch-diagnostics',
   'ode-profile','ode-symbolic-solve','laplace-ode-solve','ode-equilibria','ode-stability','ode-linearize','ode-to-system','ode-adaptive-solve',
   'laplace-transform','inverse-laplace-transform','fourier-transform','inverse-fourier-transform','discrete-fourier-transform','inverse-discrete-fourier-transform',
   'numerical-lu','numerical-cholesky','numerical-qr','numerical-eigen','numerical-svd','pseudoinverse','numerical-rank','spectral-condition','conjugate-gradient','numerical-optimize','nonlinear-system-solve',
