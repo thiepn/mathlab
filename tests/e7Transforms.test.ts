@@ -23,8 +23,8 @@ describe('E7 Fourier, Laplace and transform methods', () => {
   it('computes exact Laplace transforms of polynomial and trigonometric combinations', async () => {
     const result = await run('f(t) := t^2 + 3*sin(2*t)', 'laplace-transform');
     expect(result.exactness).toBe('exact');
-    expect(result.display).toContain('s');
-    expect(result.display).toContain('6');
+    expect(result.display).toContain('2 / s ^ 3');
+    expect(result.display).toContain('3 * 2 / (s ^ 2 + 4)');
   });
 
   it('applies the exponential shift rule exactly', async () => {
