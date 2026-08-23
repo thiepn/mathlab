@@ -1,1 +1,1 @@
-export { ProofLabPage } from './ProofLabPageM6';
+export { ProofLabPage } from './ProofLabPageE11';
