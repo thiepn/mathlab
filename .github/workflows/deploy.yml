@@ -31,6 +31,9 @@ jobs:
       - name: Release audit
         run: npm run audit:release
 
+      - name: E12 certification audit
+        run: npm run audit:e12
+
       - name: Install dependencies
         run: npm install --no-package-lock
 
