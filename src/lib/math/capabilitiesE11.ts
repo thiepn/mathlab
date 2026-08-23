@@ -18,7 +18,7 @@ export function e11CapabilitiesForObject(object:SemanticMathObject):ObjectCapabi
   if(['expression','equation','inequality','function'].includes(object.kind))out.push(ready(REWRITE));
   if(object.kind==='inequality')out.push(ready(ORDER));
   if(object.kind==='finite-set')out.push(ready(QUANTIFIER));
-  if(object.kind==='equation')out.push(ready(INDUCTION));
+  if(object.kind==='equation'||(object.kind==='function'&&object.parameters.length===1&&object.definitionStyle==='natural'))out.push(ready(INDUCTION));
   if(object.kind==='expression'||object.kind==='function'){
     const variables=object.kind==='function'?object.parameters:object.variables;
     out.push(variables.length===1?ready(ANALYSIS):blocked(ANALYSIS,'The E11 point theorem certificate currently requires exactly one independent real variable.'));
