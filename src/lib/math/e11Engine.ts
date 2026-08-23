@@ -20,11 +20,11 @@ const E11_OPERATIONS=new Set([
   'analysis-theorem-certificate','linear-algebra-theorem-certificate','finite-group-theorem-certificate',
 ]);
 
+function parsedInputAst(request:MathOperationRequest):AstNode{
+  const parsed=parseMath(request.input),error=parsed.diagnostics.find(item=>item.severity==='error');if(!parsed.ast||error)throw new Error(error?.message??'Could not parse the E11 proof input.');return parsed.ast;
+}
 function requestAst(request:MathOperationRequest):AstNode{
-  let source=request.ast;
-  if(!source){const parsed=parseMath(request.input);const error=parsed.diagnostics.find(item=>item.severity==='error');if(!parsed.ast||error)throw new Error(error?.message??'Could not parse the E11 proof input.');source=parsed.ast;}
-  const ast=source.type==='definition'?source.right:source;
-  return substituteBindings(ast,request.bindings??[],[]);
+  let source=request.ast??parsedInputAst(request);const ast=source.type==='definition'?source.right:source;return substituteBindings(ast,request.bindings??[],[]);
 }
 function text(request:MathOperationRequest,name:string,fallback=''):string{const raw=request.options?.[name];return raw===undefined?fallback:String(raw).trim();}
 function integer(request:MathOperationRequest,name:string,fallback:number):number{const raw=request.options?.[name],value=raw===undefined||raw===''?fallback:Number(raw);if(!Number.isSafeInteger(value))throw new Error(`${name} must be a safe integer.`);return value;}
@@ -34,7 +34,7 @@ export class E11MathEngine extends E10MathEngine{
   async execute(request:MathOperationRequest):Promise<MathResult>{
     if(!E11_OPERATIONS.has(request.operation))return super.execute(request);
     if(request.operation==='theorem-registry')return result(request,theoremRegistry());
-    const ast=requestAst(request);
+    const ast=request.operation==='induction-certificate'?parsedInputAst(request):requestAst(request);
     switch(request.operation){
       case 'lemma-rewrite': return result(request,lemmaRewrite(ast,text(request,'target'),text(request,'lemma'),text(request,'direction','forward')==='reverse'?'reverse':'forward',text(request,'occurrence','first')==='all'?'all':'first'));
       case 'inequality-consequence': return result(request,inequalityConsequence(ast,text(request,'target')));
