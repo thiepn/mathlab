@@ -34,14 +34,29 @@ jobs:
       - name: E12 certification audit
         run: npm run audit:e12
 
+      - name: Stable release audit
+        run: npm run audit:stable
+
       - name: Install dependencies
         run: npm install --no-package-lock
+
+      - name: Dependency security gate
+        run: |
+          npm install --package-lock-only --ignore-scripts --no-audit --no-fund
+          npm audit --audit-level=high
+          rm package-lock.json
 
       - name: Run tests
         run: npm run test
 
       - name: Build
         run: npm run build
+
+      - name: Install certified browser engines
+        run: npx playwright install --with-deps chromium firefox webkit
+
+      - name: Cross-browser stable release smoke
+        run: npm run test:e2e
 
       - name: Configure GitHub Pages
         uses: actions/configure-pages@v5
