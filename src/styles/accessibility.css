@@ -5,6 +5,13 @@
   outline-offset: -3px;
 }
 
+/* Keep selected tool metadata comfortably above WCAG AA contrast on the blue selection surface. */
+.tool-card.is-selected .tool-card-main small,
+.tool-card.is-selected .status-example,
+.tool-card.is-selected .tool-card-meta b {
+  color: #465466;
+}
+
 @media (max-width: 820px) {
   .mobile-nav.mobile-nav-six {
     grid-template-columns: repeat(6, minmax(0, 1fr));
@@ -12,7 +19,10 @@
 
   .mobile-nav.mobile-nav-six button {
     min-width: 0;
-    padding-inline: 0;
+    padding-inline: 1px;
+    white-space: normal;
+    overflow-wrap: anywhere;
+    line-height: 1.05;
   }
 }
 
