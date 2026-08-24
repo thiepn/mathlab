@@ -9,6 +9,7 @@ import { MathPreview } from './MathPreview';
 
 interface MathInputProps {
   initialValue?: string;
+  canSubmit?: boolean;
   onChangeParsed?: (parsed: ParsedMath) => void;
   onSubmit?: (parsed: ParsedMath) => void;
 }
@@ -40,7 +41,7 @@ function insertAt(value: string, start: number, end: number, text: string) {
   return { value: next, cursor: start + text.length - (emptyPair ? 1 : 0) };
 }
 
-export function MathInput({ initialValue = '', onChangeParsed, onSubmit }: MathInputProps) {
+export function MathInput({ initialValue = '', canSubmit = true, onChangeParsed, onSubmit }: MathInputProps) {
   const [value, setValue] = useState(initialValue);
   const [cursor, setCursor] = useState(initialValue.length);
   const [suggestionIndex, setSuggestionIndex] = useState(0);
@@ -80,7 +81,7 @@ export function MathInput({ initialValue = '', onChangeParsed, onSubmit }: MathI
   };
 
   const submit = async () => {
-    if (!value.trim() || errors.length > 0 || !parsed.ast) return;
+    if (!canSubmit || !value.trim() || errors.length > 0 || !parsed.ast) return;
     await add({ source: value.trim(), normalizedSource: parsed.normalizedSource, kind });
     setHistoryIndex(-1);
     onSubmit?.(parsed);
@@ -171,7 +172,7 @@ export function MathInput({ initialValue = '', onChangeParsed, onSubmit }: MathI
           aria-describedby={firstError ? 'math-input-diagnostic' : 'math-input-status'}
           aria-label="Mathematical input"
         />
-        <button className="run-button" onClick={() => void submit()} disabled={Boolean(firstError) || !parsed.ast}>Commit <span>→</span></button>
+        <button className="run-button" onClick={() => void submit()} disabled={!canSubmit || Boolean(firstError) || !parsed.ast} title={!canSubmit ? 'Workspace storage is still loading.' : undefined}>Commit <span>→</span></button>
 
         {suggestions.length > 0 && (
           <div className="math-suggestions" role="listbox" aria-label="Mathematical input suggestions">
@@ -194,7 +195,7 @@ export function MathInput({ initialValue = '', onChangeParsed, onSubmit }: MathI
 
       <div className="math-helper-row" aria-label="Mathematical input helpers">
         {helpers.map((helper) => <button key={helper.label} onClick={() => applyHelper(helper.text)}>{helper.label}</button>)}
-        <span className="helper-note">Use := for explicit definitions · LaTeX paste · Enter commits</span>
+        <span className="helper-note">{canSubmit ? 'Use := for explicit definitions · LaTeX paste · Enter commits' : 'Workspace storage is loading · editing is available; Commit unlocks when ready'}</span>
       </div>
 
       <div className="live-preview-panel">
