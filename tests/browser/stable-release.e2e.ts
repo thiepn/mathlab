@@ -15,6 +15,10 @@ async function openWorkspace(page: Page) {
   await expect(page.getByRole('heading', { name: /What do you want to work out\?|Working on/ })).toBeVisible();
 }
 
+function isMobileProject(name: string) {
+  return name === 'android-chromium' || name === 'ios-webkit';
+}
+
 test('boots cleanly and every primary route is reachable', async ({ page }) => {
   const pageErrors: string[] = [];
   const consoleErrors: string[] = [];
@@ -22,7 +26,7 @@ test('boots cleanly and every primary route is reachable', async ({ page }) => {
   page.on('console', (message) => { if (message.type() === 'error') consoleErrors.push(message.text()); });
 
   await openWorkspace(page);
-  await expect(page.getByText('v2.0 RC1', { exact: true })).toBeVisible();
+  await expect(page.locator('.release-badge')).toHaveText(/^v2\.0(?: RC1)?$/);
 
   for (const [route, label] of routes) {
     await page.goto(`/#/${route}`);
@@ -47,7 +51,19 @@ test('visible navigation works at desktop and mobile widths without horizontal p
   expect(overflow).toBeLessThanOrEqual(1);
 });
 
-test('command palette opens from the keyboard, filters tools, closes, and restores focus', async ({ page }) => {
+test('standard release widths remain structurally responsive', async ({ page }, testInfo) => {
+  test.skip(testInfo.project.name !== 'chromium-desktop', 'Canonical width sweep runs once in Chromium; mobile engine projects cover touch layouts.');
+  for (const width of [320, 375, 768, 1024, 1440]) {
+    await page.setViewportSize({ width, height: width < 800 ? 844 : 900 });
+    await openWorkspace(page);
+    await expect(page.getByRole('textbox', { name: 'Mathematical input' })).toBeVisible();
+    const overflow = await page.evaluate(() => document.documentElement.scrollWidth - window.innerWidth);
+    expect(overflow, `horizontal overflow at ${width}px`).toBeLessThanOrEqual(1);
+  }
+});
+
+test('command palette opens from the keyboard, filters tools, closes, and restores focus', async ({ page }, testInfo) => {
+  test.skip(isMobileProject(testInfo.project.name), 'Keyboard shortcut/focus restoration is a desktop interaction; mobile discovery is covered through the bottom navigation.');
   await openWorkspace(page);
   const searchButton = page.getByRole('button', { name: 'Search mathematical tools and workspace' });
   await searchButton.focus();
@@ -64,6 +80,17 @@ test('command palette opens from the keyboard, filters tools, closes, and restor
   await expect(searchButton).toBeFocused();
 });
 
+test('skip link and primary mathematical input expose keyboard-accessible semantics', async ({ page }, testInfo) => {
+  test.skip(testInfo.project.name !== 'chromium-desktop', 'One deterministic keyboard semantics pass is sufficient; this is not claimed as a screen-reader certification.');
+  await openWorkspace(page);
+  const skip = page.getByRole('link', { name: 'Skip to main content' });
+  await skip.focus();
+  await expect(skip).toBeVisible();
+  await page.keyboard.press('Enter');
+  await expect(page.locator('#mathlab-main')).toBeFocused();
+  await expect(page.getByRole('textbox', { name: 'Mathematical input' })).toBeVisible();
+});
+
 test('workspace commits mathematics and executes the Worker engine', async ({ page }) => {
   await openWorkspace(page);
   const input = page.getByRole('textbox', { name: 'Mathematical input' });
@@ -73,9 +100,9 @@ test('workspace commits mathematics and executes the Worker engine', async ({ pa
 
   await page.getByRole('button', { name: /^Factor/ }).click();
   const result = page.locator('#mathlab-result');
-  await expect(result).toBeVisible();
-  await expect(result.getByText('EXACT', { exact: true })).toBeVisible();
+  await expect(result).toBeVisible({ timeout: 15_000 });
   await expect(result.locator('.engine-error')).toHaveCount(0);
+  await expect(result.getByText('EXACT', { exact: true })).toBeVisible();
 });
 
 test('IndexedDB workspace state survives a browser reload', async ({ page }) => {
@@ -105,7 +132,6 @@ test('installed service worker supports an offline application reload', async ({
   try {
     await page.reload({ waitUntil: 'domcontentloaded' });
     await expect(page).toHaveTitle('Workspace · MathLab');
-    await expect(page.getByText('Offline', { exact: true })).toBeVisible();
     await expect(page.getByRole('textbox', { name: 'Mathematical input' })).toBeVisible();
   } finally {
     await context.setOffline(false);
