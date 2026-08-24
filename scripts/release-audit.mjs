@@ -7,7 +7,7 @@ const pass = (condition, message) => { if (!condition) failures.push(message); }
 const text = (path) => readFileSync(join(root, path), 'utf8');
 
 const pkg = JSON.parse(text('package.json'));
-pass(pkg.version === '2.0.0-rc.1', 'package version must be 2.0.0-rc.1');
+pass(pkg.version === '2.0.0', 'package version must be stable 2.0.0');
 pass(pkg.engines?.node === '^20.19.0 || >=22.12.0', 'Node engine must match the supported Vite 7 runtime floor');
 pass(pkg.devDependencies?.vite === '7.3.5', 'Vite must stay pinned to the security-patched 7.3.5 release');
 pass(pkg.devDependencies?.vitest === '3.2.7', 'Vitest must stay pinned to the security-patched 3.2.7 release');
@@ -48,8 +48,9 @@ const app = text('src/app/App.tsx');
 pass(app.includes('skip-link'), 'app lacks keyboard skip link');
 pass(app.includes('navigator.onLine'), 'app lacks online/offline state');
 const header = text('src/app/components/Header.tsx');
-pass(header.includes('v2.0 RC1'), 'header must identify the build as v2.0 RC1 rather than stable v2.0');
-pass(header.includes('v2.0.0-rc.1'), 'header release-candidate title must match the package version');
+pass(header.includes('>v2.0</span>'), 'header must identify the stable v2.0 release');
+pass(header.includes('v2.0.0 stable release'), 'header stable title must match the package version');
+pass(!header.includes('RC1') && !header.includes('2.0.0-rc.1'), 'release UI must not retain RC identity');
 
 const main = text('src/main.tsx');
 pass(main.includes('AppErrorBoundary'), 'app lacks top-level error boundary');
