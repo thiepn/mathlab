@@ -14,6 +14,23 @@
   color: #465466;
 }
 
+/* Proof mode descriptions and proof-principle indices must remain legible on their tinted surfaces. */
+.m6-proof-modes button.is-active > small,
+.m6-proof-principles article > span {
+  color: #465466;
+}
+
+/* The proof preview owns horizontal scrolling; keep the MathML itself non-scrollable so keyboard
+   focus lands on the labelled preview region instead of creating an inaccessible nested scroller. */
+.m6-proof-preview .math-preview.is-compact {
+  overflow: visible;
+}
+
+.m6-proof-preview:focus-visible {
+  outline: 3px solid var(--ml-blue);
+  outline-offset: 2px;
+}
+
 @media (max-width: 820px) {
   /* M3 makes the desktop workspace sidebar sticky after the earlier mobile drawer rules.
      Restore the intended off-canvas drawer on phones so it does not occupy document flow. */
@@ -43,7 +60,8 @@
 }
 
 @media (forced-colors: active) {
-  .math-input-shell input:focus-visible {
+  .math-input-shell input:focus-visible,
+  .m6-proof-preview:focus-visible {
     outline: 3px solid Highlight !important;
     outline-offset: -3px;
   }
