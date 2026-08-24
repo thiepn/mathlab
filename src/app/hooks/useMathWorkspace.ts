@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import type { ParsedMath } from '../../lib/math/ast';
 import { detectAssumptionConflicts, parseAssumption } from '../../lib/math/assumptions';
 import { dependentObjects, duplicateObject, renameObjectAndReferences } from '../../lib/math/workspaceLifecycle';
@@ -35,11 +35,17 @@ export function useMathWorkspace() {
   const [workingObject, setWorkingObject] = useState<SemanticMathObject | null>(null);
   const [hydrated, setHydrated] = useState(false);
   const [saveState, setSaveState] = useState<'loading' | 'saved' | 'saving' | 'error'>('loading');
+  const skipHydratedSaveRef = useRef(false);
 
   useEffect(() => {
     let mounted = true;
     void loadWorkspace().then((loaded) => {
       if (!mounted) return;
+      // Hydration is a read, not a user mutation. Rewriting the same snapshot on
+      // every boot creates needless IndexedDB traffic and can compete with a very
+      // fast first edit. Skip exactly the state transition produced by hydration;
+      // every subsequent workspace mutation still enters the normal save path.
+      skipHydratedSaveRef.current = true;
       setState(loaded);
       setHydrated(true);
       setSaveState('saved');
@@ -53,6 +59,10 @@ export function useMathWorkspace() {
 
   useEffect(() => {
     if (!hydrated) return;
+    if (skipHydratedSaveRef.current) {
+      skipHydratedSaveRef.current = false;
+      return;
+    }
     setSaveState('saving');
     const handle = window.setTimeout(() => {
       void saveWorkspace(state).then(() => setSaveState('saved')).catch(() => setSaveState('error'));
