@@ -16,6 +16,15 @@ async function expectNoPageOverflow(page: Page, context: string) {
   expect(overflow, context).toBeLessThanOrEqual(1);
 }
 
+function cssTimeToMs(value: string) {
+  return Math.max(...value.split(',').map((entry) => {
+    const normalized = entry.trim();
+    if (normalized.endsWith('ms')) return Number.parseFloat(normalized);
+    if (normalized.endsWith('s')) return Number.parseFloat(normalized) * 1000;
+    throw new Error(`Unsupported CSS time value: ${normalized}`);
+  }));
+}
+
 test('primary routes have no automated WCAG A/AA violations', async ({ page }, testInfo) => {
   test.skip(testInfo.project.name !== 'chromium-desktop', 'Axe runs once on the canonical DOM; engine/device behavior is certified separately.');
 
@@ -76,8 +85,8 @@ test('reduced-motion preference disables smooth scrolling and long animation/tra
     };
   });
   expect(values.scrollBehavior).toBe('auto');
-  expect(values.animationDuration).toMatch(/0\.0+1ms|0s/);
-  expect(values.transitionDuration).toMatch(/0\.0+1ms|0s/);
+  expect(cssTimeToMs(values.animationDuration)).toBeLessThanOrEqual(1);
+  expect(cssTimeToMs(values.transitionDuration)).toBeLessThanOrEqual(1);
 });
 
 test('forced-colors mode retains visible keyboard focus and usable core controls', async ({ page }, testInfo) => {
@@ -88,6 +97,7 @@ test('forced-colors mode retains visible keyboard focus and usable core controls
 
   const input = page.getByRole('textbox', { name: 'Mathematical input' });
   await input.focus();
+  expect(await input.evaluate((element) => element.matches(':focus-visible'))).toBe(true);
   const outline = await input.evaluate((element) => {
     const style = getComputedStyle(element);
     return { width: Number.parseFloat(style.outlineWidth), style: style.outlineStyle };
