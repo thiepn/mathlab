@@ -26,7 +26,7 @@ test('boots cleanly and every primary route is reachable', async ({ page }) => {
   page.on('console', (message) => { if (message.type() === 'error') consoleErrors.push(message.text()); });
 
   await openWorkspace(page);
-  await expect(page.locator('.release-badge')).toHaveText(/^v2\.0(?: RC1)?$/);
+  await expect(page.locator('.release-badge')).toHaveText('v2.0');
 
   for (const [route, label] of routes) {
     await page.goto(`/#/${route}`);
@@ -108,13 +108,40 @@ test('workspace commits mathematics and executes the Worker engine', async ({ pa
 test('IndexedDB workspace state survives a browser reload', async ({ page }) => {
   await openWorkspace(page);
   const input = page.getByRole('textbox', { name: 'Mathematical input' });
-  const saveState = page.locator('.save-state');
   await input.fill('stable_probe := 2');
   await page.getByRole('button', { name: /Commit/ }).click();
   await expect(page.getByText(/Saved stable_probe to the workspace\.|Updated stable_probe\./)).toBeVisible();
-  await expect(saveState).toHaveText('Saving');
-  await expect(saveState).toHaveText('Saved locally');
 
+  // Certify the actual persisted record rather than relying on observing the
+  // transient "Saving" label, which a fast IndexedDB implementation may skip
+  // between Playwright polling intervals.
+  await page.waitForFunction(async () => {
+    try {
+      const record = await new Promise<Record<string, unknown> | null>((resolve) => {
+        const open = indexedDB.open('mathlab', 1);
+        open.onerror = () => resolve(null);
+        open.onblocked = () => resolve(null);
+        open.onsuccess = () => {
+          const db = open.result;
+          try {
+            const tx = db.transaction('records', 'readonly');
+            const request = tx.objectStore('records').get('workspace:p15:default');
+            request.onerror = () => { db.close(); resolve(null); };
+            request.onsuccess = () => { db.close(); resolve(request.result as Record<string, unknown> | null); };
+          } catch {
+            db.close();
+            resolve(null);
+          }
+        };
+      });
+      const value = record?.value as { objects?: Array<{ name?: string; source?: string }> } | undefined;
+      return Boolean(value?.objects?.some((object) => object.name === 'stable_probe' && object.source === 'stable_probe := 2'));
+    } catch {
+      return false;
+    }
+  }, undefined, { timeout: 15_000 });
+
+  await expect(page.locator('.save-state')).toHaveText('Saved locally');
   await page.reload();
   await expect(page.getByRole('heading', { name: 'Working on stable_probe' })).toBeVisible();
   await expect(page.getByRole('textbox', { name: 'Mathematical input' })).toHaveValue('stable_probe := 2');
