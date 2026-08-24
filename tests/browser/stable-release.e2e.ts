@@ -1,4 +1,4 @@
-import { expect, test } from '@playwright/test';
+import { expect, test, type Page } from '@playwright/test';
 
 const routes = [
   ['workspace', 'Workspace'],
@@ -9,7 +9,7 @@ const routes = [
   ['reference', 'Reference'],
 ] as const;
 
-async function openWorkspace(page: Parameters<typeof test>[0] extends never ? never : any) {
+async function openWorkspace(page: Page) {
   await page.goto('/#/workspace');
   await expect(page).toHaveTitle('Workspace · MathLab');
   await expect(page.getByRole('heading', { name: /What do you want to work out\?|Working on/ })).toBeVisible();
