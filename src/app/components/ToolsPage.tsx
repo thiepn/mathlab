@@ -73,7 +73,7 @@ export function ToolsPage({ currentObject, initialToolId = '', onRun, onConfigur
           <input value={query} onChange={(event) => setQuery(event.target.value)} placeholder="Search ANOVA, regression, Markov, SVD, BFGS, RK45, Bayes, RREF…" aria-label="Search tools" />
           {query && <button onClick={() => setQuery('')}>Clear</button>}
         </div>
-        <div className="tool-category-strip" role="list" aria-label="Tool categories">
+        <div className="tool-category-strip" role="group" aria-label="Tool categories">
           {(['All', ...TOOL_CATEGORIES] as const).map((item) => (
             <button key={item} className={category === item ? 'is-active' : ''} onClick={() => setCategory(item)}>{item}</button>
           ))}

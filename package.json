@@ -15,13 +15,15 @@
     "audit:release": "node scripts/release-audit.mjs",
     "audit:e12": "node scripts/e12-audit.mjs",
     "audit:stable": "node scripts/stable-audit.mjs",
-    "check:release": "npm run audit:release && npm run audit:e12 && npm run audit:stable && npm run check"
+    "audit:accessibility": "node scripts/accessibility-device-audit.mjs",
+    "check:release": "npm run audit:release && npm run audit:e12 && npm run audit:stable && npm run audit:accessibility && npm run check"
   },
   "dependencies": {
     "react": "19.1.1",
     "react-dom": "19.1.1"
   },
   "devDependencies": {
+    "@axe-core/playwright": "4.13.0",
     "@playwright/test": "1.62.1",
     "@types/react": "19.1.10",
     "@types/react-dom": "19.1.7",

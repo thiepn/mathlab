@@ -17,7 +17,10 @@ async function openWorkspace(page: Page) {
 }
 
 function isMobileProject(name: string) {
-  return name === 'android-chromium' || name === 'ios-webkit';
+  return name === 'android-chromium'
+    || name === 'ios-webkit'
+    || name === 'android-tablet-chromium'
+    || name === 'ipad-webkit';
 }
 
 test('boots cleanly and every primary route is reachable', async ({ page }) => {
@@ -64,7 +67,7 @@ test('standard release widths remain structurally responsive', async ({ page }, 
 });
 
 test('command palette opens from the keyboard, filters tools, closes, and restores focus', async ({ page }, testInfo) => {
-  test.skip(isMobileProject(testInfo.project.name), 'Keyboard shortcut/focus restoration is a desktop interaction; mobile discovery is covered through the bottom navigation.');
+  test.skip(isMobileProject(testInfo.project.name), 'Keyboard shortcut/focus restoration is a desktop interaction; mobile discovery is covered through touch navigation.');
   await openWorkspace(page);
   const searchButton = page.getByRole('button', { name: 'Search mathematical tools and workspace' });
   await searchButton.focus();
@@ -113,9 +116,6 @@ test('IndexedDB workspace state survives a browser reload', async ({ page }) => 
   await page.getByRole('button', { name: /Commit/ }).click();
   await expect(page.getByText(/Saved stable_probe to the workspace\.|Updated stable_probe\./)).toBeVisible();
 
-  // Certify the actual persisted record rather than relying on observing the
-  // transient "Saving" label, which a fast IndexedDB implementation may skip
-  // between Playwright polling intervals.
   await page.waitForFunction(async () => {
     try {
       const record = await new Promise<Record<string, unknown> | null>((resolve) => {
