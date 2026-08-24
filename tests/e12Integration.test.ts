@@ -62,12 +62,14 @@ describe('E12 mathematical integration invariants',()=>{
     expect(E12_GOLDEN_CORPUS.some((entry)=>entry.expectedExactness==='approximate')).toBe(true);
   });
 
-  it('keeps certification scope separate from external browser/device claims',()=>{
-    expect(E12_TARGET_VERSION).toBe('2.0.0-rc.1');
+  it('records stable automated coverage separately from physical-device claims',()=>{
+    expect(E12_TARGET_VERSION).toBe('2.0.0');
     expect(E12_AUTOMATED_GATES).toContain('golden-cross-domain-corpus');
     expect(E12_AUTOMATED_GATES).toContain('pwa-static-contract');
-    expect(E12_EXTERNAL_RELEASE_GATES).toContain('Android Chrome smoke');
-    expect(E12_EXTERNAL_RELEASE_GATES).toContain('iOS Safari/WebKit smoke');
+    expect(E12_AUTOMATED_GATES).toContain('chromium-firefox-webkit-smoke');
+    expect(E12_AUTOMATED_GATES).toContain('android-ios-engine-emulation');
+    expect(E12_EXTERNAL_RELEASE_GATES).toContain('physical Android Chrome spot check');
+    expect(E12_EXTERNAL_RELEASE_GATES).toContain('physical iOS Safari spot check');
   });
 
   it('does not equate zero missing domains with comprehensive mathematics',()=>{
