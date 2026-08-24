@@ -13,6 +13,7 @@ async function openWorkspace(page: Page) {
   await page.goto('/#/workspace');
   await expect(page).toHaveTitle('Workspace · MathLab');
   await expect(page.getByRole('heading', { name: /What do you want to work out\?|Working on/ })).toBeVisible();
+  await expect(page.locator('.save-state')).toHaveText('Saved locally');
 }
 
 function isMobileProject(name: string) {
