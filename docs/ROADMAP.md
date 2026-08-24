@@ -93,16 +93,21 @@ Visualization may consume an existing Semantic Object directly only as a read-on
 
 ## Current release state
 
-The completed P/M/E source is promoted to **`v2.0.0-rc.1`** only after the exact final E12 branch head passes:
+**MathLab v2.0.0 is the stable live release.** The stable source passed the release/E12/stable audits, full regression suite, strict TypeScript, production build and real Chromium/Firefox/WebKit browser-engine gate. GitHub Pages then deployed `main`, and the separate custom-domain verification passed against `https://thiepn.dev/mathlab/` with a `mathlab-production: success` status.
 
-- P15 release audit;
-- E12 certification audit;
-- complete Vitest suite;
-- strict TypeScript;
-- Vite production build.
+Post-v2 hardening now adds a dedicated accessibility/device certification layer without changing the release identity or the locked E-series. It adds:
 
-Stable **`v2.0.0` is not certified by repository CI alone**. It remains gated on real deployed Chromium/Firefox, Android Chrome, iOS Safari/WebKit, PWA install/offline/upgrade, keyboard/screen-reader and visual-regression evidence described in `RELEASE_CERTIFICATION.md`.
+- automated axe-core WCAG A/AA route scans;
+- 320px + 200% text reflow checks;
+- visible first-focus/skip-link checks;
+- reduced-motion and forced-colors checks;
+- Android/iOS phone and Android/iPad tablet browser emulation;
+- portrait/landscape touch-layout checks;
+- primary touch-target sizing checks;
+- stronger PWA manifest and service-worker installability contracts.
+
+The automated matrix is not a substitute for physical hardware or assistive technology. Physical Android/iPhone/iPad behavior, installed PWA behavior on those devices, VoiceOver, TalkBack, NVDA and physical Windows High Contrast remain external manual evidence items documented in `ACCESSIBILITY_DEVICE_CERTIFICATION.md`.
 
 ## What comes after E12
 
-There is **no E13 in the locked expansion roadmap**. E12 closes the planned E-series. Future work should be driven by concrete post-RC defects, real-user UX findings, performance/security maintenance, or a deliberately defined new roadmap rather than continuing phase numbering automatically.
+There is **no E13 in the locked expansion roadmap**. E12 closes the planned E-series. Future work is post-v2 maintenance/hardening driven by concrete defects, accessibility/device findings, performance/security maintenance, or a deliberately defined new roadmap rather than continuing phase numbering automatically.
