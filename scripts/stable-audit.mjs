@@ -94,6 +94,11 @@ pass(deploy.includes('needs: deploy'), 'live production verification must run on
 pass(deploy.includes('https://thiepn.dev/mathlab/'), 'live production verification must target the canonical custom domain');
 pass(deploy.includes('node scripts/wait-for-production.mjs'), 'Pages workflow must wait for custom-domain propagation before browser verification');
 pass(deploy.includes('playwright.production.config.mjs'), 'Pages workflow must execute the production Playwright configuration');
+pass(deploy.includes('statuses: write'), 'Pages workflow must be able to publish an observable production verification status');
+pass(deploy.includes('PRODUCTION_STATUS_CONTEXT: mathlab-production'), 'Pages workflow must use the canonical mathlab-production commit-status context');
+pass(deploy.includes('Mark production verification pending'), 'Pages workflow must publish a pending production status before live verification');
+pass(deploy.includes('Mark production verification successful'), 'Pages workflow must publish success after live verification');
+pass(deploy.includes('Mark production verification failed'), 'Pages workflow must publish failure when live verification fails');
 
 if (failures.length) {
   console.error(`MathLab stable release audit failed (${failures.length} issue${failures.length === 1 ? '' : 's'}):`);
