@@ -1,6 +1,7 @@
 import { expect, test, type Page } from '@playwright/test';
 
-const productionURL = new URL(process.env.MATHLAB_PRODUCTION_URL ?? 'https://thiepn.dev/mathlab/');
+const runtime = globalThis as typeof globalThis & { process?: { env?: Record<string, string | undefined> } };
+const productionURL = new URL(runtime.process?.env?.MATHLAB_PRODUCTION_URL ?? 'https://thiepn.dev/mathlab/');
 const routes = ['workspace', 'tools', 'visualize', 'proof', 'practice', 'reference'] as const;
 
 function routeURL(route: string) {
