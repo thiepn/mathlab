@@ -10,16 +10,19 @@
     "typecheck": "tsc -b --pretty false",
     "test": "vitest run",
     "test:watch": "vitest",
+    "test:e2e": "playwright test --config=playwright.config.mjs",
     "check": "npm run typecheck && npm run test && npm run build",
     "audit:release": "node scripts/release-audit.mjs",
     "audit:e12": "node scripts/e12-audit.mjs",
-    "check:release": "npm run audit:release && npm run audit:e12 && npm run check"
+    "audit:stable": "node scripts/stable-audit.mjs",
+    "check:release": "npm run audit:release && npm run audit:e12 && npm run audit:stable && npm run check"
   },
   "dependencies": {
     "react": "19.1.1",
     "react-dom": "19.1.1"
   },
   "devDependencies": {
+    "@playwright/test": "1.62.1",
     "@types/react": "19.1.10",
     "@types/react-dom": "19.1.7",
     "@vitejs/plugin-react": "5.0.1",
