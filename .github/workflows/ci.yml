@@ -34,7 +34,10 @@ jobs:
         run: npm install --no-package-lock
 
       - name: Dependency security gate
-        run: npm audit --audit-level=high
+        run: |
+          npm install --package-lock-only --ignore-scripts --no-audit --no-fund
+          npm audit --audit-level=high
+          rm package-lock.json
 
       - name: Run tests
         run: npm run test
