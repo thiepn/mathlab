@@ -46,6 +46,7 @@ export function MathInput({ initialValue = '', onChangeParsed, onSubmit }: MathI
   const [suggestionIndex, setSuggestionIndex] = useState(0);
   const [historyIndex, setHistoryIndex] = useState(-1);
   const inputRef = useRef<HTMLInputElement>(null);
+  const onChangeParsedRef = useRef(onChangeParsed);
   const { history, add, clear } = useInputHistory();
 
   const parsed = useMemo(() => parseMath(value), [value]);
@@ -55,7 +56,8 @@ export function MathInput({ initialValue = '', onChangeParsed, onSubmit }: MathI
   const suggestions = useMemo(() => getMathSuggestions(value, cursor), [value, cursor]);
   const latex = parsed.ast && errors.length === 0 ? astToLatex(parsed.ast) : '';
 
-  useEffect(() => onChangeParsed?.(parsed), [parsed, onChangeParsed]);
+  useEffect(() => { onChangeParsedRef.current = onChangeParsed; }, [onChangeParsed]);
+  useEffect(() => onChangeParsedRef.current?.(parsed), [parsed]);
   useEffect(() => {
     setValue(initialValue);
     setCursor(initialValue.length);
