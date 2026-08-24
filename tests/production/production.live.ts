@@ -110,6 +110,10 @@ test('live IndexedDB workspace persists across a production reload', async ({ pa
     }
   }, undefined, { timeout: 20_000 });
 
+  // Reload only after MathLab itself reports that the asynchronous persistence
+  // protocol is complete. This matches the stable release contract and still
+  // verifies the real IndexedDB record independently above.
+  await expect(page.locator('.save-state')).toHaveText('Saved locally');
   await page.reload({ waitUntil: 'domcontentloaded' });
   await expect(page.locator('.save-state')).toHaveText('Saved locally');
   await expect(page.getByRole('heading', { name: 'Working on production_probe' })).toBeVisible();
