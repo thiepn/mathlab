@@ -11,6 +11,12 @@ const MAX_OBJECTS = 1000;
 const MAX_ASSUMPTIONS = 250;
 const MAX_IMPORT_BYTES = 5_000_000;
 
+// A workspace save spans more than one IndexedDB transaction: read the current
+// record, optionally write recovery, then write the new record. Without a queue,
+// two React effects can interleave those transactions and allow an older snapshot
+// to land after a newer one. Keep the complete save protocol ordered.
+let workspaceSaveQueue: Promise<void> = Promise.resolve();
+
 export function emptyWorkspace(): MathWorkspaceState {
   return { version: 3, objects: [], assumptions: [], pinnedObjectIds: [], activity: [], updatedAt: Date.now() };
 }
@@ -33,7 +39,8 @@ function isP3Workspace(value: unknown): value is MathWorkspaceState {
     && Array.isArray(candidate.objects) && candidate.objects.length <= MAX_OBJECTS && candidate.objects.every(validObject)
     && Array.isArray(candidate.assumptions) && candidate.assumptions.length <= MAX_ASSUMPTIONS && candidate.assumptions.every(validAssumption)
     && Array.isArray(candidate.pinnedObjectIds) && candidate.pinnedObjectIds.every((id) => typeof id === 'string')
-    && Array.isArray(candidate.activity);
+    && Array.isArray(candidate.activity)
+    && typeof candidate.updatedAt === 'number' && Number.isFinite(candidate.updatedAt);
 }
 
 function migrateP2(value: unknown): MathWorkspaceState | null {
@@ -60,7 +67,9 @@ export function normalizeWorkspace(state: MathWorkspaceState): MathWorkspaceStat
     activeObjectId: state.activeObjectId && validIds.has(state.activeObjectId) ? state.activeObjectId : undefined,
     pinnedObjectIds: state.pinnedObjectIds.filter((id, index, all) => validIds.has(id) && all.indexOf(id) === index),
     activity: state.activity.filter((item) => item && typeof item.id === 'string' && typeof item.label === 'string').slice(0, MAX_ACTIVITY),
-    updatedAt: Date.now(),
+    // Reading/exporting/normalizing a workspace is not a mutation. Preserve the
+    // revision so stale asynchronous saves can be identified reliably.
+    updatedAt: Number.isFinite(state.updatedAt) ? state.updatedAt : Date.now(),
   };
 }
 
@@ -86,13 +95,26 @@ export async function loadWorkspace(): Promise<MathWorkspaceState> {
   return emptyWorkspace();
 }
 
-export async function saveWorkspace(state: MathWorkspaceState): Promise<void> {
-  if (state.objects.length > MAX_OBJECTS) throw new Error(`Workspace limit exceeded (${MAX_OBJECTS} objects). Export or remove objects before continuing.`);
-  if (state.assumptions.length > MAX_ASSUMPTIONS) throw new Error(`Workspace limit exceeded (${MAX_ASSUMPTIONS} assumptions).`);
-  const normalized = normalizeWorkspace(state);
+async function persistWorkspace(snapshot: MathWorkspaceState): Promise<void> {
   const previous = await mathLabDb.get<unknown>(WORKSPACE_KEY);
+
+  // A delayed save must never roll the workspace back. This is deliberately
+  // checked inside the serialized save protocol so the comparison and write
+  // cannot race another MathLab save.
+  if (isP3Workspace(previous?.value) && previous.value.updatedAt > snapshot.updatedAt) return;
+
   if (isP3Workspace(previous?.value)) await mathLabDb.put(RECOVERY_KEY, previous.value);
-  await mathLabDb.put(WORKSPACE_KEY, normalized);
+  await mathLabDb.put(WORKSPACE_KEY, snapshot);
+}
+
+export function saveWorkspace(state: MathWorkspaceState): Promise<void> {
+  if (state.objects.length > MAX_OBJECTS) return Promise.reject(new Error(`Workspace limit exceeded (${MAX_OBJECTS} objects). Export or remove objects before continuing.`));
+  if (state.assumptions.length > MAX_ASSUMPTIONS) return Promise.reject(new Error(`Workspace limit exceeded (${MAX_ASSUMPTIONS} assumptions).`));
+  const snapshot = normalizeWorkspace(state);
+
+  const queued = workspaceSaveQueue.catch(() => undefined).then(() => persistWorkspace(snapshot));
+  workspaceSaveQueue = queued;
+  return queued;
 }
 
 export async function loadRecoveryWorkspace(): Promise<MathWorkspaceState | null> {
