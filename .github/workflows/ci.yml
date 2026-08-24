@@ -39,6 +39,12 @@ jobs:
           npm audit --audit-level=high
           rm package-lock.json
 
+      - name: Validate production verification harness
+        run: |
+          node --check playwright.production.config.mjs
+          node --check scripts/wait-for-production.mjs
+          npx playwright test --config=playwright.production.config.mjs --list
+
       - name: Run tests
         run: npm run test
 
