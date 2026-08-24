@@ -15,6 +15,7 @@ import './styles/m6.css';
 import './styles/m7.css';
 import './styles/e2.css';
 import './styles/e3.css';
+import './styles/accessibility.css';
 
 if ('serviceWorker' in navigator && import.meta.env.PROD) {
   window.addEventListener('load', () => {
