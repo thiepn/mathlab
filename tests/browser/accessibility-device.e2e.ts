@@ -12,8 +12,37 @@ async function openWorkspace(page: Page) {
 }
 
 async function expectNoPageOverflow(page: Page, context: string) {
-  const overflow = await page.evaluate(() => document.documentElement.scrollWidth - window.innerWidth);
-  expect(overflow, context).toBeLessThanOrEqual(1);
+  const report = await page.evaluate(() => {
+    const viewport = window.innerWidth;
+    const round = (value: number) => Math.round(value * 100) / 100;
+    const offenders = Array.from(document.querySelectorAll<HTMLElement>('body *'))
+      .map((element) => {
+        const rect = element.getBoundingClientRect();
+        return {
+          tag: element.tagName.toLowerCase(),
+          id: element.id,
+          className: element.className,
+          left: round(rect.left),
+          right: round(rect.right),
+          width: round(rect.width),
+          scrollWidth: element.scrollWidth,
+          clientWidth: element.clientWidth,
+          text: (element.textContent ?? '').trim().replace(/\s+/g, ' ').slice(0, 90),
+        };
+      })
+      .filter((entry) => entry.right > viewport + 1)
+      .sort((a, b) => b.right - a.right)
+      .slice(0, 20);
+
+    return {
+      overflow: document.documentElement.scrollWidth - viewport,
+      viewport,
+      rootScrollWidth: document.documentElement.scrollWidth,
+      bodyScrollWidth: document.body.scrollWidth,
+      offenders,
+    };
+  });
+  expect(report.overflow, `${context}; layout=${JSON.stringify(report)}`).toBeLessThanOrEqual(1);
 }
 
 function cssTimeToMs(value: string) {
