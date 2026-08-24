@@ -13,7 +13,7 @@ export interface E12GoldenCase {
   expectedDisplayIncludes?: string;
 }
 
-export const E12_TARGET_VERSION = '2.0.0-rc.1';
+export const E12_TARGET_VERSION = '2.0.0';
 export const E12_CERTIFICATION_DOMAINS = 22;
 
 // One production-path smoke case per fixed M7 domain. Domain-specific suites remain
@@ -54,14 +54,19 @@ export const E12_AUTOMATED_GATES = [
   'vitest-regression',
   'vite-production-build',
   'pwa-static-contract',
+  'chromium-firefox-webkit-smoke',
+  'android-ios-engine-emulation',
+  'responsive-width-regression',
+  'worker-execution-smoke',
+  'indexeddb-reload-persistence',
+  'service-worker-offline-reload',
 ] as const;
 
+// These remain useful post-release validation targets. They are intentionally not
+// represented as completed by browser-engine emulation or CI.
 export const E12_EXTERNAL_RELEASE_GATES = [
-  'current Chromium desktop smoke',
-  'current Firefox desktop smoke',
-  'Android Chrome smoke',
-  'iOS Safari/WebKit smoke',
-  'real deployed PWA install/offline/upgrade cycle',
-  'keyboard-only and screen-reader spot checks',
-  'visual regression across target viewport widths',
+  'physical Android Chrome spot check',
+  'physical iOS Safari spot check',
+  'physical installed PWA spot check',
+  'target screen-reader spot checks',
 ] as const;

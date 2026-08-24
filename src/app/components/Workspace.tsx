@@ -65,6 +65,10 @@ export function Workspace({
   const usedBy = persistedObject ? dependentObjects(controller.state.objects, persistedObject.name) : [];
 
   const commit = (parsed: ParsedMath) => {
+    if (!controller.hydrated) {
+      setResolutionMessage('Workspace storage is still loading. Commit will unlock when the saved workspace is ready.');
+      return;
+    }
     setSubmitted(parsed);
     const result = controller.commitParsed(parsed);
     const error = result.diagnostics.find((item) => item.severity === 'error');
@@ -75,6 +79,10 @@ export function Workspace({
 
   const importFile = async (file?: File) => {
     if (!file) return;
+    if (!controller.hydrated) {
+      setTransferMessage('Workspace storage is still loading. Import will unlock when the saved workspace is ready.');
+      return;
+    }
     try {
       if (file.size > 5_000_000) throw new Error('Workspace file is too large. The release import limit is 5 MB.');
       const raw = await file.text();
@@ -90,6 +98,10 @@ export function Workspace({
   };
 
   const restore = async () => {
+    if (!controller.hydrated) {
+      setTransferMessage('Workspace storage is still loading. Recovery will unlock when the saved workspace is ready.');
+      return;
+    }
     try {
       const restored = await controller.restoreRecovery();
       setSubmitted(null);
@@ -112,20 +124,21 @@ export function Workspace({
           <details className="workspace-data-menu">
             <summary>Workspace data</summary>
             <div>
-              <button onClick={() => downloadWorkspace(controller.exportWorkspace())}>Export workspace</button>
-              <button onClick={() => importRef.current?.click()}>Import workspace</button>
-              <button onClick={() => void restore()}>Restore recovery</button>
+              <button disabled={!controller.hydrated} onClick={() => downloadWorkspace(controller.exportWorkspace())}>Export workspace</button>
+              <button disabled={!controller.hydrated} onClick={() => importRef.current?.click()}>Import workspace</button>
+              <button disabled={!controller.hydrated} onClick={() => void restore()}>Restore recovery</button>
             </div>
           </details>
-          <input ref={importRef} className="visually-hidden" type="file" accept="application/json,.json" onChange={(event) => void importFile(event.target.files?.[0])} />
+          <input ref={importRef} className="visually-hidden" type="file" accept="application/json,.json" disabled={!controller.hydrated} onChange={(event) => void importFile(event.target.files?.[0])} />
         </div>
       </div>
 
-      <MathInput initialValue={editorSource} onChangeParsed={onActiveParsed} onSubmit={commit} />
+      <MathInput initialValue={editorSource} canSubmit={controller.hydrated} onChangeParsed={onActiveParsed} onSubmit={commit} />
 
       <AssumptionBar
         assumptions={controller.state.assumptions}
         diagnostics={controller.assumptionDiagnostics}
+        disabled={!controller.hydrated}
         onAdd={controller.addAssumption}
         onRemove={controller.removeAssumption}
       />

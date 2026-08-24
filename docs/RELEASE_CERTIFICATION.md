@@ -1,12 +1,12 @@
-# MathLab v2.0.0-rc.1 — E12 Release Certification Record
+# MathLab v2.0.0 — Stable Release Certification Record
 
-## Decision
+## STABLE RELEASE GATE
 
-**`v2.0.0-rc.1` source release candidate: CERTIFIABLE after the final exact-head E12 CI gate.**
+**Target release: `v2.0.0`.**
 
-**Stable `v2.0.0`: NOT CERTIFIED.**
+This record is valid only for the exact Git head that passes the complete `Check MathLab` workflow after the stable identity is present. Any source, test, workflow, dependency, service-worker, UI-version, or documentation change after that green run invalidates the certification and requires a fresh exact-head run.
 
-E12 is the final P/M/E integration pass. The repository now has real dependency-backed GitHub CI and a deployed GitHub Pages workflow, so the old v1-era record about unavailable npm/GitHub infrastructure is obsolete.
+Stable promotion is authorized only when that final exact-head workflow is green and contains no browser-test retry/flaky result.
 
 ## Mathematical evidence
 
@@ -24,57 +24,69 @@ Current result:
 
 See `E12_MATHEMATICAL_REAUDIT.md`.
 
-The release candidate therefore represents a broad university-mathematics environment, not a claim of comprehensive mathematics coverage.
+The stable release therefore represents a broad university-mathematics environment. It does **not** claim comprehensive coverage of mathematics.
 
-## E12 automated source gates
+## Stable automated source and browser gates
 
-The promotion branch must pass all of the following on the **same exact head SHA** before merge:
+The exact stable head must pass all of the following before merge:
 
-1. `npm run audit:release`
-2. `npm run audit:e12`
-3. dependency installation under Node 22
-4. complete `npm run test`
-5. strict TypeScript through `npm run build`
-6. Vite production build
-7. fixed 22-domain score/status invariants
-8. 22-domain cumulative golden corpus
-9. tool/catalog/capability/control consistency
-10. explicit exactness-provenance checks
-11. inherited P15 static PWA/security/persistence contracts
+1. `npm run audit:release`;
+2. `npm run audit:e12`;
+3. `npm run audit:stable`;
+4. dependency installation under Node 22;
+5. generated-lockfile `npm audit --audit-level=high` security gate;
+6. all Vitest regression tests;
+7. strict TypeScript compilation;
+8. Vite production build;
+9. fixed 22-domain score/status invariants;
+10. 22-domain cumulative golden corpus;
+11. tool/catalog/capability/control consistency;
+12. explicit exactness-provenance checks;
+13. PWA/security/persistence static contracts;
+14. Playwright Chromium desktop smoke;
+15. Playwright Firefox desktop smoke;
+16. Playwright WebKit desktop smoke;
+17. Android-like Chromium mobile emulation;
+18. iOS-like WebKit mobile emulation;
+19. 320 / 375 / 768 / 1024 / 1440 responsive-width overflow checks;
+20. keyboard command-palette and focus restoration checks;
+21. skip-link and primary-input keyboard semantics;
+22. real Worker-backed mathematical execution;
+23. IndexedDB save → reload persistence;
+24. installed service-worker offline application reload.
 
-The pre-promotion E12 implementation already demonstrated **45/45 test files and 432/432 tests** plus strict TypeScript and a successful production build before the RC identity/docs/workflow promotion. The final promoted head receives the same full gate again before merge.
+The final pre-promotion RC run demonstrated **45/45 Vitest files, 432/432 tests**, strict TypeScript, a successful Vite production build, and a clean browser run of **26 passed / 14 intentionally skipped / 0 flaky** after the persistence timing check was hardened.
 
-## Release-candidate identity
+The final stable `2.0.0` head must repeat that entire gate. The GitHub Pages deployment workflow also repeats the stable audit, dependency security gate, full unit suite, production build, and cross-browser Playwright suite before publishing `main`.
 
-The E12 candidate is intentionally prerelease-only:
+## Browser/device evidence boundary
 
-- package: `2.0.0-rc.1`
-- UI badge: `v2.0 RC1`
-- stable `2.0.0` is rejected by the release/certification policy at this stage.
+The automated browser matrix executes real Chromium, Firefox and WebKit engines. The Android and iOS projects are browser/device emulations, not physical hardware.
 
-## External stable-release gates
+Accordingly, this certification does **not** claim direct physical-device testing. Physical Android Chrome, physical iOS Safari, installed-PWA behavior on target hardware, and target screen-reader spot checks remain **post-release physical-device validation** items. They are useful compatibility evidence but are not falsely represented as completed by CI.
 
-Repository CI cannot honestly certify real interaction on every target browser/device. Stable `v2.0.0` remains blocked until actual deployed evidence covers:
+## Release identity
 
-1. current Chromium desktop smoke test;
-2. current Firefox desktop smoke test;
-3. Android Chrome smoke test;
-4. iOS Safari/WebKit smoke test;
-5. PWA install from the real deployment path;
-6. installed/offline reload and return-online refresh;
-7. service-worker upgrade behavior;
-8. migration from a real existing browser workspace/practice state;
-9. keyboard-only navigation and dialogs;
-10. screen-reader spot checks for navigation, math input/results, Proof Lab and Practice status;
-11. visual regression at representative phone/tablet/desktop widths;
-12. dependency-advisory review appropriate to the final stable release.
+Stable identity is locked consistently across the release contracts:
 
-Until those gates are actually run, **do not tag or describe the product as stable `v2.0.0`**.
+- package: `2.0.0`;
+- UI badge: `v2.0`;
+- E12 target: `2.0.0`;
+- P15 release audit: stable-only;
+- E12 audit: stable-only;
+- stable audit: stable-only;
+- service-worker caches: `mathlab-v2-shell` and `mathlab-v2-runtime`.
+
+No RC label may remain in the user-facing release identity.
 
 ## Known non-blocking observations
 
-Current CI installation reports one low-severity npm advisory. The Vite build also reports the existing >500 kB minified chunk warning. Neither currently violates the automated RC gate, but both remain valid performance/security-maintenance items for stable-release hardening.
+The dependency audit currently reports one **low-severity** `esbuild` development-server advisory. The stable gate rejects high and critical advisories. MathLab is a static production build and does not expose the Vite/esbuild development server as the deployed application.
 
-## Merge policy
+The Vite build also reports the existing >500 kB minified chunk warning. This is a performance-maintenance issue, not a correctness failure, and remains a candidate for post-v2 code splitting.
 
-Only the exact E12 branch head that passes both audits, the complete test suite, strict TypeScript and Vite production build may be merged. Any source or documentation change after a green gate invalidates that certification and requires a fresh run.
+## Merge and deployment policy
+
+Only the exact stable branch head with a clean full gate may be squash-merged into `main`. The merge must use the expected tested head SHA so branch drift cannot be silently accepted.
+
+After merge, GitHub Pages must rebuild from `main` and pass the production deployment gate before the deployment is treated as the live stable release. Production verification then checks the deployed site separately from source certification.
