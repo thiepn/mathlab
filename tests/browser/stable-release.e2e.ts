@@ -108,10 +108,12 @@ test('workspace commits mathematics and executes the Worker engine', async ({ pa
 test('IndexedDB workspace state survives a browser reload', async ({ page }) => {
   await openWorkspace(page);
   const input = page.getByRole('textbox', { name: 'Mathematical input' });
+  const saveState = page.locator('.save-state');
   await input.fill('stable_probe := 2');
   await page.getByRole('button', { name: /Commit/ }).click();
   await expect(page.getByText(/Saved stable_probe to the workspace\.|Updated stable_probe\./)).toBeVisible();
-  await expect(page.getByText('Saved locally')).toBeVisible();
+  await expect(saveState).toHaveText('Saving');
+  await expect(saveState).toHaveText('Saved locally');
 
   await page.reload();
   await expect(page.getByRole('heading', { name: 'Working on stable_probe' })).toBeVisible();
