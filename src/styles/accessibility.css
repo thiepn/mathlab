@@ -1,0 +1,24 @@
+/* Post-v2 accessibility hardening. Imported last so these rules repair legacy shell/input overrides. */
+
+.math-input-shell input:focus-visible {
+  outline: 3px solid var(--ml-blue) !important;
+  outline-offset: -3px;
+}
+
+@media (max-width: 820px) {
+  .mobile-nav.mobile-nav-six {
+    grid-template-columns: repeat(6, minmax(0, 1fr));
+  }
+
+  .mobile-nav.mobile-nav-six button {
+    min-width: 0;
+    padding-inline: 0;
+  }
+}
+
+@media (forced-colors: active) {
+  .math-input-shell input:focus-visible {
+    outline: 3px solid Highlight !important;
+    outline-offset: -3px;
+  }
+}
