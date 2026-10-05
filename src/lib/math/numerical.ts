@@ -1,4 +1,5 @@
 import type { AstNode } from './ast';
+import { evaluateConditionWith, selectPiecewiseBranch } from './piecewise';
 import { expandAst, rationalToAst, rationalValue, simplifyAst } from './algebra';
 import { astToPlainText } from './format';
 import { abs as absRational, div, eq, rat, rationalToNumber, rationalToString, sub, type Rational, ZERO } from './rational';
@@ -79,6 +80,11 @@ function numeric(node: AstNode, variables: Record<string, number>): number {
         return finite(left / right);
       }
       return finite(Math.pow(left, right));
+    }
+    case 'piecewise': {
+      const selected = selectPiecewiseBranch(node, (condition) => evaluateConditionWith(condition, (candidate) => numeric(candidate, variables)));
+      if (!selected) throw new Error('No piecewise branch condition is true for this numerical input and no otherwise branch is defined.');
+      return numeric(selected, variables);
     }
     case 'call': {
       if (node.args.length !== 1) throw new Error(`Numerical evaluation does not support the call ${node.name}(…) in this workflow.`);

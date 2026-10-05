@@ -1,4 +1,5 @@
 import type { AstNode } from './ast';
+import { evaluateConditionWith, selectPiecewiseBranch } from './piecewise';
 import { criticalPointAnalysis, gradient } from './multivariable';
 
 export interface View2D { xMin:number; xMax:number; yMin:number; yMax:number }
@@ -38,6 +39,10 @@ export function evaluateNumericPoint(node:AstNode,values:Record<string,number>):
       if(node.operator==='*')return finite(left*right);
       if(node.operator==='/')return Math.abs(right)<=Number.EPSILON?Number.NaN:finite(left/right);
       return finite(Math.pow(left,right));
+    }
+    case 'piecewise':{
+      const selected=selectPiecewiseBranch(node,(condition)=>evaluateConditionWith(condition,(candidate)=>evaluateNumericPoint(candidate,values)));
+      return selected?evaluateNumericPoint(selected,values):Number.NaN;
     }
     case 'call':{
       if(node.args.length!==1)return Number.NaN;

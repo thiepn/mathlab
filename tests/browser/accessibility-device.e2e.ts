@@ -93,7 +93,9 @@ test('320px viewport with 200% text reflows without page-level horizontal scroll
   await openWorkspace(page);
   await page.evaluate(() => { document.documentElement.style.fontSize = '200%'; });
   await expect(page.getByRole('textbox', { name: 'Mathematical input' })).toBeVisible();
-  await expectNoPageOverflow(page, 'horizontal overflow at 320px with 200% root text size');
+  await page.getByRole('button', { name: 'Math keypad', exact: true }).click();
+  await expect(page.getByRole('region', { name: 'Math keypad' })).toBeVisible();
+  await expectNoPageOverflow(page, 'horizontal overflow at 320px with 200% root text size and keypad open');
 });
 
 test('reduced-motion preference disables smooth scrolling and long animation/transition timing', async ({ page }, testInfo) => {
@@ -157,11 +159,18 @@ test('primary touch controls meet the WCAG 2.2 24px minimum target size', async 
   test.skip(!touchProjects.has(testInfo.project.name), 'Target-size certification only applies to touch projects.');
   await openWorkspace(page);
 
-  const targets = [page.getByRole('button', { name: /Commit/ })];
+  const targets = [
+    page.getByRole('button', { name: /Commit/ }),
+    page.getByRole('button', { name: 'Math keypad', exact: true }),
+  ];
   const mobileNav = page.getByRole('navigation', { name: 'Mobile primary navigation' });
   if (await mobileNav.isVisible()) targets.push(mobileNav.getByRole('button', { name: 'Work', exact: true }));
   const workNav = page.getByRole('navigation', { name: 'Work section navigation' });
   if (await workNav.isVisible()) targets.push(workNav.getByRole('button', { name: 'Tools', exact: true }));
+
+  await page.getByRole('button', { name: 'Math keypad', exact: true }).click();
+  const keypad = page.getByRole('region', { name: 'Math keypad' });
+  targets.push(keypad.getByRole('button', { name: /Square root/ }));
 
   for (const target of targets) {
     const box = await target.boundingBox();

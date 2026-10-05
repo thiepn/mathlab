@@ -11,6 +11,14 @@ function replaceNodeSymbol(node: AstNode, oldName: string, newName: string): Ast
     case 'unary': return { ...node, operand: replaceNodeSymbol(node.operand, oldName, newName) };
     case 'binary': return { ...node, left: replaceNodeSymbol(node.left, oldName, newName), right: replaceNodeSymbol(node.right, oldName, newName) };
     case 'call': return { ...node, name: node.name === oldName ? newName : node.name, args: node.args.map((arg) => replaceNodeSymbol(arg, oldName, newName)) };
+    case 'piecewise': return {
+      ...node,
+      branches: node.branches.map((branch) => ({
+        value: replaceNodeSymbol(branch.value, oldName, newName),
+        condition: replaceNodeSymbol(branch.condition, oldName, newName),
+      })),
+      otherwise: node.otherwise ? replaceNodeSymbol(node.otherwise, oldName, newName) : undefined,
+    };
     case 'equation': return { ...node, left: replaceNodeSymbol(node.left, oldName, newName), right: replaceNodeSymbol(node.right, oldName, newName) };
     case 'comparison': return { ...node, left: replaceNodeSymbol(node.left, oldName, newName), right: replaceNodeSymbol(node.right, oldName, newName) };
     case 'definition': return { ...node, left: replaceNodeSymbol(node.left, oldName, newName), right: replaceNodeSymbol(node.right, oldName, newName) };

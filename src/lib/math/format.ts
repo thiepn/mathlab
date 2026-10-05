@@ -3,7 +3,7 @@ import type { AstNode } from './ast';
 const PRECEDENCE: Record<string, number> = { equation: 0, '+': 1, '-': 1, '*': 2, '/': 2, '^': 3, unary: 4, atom: 5 };
 
 function precedence(node: AstNode): number {
-  if (node.type === 'equation' || node.type === 'comparison' || node.type === 'definition' || node.type === 'system' || node.type === 'set') return PRECEDENCE.equation;
+  if (node.type === 'equation' || node.type === 'comparison' || node.type === 'definition' || node.type === 'system' || node.type === 'set' || node.type === 'piecewise') return PRECEDENCE.equation;
   if (node.type === 'binary') return PRECEDENCE[node.operator];
   if (node.type === 'unary') return PRECEDENCE.unary;
   return PRECEDENCE.atom;
@@ -38,6 +38,11 @@ export function astToLatex(node: AstNode): string {
       if (['sin','cos','tan','ln','log','exp'].includes(node.name)) return `\\${node.name}\\left(${args}\\right)`;
       return `${node.name}\\left(${args}\\right)`;
     }
+    case 'piecewise': {
+      const rows = node.branches.map((branch) => `${astToLatex(branch.value)} & \\text{if } ${astToLatex(branch.condition)}`);
+      if (node.otherwise) rows.push(`${astToLatex(node.otherwise)} & \\text{otherwise}`);
+      return `\\begin{cases}${rows.join(' \\\\ ')}\\end{cases}`;
+    }
     case 'equation': return `${astToLatex(node.left)} = ${astToLatex(node.right)}`;
     case 'comparison': { const op = node.operator === '<=' ? '\\le' : node.operator === '>=' ? '\\ge' : node.operator === '!=' ? '\\ne' : node.operator; return `${astToLatex(node.left)} ${op} ${astToLatex(node.right)}`; }
     case 'system': return `\\left\\{\\begin{aligned}${node.items.map(astToLatex).join(' \\\\ ')}\\end{aligned}\\right.`;
@@ -48,7 +53,7 @@ export function astToLatex(node: AstNode): string {
 }
 
 function plainPrecedence(node: AstNode): number {
-  if (node.type === 'equation' || node.type === 'comparison' || node.type === 'definition' || node.type === 'system' || node.type === 'set') return 0;
+  if (node.type === 'equation' || node.type === 'comparison' || node.type === 'definition' || node.type === 'system' || node.type === 'set' || node.type === 'piecewise') return 0;
   if (node.type === 'binary') return node.operator === '+' || node.operator === '-' ? 1 : node.operator === '*' || node.operator === '/' ? 2 : 3;
   if (node.type === 'unary') return 4;
   return 5;
@@ -72,6 +77,11 @@ export function astToPlainText(node: AstNode): string {
       return `${left} ${node.operator} ${right}`;
     }
     case 'call': return `${node.name}(${node.args.map(astToPlainText).join(', ')})`;
+    case 'piecewise': {
+      const branches = node.branches.map((branch) => `${astToPlainText(branch.value)}, ${astToPlainText(branch.condition)}`);
+      if (node.otherwise) branches.push(astToPlainText(node.otherwise));
+      return `piecewise(${branches.join('; ')})`;
+    }
     case 'equation': return `${astToPlainText(node.left)} = ${astToPlainText(node.right)}`;
     case 'comparison': return `${astToPlainText(node.left)} ${node.operator} ${astToPlainText(node.right)}`;
     case 'system': return node.items.map(astToPlainText).join('; ');

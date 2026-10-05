@@ -258,6 +258,10 @@ function calculusVariable(request: MathOperationRequest, ast: AstNode): string {
         case 'unary': visit(node.operand); break;
         case 'binary': visit(node.left); visit(node.right); break;
         case 'call': node.args.forEach(visit); break;
+        case 'piecewise':
+          node.branches.forEach((branch) => { visit(branch.value); visit(branch.condition); });
+          if (node.otherwise) visit(node.otherwise);
+          break;
         case 'equation': case 'comparison': case 'definition': visit(node.left); visit(node.right); break;
         case 'matrix': node.rows.flat().forEach(visit); break;
         case 'system': case 'set': node.items.forEach(visit); break;
@@ -281,6 +285,8 @@ function containsVariable(node: AstNode, variable: string): boolean {
     case 'unary': return containsVariable(node.operand, variable);
     case 'binary': return containsVariable(node.left, variable) || containsVariable(node.right, variable);
     case 'call': return node.args.some((arg) => containsVariable(arg, variable));
+    case 'piecewise': return node.branches.some((branch) => containsVariable(branch.value, variable) || containsVariable(branch.condition, variable))
+      || Boolean(node.otherwise && containsVariable(node.otherwise, variable));
     case 'equation': case 'comparison': case 'definition': return containsVariable(node.left, variable) || containsVariable(node.right, variable);
     case 'matrix': return node.rows.flat().some((cell) => containsVariable(cell, variable));
     case 'system': case 'set': return node.items.some((item) => containsVariable(item, variable));

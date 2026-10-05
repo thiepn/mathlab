@@ -1,4 +1,5 @@
 import type { AstNode } from './ast';
+import { evaluateStaticCondition } from './piecewise';
 import {
   ONE, ZERO, abs, add, div, eq, isOne, isZero, mul, neg, parseRational,
   pow, rat, rationalToDecimalString, rationalToString, sign, sqrtRational, sub, type Rational,
@@ -97,6 +98,10 @@ export function symbolsIn(node: AstNode): string[] {
       case 'unary': visit(current.operand); break;
       case 'binary': visit(current.left); visit(current.right); break;
       case 'call': current.args.forEach(visit); break;
+      case 'piecewise':
+        current.branches.forEach((branch) => { visit(branch.value); visit(branch.condition); });
+        if (current.otherwise) visit(current.otherwise);
+        break;
       case 'equation': case 'comparison': case 'definition': visit(current.left); visit(current.right); break;
       case 'matrix': current.rows.flat().forEach(visit); break;
       case 'system': case 'set': current.items.forEach(visit); break;
@@ -161,6 +166,7 @@ function hasDistribution(node: AstNode): boolean {
   }
   if (node.type === 'unary') return hasDistribution(node.operand);
   if (node.type === 'call') return node.args.some(hasDistribution);
+  if (node.type === 'piecewise') return node.branches.some((branch) => hasDistribution(branch.value) || hasDistribution(branch.condition)) || Boolean(node.otherwise && hasDistribution(node.otherwise));
   return false;
 }
 
@@ -174,6 +180,7 @@ function containsSymbolicZeroPower(node: AstNode): boolean {
   }
   if (node.type === 'unary') return containsSymbolicZeroPower(node.operand);
   if (node.type === 'call') return node.args.some(containsSymbolicZeroPower);
+  if (node.type === 'piecewise') return node.branches.some((branch) => containsSymbolicZeroPower(branch.value) || containsSymbolicZeroPower(branch.condition)) || Boolean(node.otherwise && containsSymbolicZeroPower(node.otherwise));
   return false;
 }
 
@@ -218,6 +225,19 @@ export function sqrtRationalAst(value: Rational): AstNode {
 export function simplifyAst(node: AstNode): AstNode {
   if (node.type === 'number' || node.type === 'symbol') return node;
   if (node.type === 'matrix') return { ...node, rows: node.rows.map((row) => row.map(simplifyAst)) };
+  if (node.type === 'piecewise') {
+    const branches: typeof node.branches = [];
+    for (const branch of node.branches) {
+      const value = simplifyAst(branch.value);
+      const condition = simplifyAst(branch.condition);
+      const verdict = evaluateStaticCondition(condition);
+      if (verdict === false) continue;
+      if (verdict === true) return value;
+      branches.push({ value, condition });
+    }
+    const otherwise = node.otherwise ? simplifyAst(node.otherwise) : undefined;
+    return { type: 'piecewise', branches, otherwise };
+  }
   if (node.type === 'system' || node.type === 'set') return { ...node, items: node.items.map(simplifyAst) };
   if (node.type === 'equation' || node.type === 'comparison' || node.type === 'definition') return { ...node, left: simplifyAst(node.left), right: simplifyAst(node.right) };
   if (node.type === 'call') {
@@ -408,6 +428,14 @@ export function substituteAst(node: AstNode, symbol: string, replacement: AstNod
     case 'unary': return { ...node, operand: substituteAst(node.operand, symbol, replacement) };
     case 'binary': return { ...node, left: substituteAst(node.left, symbol, replacement), right: substituteAst(node.right, symbol, replacement) };
     case 'call': return { ...node, args: node.args.map((arg) => substituteAst(arg, symbol, replacement)) };
+    case 'piecewise': return {
+      ...node,
+      branches: node.branches.map((branch) => ({
+        value: substituteAst(branch.value, symbol, replacement),
+        condition: substituteAst(branch.condition, symbol, replacement),
+      })),
+      otherwise: node.otherwise ? substituteAst(node.otherwise, symbol, replacement) : undefined,
+    };
     case 'equation': case 'comparison': case 'definition': return { ...node, left: substituteAst(node.left, symbol, replacement), right: substituteAst(node.right, symbol, replacement) };
     case 'matrix': return { ...node, rows: node.rows.map((row) => row.map((cell) => substituteAst(cell, symbol, replacement))) };
     case 'system': case 'set': return { ...node, items: node.items.map((item) => substituteAst(item, symbol, replacement)) };

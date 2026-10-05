@@ -21,6 +21,14 @@ function substitute(node: AstNode, variable: string, value: AstNode): AstNode {
   if (node.type === 'unary') return { ...node, operand: substitute(node.operand, variable, value) };
   if (node.type === 'binary') return { ...node, left: substitute(node.left, variable, value), right: substitute(node.right, variable, value) };
   if (node.type === 'call') return { ...node, args: node.args.map(arg => substitute(arg, variable, value)) };
+  if (node.type === 'piecewise') return {
+    ...node,
+    branches: node.branches.map(branch => ({
+      value: substitute(branch.value, variable, value),
+      condition: substitute(branch.condition, variable, value),
+    })),
+    otherwise: node.otherwise ? substitute(node.otherwise, variable, value) : undefined,
+  };
   if (node.type === 'matrix') return { ...node, rows: node.rows.map(row => row.map(cell => substitute(cell, variable, value))) };
   if (node.type === 'system' || node.type === 'set') return { ...node, items: node.items.map(item => substitute(item, variable, value)) };
   return { ...node, left: substitute(node.left, variable, value), right: substitute(node.right, variable, value) };

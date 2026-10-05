@@ -6,6 +6,7 @@ export type AstNode =
   | { type: 'unary'; operator: '+' | '-'; operand: AstNode }
   | { type: 'binary'; operator: '+' | '-' | '*' | '/' | '^'; left: AstNode; right: AstNode; implicit?: boolean }
   | { type: 'call'; name: string; args: AstNode[] }
+  | { type: 'piecewise'; branches: Array<{ value: AstNode; condition: AstNode }>; otherwise?: AstNode }
   | { type: 'equation'; left: AstNode; right: AstNode }
   | { type: 'comparison'; operator: ComparisonOperator; left: AstNode; right: AstNode }
   | { type: 'definition'; left: AstNode; right: AstNode }
@@ -29,6 +30,7 @@ export type DiagnosticCode =
   | 'empty-group'
   | 'invalid-number'
   | 'invalid-matrix'
+  | 'invalid-piecewise'
   | 'trailing-input'
   | 'invalid-definition';
 

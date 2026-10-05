@@ -1,5 +1,6 @@
 import { odeCapabilityInfo } from './e4Ode';
 import type { SemanticMathObject } from './types';
+import { containsPiecewise } from './piecewise';
 
 export interface ObjectCapability {
   id: string;
@@ -139,6 +140,17 @@ function multivariableDimension(object: SemanticMathObject): number { return obj
 function isVectorField(object: SemanticMathObject, dimension:number):boolean{return object.valueAst.type==='matrix'&&object.valueAst.rows.length===1&&object.valueAst.rows[0].length===dimension;}
 
 function applicability(object: SemanticMathObject, id: string): { applicable: boolean; reason?: string } {
+  if (containsPiecewise(object.valueAst)) {
+    const allowed = object.kind === 'function'
+      ? new Set(['evaluate-function', 'graph'])
+      : new Set(['graph']);
+    if (!allowed.has(id)) {
+      return {
+        applicable: false,
+        reason: 'Piecewise input currently supports point evaluation and graphing. Global symbolic operations remain disabled until branch-boundary conditions are certified.',
+      };
+    }
+  }
   if (E1_IDS.has(id)) {
     const dimension = multivariableDimension(object);
     if (dimension < 2) return { applicable:false, reason:'E1 multivariable calculus requires at least two independent variables.' };

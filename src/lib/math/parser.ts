@@ -10,7 +10,7 @@ import { normalizeMathSource } from './normalize';
 const KNOWN_FUNCTIONS = new Set([
   'sin', 'cos', 'tan', 'sec', 'csc', 'cot',
   'asin', 'acos', 'atan', 'sinh', 'cosh', 'tanh',
-  'sqrt', 'ln', 'log', 'exp', 'abs', 'floor', 'ceil',
+  'sqrt', 'ln', 'log', 'exp', 'abs', 'floor', 'ceil', 'piecewise',
   // P10 + E6 data/probability constructors and exact probability helpers.
   'data', 'bernoulli', 'binomial', 'geometric', 'poisson', 'uniform', 'normal',
   'exponential', 'chisquare', 'studentt', 'fdist', 'jointpmf',
@@ -295,7 +295,11 @@ class Parser {
 
     if (this.match('identifier')) {
       const name = token.text;
-      if (this.match('lparen')) return this.finishCall(name, this.previous());
+      if (this.match('lparen')) {
+        const open = this.previous();
+        if (name.toLowerCase() === 'piecewise') return this.finishPiecewise(open);
+        return this.finishCall(name, open);
+      }
       return { type: 'symbol', name };
     }
 
@@ -326,6 +330,59 @@ class Parser {
       this.advance();
     }
     return null;
+  }
+
+  private finishPiecewise(open: MathToken): AstNode | null {
+    const branches: Array<{ value: AstNode; condition: AstNode }> = [];
+    let otherwise: AstNode | undefined;
+
+    if (this.match('rparen')) {
+      this.error('empty-group', 'piecewise(…) requires at least one value-condition branch.', open.start, this.previous().end);
+      return { type: 'piecewise', branches };
+    }
+
+    while (this.peek().kind !== 'eof' && this.peek().kind !== 'rparen') {
+      const value = this.parseEquation();
+      if (!value) {
+        this.error('invalid-piecewise', 'Expected a branch value in piecewise(value, condition; …).', this.peek());
+        break;
+      }
+
+      if (this.match('comma')) {
+        const condition = this.parseEquation();
+        if (!condition) {
+          this.error('invalid-piecewise', 'Expected a branch condition after the comma.', this.previous().end, this.previous().end);
+          break;
+        }
+        const validCondition = condition.type === 'comparison'
+          || condition.type === 'equation'
+          || (condition.type === 'call' && ['and','or','xor','implies','iff','not'].includes(condition.name));
+        if (!validCondition) {
+          this.error('invalid-piecewise', 'Piecewise conditions must be comparisons/equalities, optionally combined with and(…), or(…), not(…), xor(…), implies(…), or iff(…).', open.start, open.end);
+        }
+        branches.push({ value, condition });
+      } else if (branches.length > 0) {
+        otherwise = value;
+        break;
+      } else {
+        this.error('invalid-piecewise', 'The first piecewise branch needs a condition: piecewise(value, condition; …).', open.start, open.end);
+        break;
+      }
+
+      if (!this.match('semicolon')) break;
+      if (this.peek().kind === 'rparen') {
+        this.error('invalid-piecewise', 'Remove the trailing semicolon or add an otherwise value.', this.peek());
+        break;
+      }
+    }
+
+    if (!this.match('rparen')) {
+      this.error('missing-closing-delimiter', 'Missing closing parenthesis for piecewise(…).', open.start, open.end);
+    }
+    if (!branches.length) {
+      this.error('invalid-piecewise', 'piecewise(…) requires at least one value-condition branch.', open.start, this.previous().end);
+    }
+    return { type: 'piecewise', branches, otherwise };
   }
 
   private finishCall(name: string, open: MathToken): AstNode | null {

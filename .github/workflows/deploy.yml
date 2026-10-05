@@ -44,6 +44,9 @@ jobs:
       - name: Mathematical worksheet audit
         run: npm run audit:worksheet
 
+      - name: Input and interaction audit
+        run: npm run audit:input
+
       - name: Install dependencies
         run: npm ci
 
