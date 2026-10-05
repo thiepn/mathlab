@@ -116,6 +116,46 @@ test('skip link and primary mathematical input expose keyboard-accessible semant
   await expect(page.getByRole('textbox', { name: 'Mathematical input' })).toBeVisible();
 });
 
+test('structured input wraps selections and keyboard shortcuts preserve fast entry', async ({ page }) => {
+  await openWorkspace(page);
+  const input = page.getByRole('textbox', { name: 'Mathematical input' });
+
+  await input.fill('x+1');
+  await input.selectText();
+  await page.getByRole('button', { name: 'Math keypad', exact: true }).click();
+  const keypad = page.getByRole('region', { name: 'Math keypad' });
+  await expect(keypad).toBeVisible();
+  await keypad.getByRole('button', { name: /Square root/ }).click();
+  await expect(input).toHaveValue('sqrt(x+1)');
+
+  await input.fill('x+1');
+  await input.selectText();
+  await page.keyboard.press('(');
+  await expect(input).toHaveValue('(x+1)');
+
+  await input.fill('x^2+1');
+  await page.keyboard.press('Control+Enter');
+  await expect(page.locator('.worksheet-entry-input')).toHaveCount(1);
+});
+
+test('piecewise template commits as a function with deliberately bounded capabilities', async ({ page }) => {
+  await openWorkspace(page);
+  const input = page.getByRole('textbox', { name: 'Mathematical input' });
+  await page.getByRole('button', { name: 'Math keypad', exact: true }).click();
+  const keypad = page.getByRole('region', { name: 'Math keypad' });
+  await keypad.getByRole('tab', { name: 'Structure' }).click();
+  await keypad.getByRole('button', { name: /Piecewise function/ }).click();
+
+  await expect(input).toHaveValue('f(x) := piecewise(x^2, x < 0; 2x + 1, x >= 0)');
+  await expect(page.locator('.live-preview-panel math')).toBeVisible();
+  await page.getByRole('button', { name: /Commit/ }).click();
+
+  await expect(page.getByText(/Piecewise mathematics is first-class input/)).toBeVisible();
+  await expect(page.getByText(/Saved f to the workspace\.|Updated f\./)).toBeVisible();
+  await expect(page.getByRole('button', { name: /^Graph/ })).toBeVisible();
+  await expect(page.getByRole('button', { name: /^Derivative/ })).toHaveCount(0);
+});
+
 test('workspace commits mathematics and executes the Worker engine', async ({ page }) => {
   await openWorkspace(page);
   const input = page.getByRole('textbox', { name: 'Mathematical input' });
