@@ -290,7 +290,7 @@ export function App() {
               key={destination.id}
               className={active ? 'is-active' : ''}
               onClick={() => setRoute(destination.route)}
-              aria-current={active ? 'page' : undefined}
+              aria-current={active ? 'location' : undefined}
             >
               {destination.label}
             </button>
