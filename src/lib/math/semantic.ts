@@ -7,6 +7,7 @@ import { isOdeConstructorCall, odeIntrinsicSymbols, odeShapeInfo } from './e4Ode
 import { e10PdeIntrinsicSymbols, e10PdeShapeInfo, isE10PdeConstructorCall } from './e10Pde';
 import { e10FiniteAlgebraShapeInfo, isE10FiniteAlgebraConstructorCall } from './e10FiniteAlgebra';
 import { e10GeometryIntrinsicSymbols, e10GeometryShapeInfo, isE10GeometryConstructorCall } from './e10GeometryTopology';
+import { containsPiecewise } from './piecewise';
 import type {
   Exactness,
   MathAssumption,
@@ -69,6 +70,10 @@ export function collectSymbols(node: AstNode, includeCallNames = true): string[]
         if (includeCallNames && !isKnownFunction(current.name)) symbols.add(current.name);
         current.args.forEach(visit);
         break;
+      case 'piecewise':
+        current.branches.forEach((branch) => { visit(branch.value); visit(branch.condition); });
+        if (current.otherwise) visit(current.otherwise);
+        break;
       case 'equation':
       case 'comparison':
       case 'definition': visit(current.left); visit(current.right); break;
@@ -104,6 +109,10 @@ function inferDomain(node: AstNode, objects: SemanticMathObject[], assumptions: 
       const args = node.args.map((arg) => inferDomain(arg, objects, assumptions)).reduce(promoteDomain, 'unknown' as MathDomain);
       const dependency = objects.find((item) => item.name === node.name && item.kind === 'function');
       return dependency?.domain ?? (args === 'complex' ? 'complex' : 'real');
+    }
+    case 'piecewise': {
+      const values = [...node.branches.map((branch) => branch.value), ...(node.otherwise ? [node.otherwise] : [])];
+      return values.map((value) => inferDomain(value, objects, assumptions)).reduce(promoteDomain, 'unknown' as MathDomain);
     }
     case 'matrix': return node.rows.flat().map((cell) => inferDomain(cell, objects, assumptions)).reduce(promoteDomain, 'unknown' as MathDomain);
     case 'system': return node.items.map((item) => inferDomain(item, objects, assumptions)).reduce(promoteDomain, 'unknown' as MathDomain);
@@ -151,6 +160,13 @@ function inferLinearShape(node: AstNode, objects: SemanticMathObject[]): LinearS
     return { shape: { type: 'scalar' }, usesCollection: false };
   }
   if (node.type === 'call') return { shape: { type: 'scalar' }, usesCollection: false };
+  if (node.type === 'piecewise') {
+    const values = [...node.branches.map((branch) => branch.value), ...(node.otherwise ? [node.otherwise] : [])];
+    const shapes = values.map((value) => inferLinearShape(value, objects));
+    const first = shapes[0];
+    if (first && shapes.every((shape) => shape && JSON.stringify(shape.shape) === JSON.stringify(first.shape))) return first;
+    return null;
+  }
   if (node.type === 'unary') return inferLinearShape(node.operand, objects);
   if (node.type !== 'binary') return null;
 
@@ -300,6 +316,13 @@ export function resolveSemanticObject(
 
   const existing = name ? objects.find((item) => item.name === name) : undefined;
   if (existing) diagnostics.push({ severity: 'info', code: 'name-conflict', symbol: name, message: `Committing this definition will update the existing object “${name}”.` });
+  if (containsPiecewise(valueAst)) {
+    diagnostics.push({
+      severity: 'info',
+      code: 'piecewise-limited',
+      message: 'Piecewise mathematics is first-class input. Point evaluation and graphing are enabled; unsupported global symbolic operations remain explicitly unavailable.',
+    });
+  }
 
   const kind = inferKind(parsed, valueAst, name, parameters, objects);
   const now = Date.now();
