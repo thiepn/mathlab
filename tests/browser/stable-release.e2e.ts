@@ -105,6 +105,37 @@ test('command palette opens from the keyboard, filters tools, closes, and restor
   await expect(searchButton).toBeFocused();
 });
 
+test('unified capability registry keeps Workspace, Tools, Search, Reference and Practice aligned', async ({ page }, testInfo) => {
+  test.skip(testInfo.project.name !== 'chromium-desktop', 'One deterministic cross-surface registry parity pass is sufficient.');
+
+  await openWorkspace(page);
+  const mathInput = page.getByRole('textbox', { name: 'Mathematical input' });
+  await mathInput.fill('f(x) := x^2 + 1');
+  await page.getByRole('button', { name: /Commit/ }).click();
+  await expect(page.getByRole('button', { name: /^Derivative/ }).first()).toBeVisible();
+
+  await page.goto('/#/tools');
+  const toolSearch = page.getByRole('textbox', { name: 'Search tools' });
+  await toolSearch.fill('spectrum');
+  await expect(page.getByRole('button', { name: /Eigenvalues/ }).first()).toBeVisible();
+
+  await page.keyboard.press('Control+K');
+  const command = page.getByRole('dialog', { name: 'Search MathLab' });
+  await command.getByPlaceholder(/Search ANOVA/).fill('spectrum');
+  await expect(command.getByText('Eigenvalues', { exact: true })).toBeVisible();
+  await page.keyboard.press('Escape');
+
+  await page.goto('/#/reference');
+  const referenceSearch = page.getByRole('textbox', { name: 'Search mathematical reference' });
+  await referenceSearch.fill('spectrum');
+  await expect(page.getByText('Eigenvalues', { exact: true }).first()).toBeVisible();
+
+  await page.goto('/#/practice');
+  await page.getByRole('button', { name: /Functions & Calculus/ }).click();
+  await expect(page.getByText(/engine tools/)).toBeVisible();
+  await expect(page.getByRole('button', { name: /Browse \d+ tools/ })).toBeVisible();
+});
+
 test('skip link and primary mathematical input expose keyboard-accessible semantics', async ({ page }, testInfo) => {
   test.skip(testInfo.project.name !== 'chromium-desktop', 'One deterministic keyboard semantics pass is sufficient; this is not claimed as a screen-reader certification.');
   await openWorkspace(page);
