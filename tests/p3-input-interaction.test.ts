@@ -13,7 +13,7 @@ import {
 } from '../src/lib/math/inputEditing';
 import { parseMath } from '../src/lib/math/parser';
 import { resolveSemanticObject } from '../src/lib/math/semantic';
-import { evaluateNumeric } from '../src/lib/math/visualization';
+import { buildGraphSeries, evaluateNumeric } from '../src/lib/math/visualization';
 
 function ast(source: string) {
   const parsed = parseMath(source);
@@ -91,6 +91,20 @@ describe('P3 piecewise mathematics', () => {
     const value = ast('piecewise(x^2, x < 0; 2x + 1, x >= 0)');
     expect(evaluateNumeric(value, 'x', -2)).toBe(4);
     expect(evaluateNumeric(value, 'x', 3)).toBe(7);
+  });
+
+  it('segments plotted piecewise functions at exact branch boundaries', () => {
+    const value = ast('piecewise(x^2, x < 0; 2x + 1, x >= 0)');
+    const model = buildGraphSeries(
+      { id: 'piecewise', name: 'f', source: 'piecewise', variable: 'x', ast: value },
+      { xMin: -2, xMax: 2, yMin: -1, yMax: 5 },
+      { samples: 161, detectNumericZeros: false },
+    );
+    expect(model.segments.length).toBeGreaterThanOrEqual(2);
+    expect(model.segments.some((segment) => {
+      const xs = segment.points.map((point) => point.x);
+      return Math.min(...xs) < 0 && Math.max(...xs) > 0;
+    })).toBe(false);
   });
 
   it('collapses constant piecewise conditions during simplification', () => {
