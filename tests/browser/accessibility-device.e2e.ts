@@ -6,7 +6,7 @@ const touchProjects = new Set(['android-chromium', 'ios-webkit', 'android-tablet
 
 async function openWorkspace(page: Page) {
   await page.goto('/#/workspace');
-  await expect(page).toHaveTitle('Workspace · MathLab');
+  await expect(page).toHaveTitle('Work · MathLab');
   await expect(page.locator('.save-state')).toHaveText('Saved locally');
   await expect(page.getByRole('textbox', { name: 'Mathematical input' })).toBeVisible();
 }
@@ -159,7 +159,7 @@ test('primary touch controls meet the WCAG 2.2 24px minimum target size', async 
 
   const targets = [page.getByRole('button', { name: /Commit/ })];
   const mobileNav = page.getByRole('navigation', { name: 'Mobile primary navigation' });
-  if (await mobileNav.isVisible()) targets.push(mobileNav.getByRole('button', { name: 'Tools', exact: true }));
+  if (await mobileNav.isVisible()) targets.push(mobileNav.getByRole('button', { name: 'Work', exact: true }));
 
   for (const target of targets) {
     const box = await target.boundingBox();
