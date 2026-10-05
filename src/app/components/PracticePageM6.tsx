@@ -310,7 +310,7 @@ export function PracticePage() {
           </aside>
 
           <div className="m6-course-detail">
-            <header><div><span className="section-kicker">{selectedCourse.phaseRange}</span><h2>{selectedCourse.title}</h2><p>{selectedCourse.description}</p></div><button className="primary-action" onClick={() => startSession('course', selectedCourse)}>Start practice</button></header>
+            <header><div><span className="section-kicker">Course practice</span><h2>{selectedCourse.title}</h2><p>{selectedCourse.description}</p></div><button className="primary-action" onClick={() => startSession('course', selectedCourse)}>Start practice</button></header>
             <div className="m6-course-metrics"><span><strong>{percentage(selectedSummary.mastery)}</strong> mastery</span><span><strong>{selectedSummary.attempts ? percentage(selectedSummary.accuracy) : '—'}</strong> accuracy</span><span><strong>{selectedSummary.seen}</strong> seen</span><span><strong>{selectedSummary.due}</strong> due</span></div>
             <div className="mastery-bar m6-mastery-bar"><span style={{ width: percentage(selectedSummary.mastery) }} /></div>
             <div className="m6-topic-list">
