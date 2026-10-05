@@ -25,6 +25,7 @@ for (const marker of [
   'saveWorksheet',
   'loadRecoveryWorksheet',
   'createWorksheetExport',
+  'stringifyWorksheetExport',
   'parseWorksheetImport',
 ]) pass(storage.includes(marker), `worksheet storage contract missing: ${marker}`);
 
