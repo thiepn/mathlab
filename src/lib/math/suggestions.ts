@@ -12,11 +12,14 @@ const SUGGESTIONS: MathSuggestion[] = [
   { label: 'ln(x)', insert: 'ln()', detail: 'Natural logarithm' },
   { label: 'log(x)', insert: 'log()', detail: 'Logarithm' },
   { label: 'exp(x)', insert: 'exp()', detail: 'Exponential function' },
+  { label: 'floor(x)', insert: 'floor()', detail: 'Floor function' },
+  { label: 'ceil(x)', insert: 'ceil()', detail: 'Ceiling function' },
+  { label: 'piecewise', insert: 'piecewise(x^2, x < 0; 2x + 1, x >= 0)', detail: 'Piecewise expression' },
   { label: 'pi', insert: 'pi', detail: 'π constant' },
   { label: 'Matrix', insert: 'A = [[1, 2], [3, 4]]', detail: '2 × 2 matrix' },
   { label: 'Vector', insert: 'v = [1, 2, 3]', detail: 'Length-3 vector' },
   { label: 'Function', insert: 'f(x) = x^2', detail: 'Define a function' },
-  { label: 'ivp(x,y)', insert: 'ivp(x + y, 0, 1)', detail: 'P12 first-order ODE initial-value problem' },
+  { label: 'ivp(x,y)', insert: 'ivp(x + y, 0, 1)', detail: 'First-order ODE initial-value problem' },
 ];
 
 export function getMathSuggestions(value: string, cursor: number): MathSuggestion[] {
