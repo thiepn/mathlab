@@ -11,6 +11,7 @@ pass(pkg.version === '2.0.0', 'stable gate requires package identity 2.0.0');
 pass(pkg.devDependencies?.['@playwright/test'] === '1.62.1', 'Playwright must stay pinned to 1.62.1 for this certification record');
 pass(pkg.scripts?.['test:e2e'] === 'playwright test --config=playwright.config.mjs', 'test:e2e must execute the stable Playwright configuration');
 pass(typeof pkg.scripts?.['audit:stable'] === 'string', 'audit:stable script missing');
+pass(pkg.scripts?.['audit:worksheet'] === 'node scripts/worksheet-audit.mjs', 'P2 audit:worksheet script is missing or changed');
 
 for (const file of [
   'playwright.config.mjs',
