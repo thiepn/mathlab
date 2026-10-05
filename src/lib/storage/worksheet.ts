@@ -13,6 +13,7 @@ const MAX_SESSIONS = 40;
 const MAX_ENTRIES = 500;
 const MAX_CHECKPOINTS = 12;
 const MAX_IMPORT_BYTES = 5_000_000;
+const BIGINT_TAG = '__mathlab_bigint__';
 
 let saveQueue: Promise<void> = Promise.resolve();
 
@@ -185,10 +186,24 @@ export function createWorksheetExport(state: WorksheetState): WorksheetExport {
   return { format: 'mathlab-worksheet', version: 1, exportedAt: Date.now(), worksheet: normalizeWorksheet(state) };
 }
 
+export function stringifyWorksheetExport(state: WorksheetState): string {
+  return JSON.stringify(createWorksheetExport(state), (_key, value) => {
+    if (typeof value === 'bigint') return { [BIGINT_TAG]: value.toString() };
+    return value;
+  }, 2);
+}
+
 export function parseWorksheetImport(raw: string): WorksheetState {
   if (new TextEncoder().encode(raw).byteLength > MAX_IMPORT_BYTES) throw new Error('Worksheet file is too large. The import limit is 5 MB.');
   let decoded: unknown;
-  try { decoded = JSON.parse(raw) as unknown; }
+  try {
+    decoded = JSON.parse(raw, (_key, value: unknown) => {
+      if (isRecord(value) && Object.keys(value).length === 1 && typeof value[BIGINT_TAG] === 'string' && /^-?\\d+$/.test(value[BIGINT_TAG])) {
+        return BigInt(value[BIGINT_TAG]);
+      }
+      return value;
+    }) as unknown;
+  }
   catch { throw new Error('The selected file is not valid JSON.'); }
   if (!isRecord(decoded)) throw new Error('The selected file is not a MathLab worksheet.');
   const packet = decoded as Partial<WorksheetExport>;
