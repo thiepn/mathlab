@@ -27,7 +27,7 @@ export function Header({ route, online, onRoute, onCommand, onMobileMenu }: Head
               key={destination.id}
               className={`topnav__item ${activeSection === destination.id ? 'is-active' : ''}`}
               onClick={() => onRoute(destination.route)}
-              aria-current={activeSection === destination.id ? 'page' : undefined}
+              aria-current={activeSection === destination.id ? 'location' : undefined}
             >
               {destination.label}
             </button>
