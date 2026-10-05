@@ -26,7 +26,7 @@ npm audit --audit-level=high
 
 The security claim is therefore scoped to the exact dependency graph resolved and audited at the tested commit. It is not a permanent assertion that future registry resolution or newly published advisories cannot change dependency risk.
 
-A committed npm lockfile remains desirable for fully reproducible transitive dependency resolution and is tracked as post-v2 build-system hardening.
+The repository now commits npm lockfile v3 and both pull-request and deployment workflows use `npm ci`, making the transitive dependency graph reproducible at the certified commit.
 
 ## Vite
 
