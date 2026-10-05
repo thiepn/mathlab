@@ -90,7 +90,7 @@ export function ToolsPage({ currentObject, initialToolId = '', onRun, onConfigur
               return (
                 <button key={tool.id} className={`tool-card ${selected?.id === tool.id ? 'is-selected' : ''}`} onClick={() => setSelectedId(tool.id)}>
                   <span className="tool-card-main"><strong>{tool.label}</strong><small>{tool.description}</small></span>
-                  <span className="tool-card-meta"><i className={`tool-status status-${status.tone}`}>{status.label}</i><b>{tool.phase}</b></span>
+                  <span className="tool-card-meta"><i className={`tool-status status-${status.tone}`}>{status.label}</i><b>{tool.category}</b></span>
                 </button>
               );
             })}
@@ -100,7 +100,7 @@ export function ToolsPage({ currentObject, initialToolId = '', onRun, onConfigur
         {selected && (
           <aside className="tool-detail" aria-label={`${selected.label} details`}>
             <div className="tool-detail-heading">
-              <span>{selected.category} · {selected.phase}</span>
+              <span>{selected.category}</span>
               <h2>{selected.label}</h2>
               <p>{selected.description}</p>
             </div>
