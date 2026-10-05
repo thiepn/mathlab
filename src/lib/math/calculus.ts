@@ -1,4 +1,5 @@
 import type { AstNode } from './ast';
+import { containsPiecewise } from './piecewise';
 import {
   evaluatePolynomial,
   polynomialCoefficient,
@@ -90,6 +91,11 @@ function simplifyKnownCalls(node: AstNode): AstNode {
   if (node.type === 'unary') return simplifyAst({ ...node, operand: simplifyKnownCalls(node.operand) });
   if (node.type === 'binary') return simplifyAst({ ...node, left: simplifyKnownCalls(node.left), right: simplifyKnownCalls(node.right) });
   if (node.type === 'matrix') return { ...node, rows: node.rows.map((row) => row.map(simplifyKnownCalls)) };
+  if (node.type === 'piecewise') return simplifyAst({
+    ...node,
+    branches: node.branches.map((branch) => ({ value: simplifyKnownCalls(branch.value), condition: simplifyKnownCalls(branch.condition) })),
+    otherwise: node.otherwise ? simplifyKnownCalls(node.otherwise) : undefined,
+  });
   if (node.type === 'system' || node.type === 'set') return { ...node, items: node.items.map(simplifyKnownCalls) };
   if (node.type === 'equation' || node.type === 'comparison' || node.type === 'definition') {
     return { ...node, left: simplifyKnownCalls(node.left), right: simplifyKnownCalls(node.right) };
@@ -114,6 +120,9 @@ function simplifyKnownCalls(node: AstNode): AstNode {
 }
 
 function derivativeRaw(node: AstNode, variable: string, steps: CalculusStep[]): AstNode {
+  if (node.type === 'piecewise') {
+    throw new Error('Global symbolic differentiation of piecewise functions is intentionally unavailable until branch-boundary differentiability is certified. Evaluate or graph the function instead.');
+  }
   if (!containsVariable(node, variable)) return n(0);
   if (node.type === 'number') return n(0);
   if (node.type === 'symbol') return node.name === variable ? n(1) : n(0);
@@ -322,13 +331,21 @@ export function parsePoint(source: string): AstNode {
   const normalized = source.trim().replace(/^\+?∞$/, 'infinity').replace(/^-∞$/, '-infinity');
   const parsed = parseMath(normalized);
   if (!parsed.ast || parsed.diagnostics.some((item) => item.severity === 'error')) throw new Error(parsed.diagnostics[0]?.message ?? `Could not parse “${source}”.`);
-  if (parsed.ast.type === 'equation' || parsed.ast.type === 'comparison' || parsed.ast.type === 'definition' || parsed.ast.type === 'system' || parsed.ast.type === 'set' || parsed.ast.type === 'matrix') {
+  if (parsed.ast.type === 'equation' || parsed.ast.type === 'comparison' || parsed.ast.type === 'definition' || parsed.ast.type === 'system' || parsed.ast.type === 'set' || parsed.ast.type === 'matrix' || parsed.ast.type === 'piecewise') {
     throw new Error('A calculus point or bound must be a scalar expression.');
   }
   return parsed.ast;
 }
 
 export function evaluateAt(node: AstNode, variable: string, point: AstNode): AstNode {
+  if (containsPiecewise(node)) {
+    const resolved = evaluateAtUnchecked(node, variable, point);
+    if (containsPiecewise(resolved)) {
+      throw new Error('The piecewise branch could not be selected exactly at this input. Resolve any remaining symbols or conditions first.');
+    }
+    assertPointDomain(resolved, variable, point);
+    return resolved;
+  }
   assertPointDomain(node, variable, point);
   return evaluateAtUnchecked(node, variable, point);
 }
