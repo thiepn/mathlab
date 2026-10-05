@@ -23,6 +23,8 @@ for (const file of [
   '.github/workflows/deploy.yml',
   'public/sw.js',
   'docs/RELEASE_CERTIFICATION.md',
+  'docs/P2_MATHEMATICAL_WORKSHEET_ACCEPTANCE.md',
+  'scripts/worksheet-audit.mjs',
 ]) pass(existsSync(join(root, file)), `missing stable-release artifact: ${file}`);
 
 const config = text('playwright.config.mjs');
