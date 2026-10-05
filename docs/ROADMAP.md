@@ -108,6 +108,22 @@ Post-v2 hardening now adds a dedicated accessibility/device certification layer 
 
 The automated matrix is not a substitute for physical hardware or assistive technology. Physical Android/iPhone/iPad behavior, installed PWA behavior on those devices, VoiceOver, TalkBack, NVDA and physical Windows High Contrast remain external manual evidence items documented in `ACCESSIBILITY_DEVICE_CERTIFICATION.md`.
 
-## What comes after E12
+## Post-v2 product roadmap
 
-There is **no E13 in the locked expansion roadmap**. E12 closes the planned E-series. Future work is post-v2 maintenance/hardening driven by concrete defects, accessibility/device findings, performance/security maintenance, or a deliberately defined new roadmap rather than continuing phase numbering automatically.
+There is **no E13 in the locked expansion roadmap**. E12 closed the breadth-expansion series.
+
+The next roadmap is product-led rather than mathematics-phase-led:
+
+| Post-v2 phase | Scope | Status |
+|---|---|---|
+| **P0 — Integrity repair** | Accessibility/device closure, release-truth cleanup, Reference/catalog parity, removal of internal phase labels from user-facing UI, dependency/release reproducibility follow-up. | **In progress** |
+| P1 — Product-shell consolidation | Work / Visualize / Learn information architecture and mobile shell simplification. | Planned |
+| P2 — Mathematical worksheet | Persistent calculation history, reusable results, undo/redo and user-visible version/recovery workflow. | Planned |
+| P3 — Input & interaction | Mobile math keypad/templates, improved editing and piecewise/condition foundations. | Planned |
+| P4 — Unified capability architecture | One canonical registry powering Workspace, Tools, Search, Reference and Practice. | Planned |
+| P5 — Learning v2 | Concept/course model, worked examples, guided practice and current-engine curriculum parity. | Planned |
+| P6 — Dynamic exploration | Parameters/sliders, tables and linked formula/graph/result workflows. | Planned |
+| P7 — Wirtschaftsmathematik expansion | Optimization/OR, probability/statistics and applied numerical priorities. | Planned |
+| P8 — Architecture stabilization | Domain migration, code splitting, performance/storage hardening and physical accessibility certification. | Planned |
+
+Future mathematical expansion is intentionally selective. New breadth must be justified by real university/applied-mathematics use rather than continuing expansion numbering automatically.
