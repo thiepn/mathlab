@@ -24,7 +24,7 @@ function group(node: AstNode): ReactNode {
 }
 
 function precedence(node: AstNode): number {
-  if (node.type === 'equation' || node.type === 'comparison' || node.type === 'definition' || node.type === 'system' || node.type === 'set') return 0;
+  if (node.type === 'equation' || node.type === 'comparison' || node.type === 'definition' || node.type === 'system' || node.type === 'set' || node.type === 'piecewise') return 0;
   if (node.type === 'binary') return node.operator === '+' || node.operator === '-' ? 1 : node.operator === '*' || node.operator === '/' ? 2 : 3;
   if (node.type === 'unary') return 4;
   return 5;
@@ -91,6 +91,25 @@ export function renderMathNode(node: AstNode): ReactNode {
       const functionName = UPRIGHT_FUNCTIONS.has(node.name) ? symbolName(node.name) : symbolName(node.name);
       return <mrow><mi mathvariant={UPRIGHT_FUNCTIONS.has(node.name) ? 'normal' : undefined}>{functionName}</mi><mo>(</mo>{commaSeparated(node.args)}<mo>)</mo></mrow>;
     }
+    case 'piecewise': return (
+      <mrow>
+        <mo stretchy="true">{'{'}</mo>
+        <mtable columnalign="left left">
+          {node.branches.map((branch, index) => (
+            <mtr key={index}>
+              <mtd>{renderMathNode(branch.value)}</mtd>
+              <mtd><mtext>if </mtext>{renderMathNode(branch.condition)}</mtd>
+            </mtr>
+          ))}
+          {node.otherwise && (
+            <mtr>
+              <mtd>{renderMathNode(node.otherwise)}</mtd>
+              <mtd><mtext>otherwise</mtext></mtd>
+            </mtr>
+          )}
+        </mtable>
+      </mrow>
+    );
     case 'equation': return <mrow>{renderMathNode(node.left)}<mo>=</mo>{renderMathNode(node.right)}</mrow>;
     case 'comparison': return <mrow>{renderMathNode(node.left)}<mo>{node.operator === '<=' ? '≤' : node.operator === '>=' ? '≥' : node.operator === '!=' ? '≠' : node.operator}</mo>{renderMathNode(node.right)}</mrow>;
     case 'system': return <mrow><mo>{'{'}</mo><mtable>{node.items.map((item, index) => <mtr key={index}><mtd>{renderMathNode(item)}</mtd></mtr>)}</mtable></mrow>;
