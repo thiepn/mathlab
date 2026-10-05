@@ -52,6 +52,20 @@
     overflow: visible;
   }
 
+  /* M1 restores a visible text label after the original mobile shell hides it.
+     At 200% text that label exceeds the fixed 64px action column and expands the document.
+     Keep the accessible button name while rendering only the arrow in the constrained mobile slot. */
+  .run-button {
+    font-size: 0;
+    overflow: hidden;
+  }
+
+  .run-button span {
+    display: block;
+    margin: 0;
+    font-size: 1.2rem;
+  }
+
   .math-helper-row button {
     flex: 0 0 38px;
     min-width: 38px;
