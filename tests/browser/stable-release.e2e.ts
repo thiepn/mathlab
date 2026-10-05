@@ -1,17 +1,17 @@
 import { expect, test, type Page } from '@playwright/test';
 
 const routes = [
-  ['workspace', 'Workspace'],
+  ['workspace', 'Work'],
   ['tools', 'Tools'],
   ['visualize', 'Visualize'],
-  ['proof', 'Proof Lab'],
-  ['practice', 'Practice'],
+  ['proof', 'Proof & Verification'],
+  ['practice', 'Learn'],
   ['reference', 'Reference'],
 ] as const;
 
 async function openWorkspace(page: Page) {
   await page.goto('/#/workspace');
-  await expect(page).toHaveTitle('Workspace · MathLab');
+  await expect(page).toHaveTitle('Work · MathLab');
   await expect(page.getByRole('heading', { name: /What do you want to work out\?|Working on/ })).toBeVisible();
   await expect(page.locator('.save-state')).toHaveText('Saved locally');
 }
@@ -42,15 +42,36 @@ test('boots cleanly and every primary route is reachable', async ({ page }) => {
   expect(consoleErrors).toEqual([]);
 });
 
-test('visible navigation works at desktop and mobile widths without horizontal page overflow', async ({ page }) => {
+test('consolidated primary and contextual navigation works without page overflow', async ({ page }) => {
   await openWorkspace(page);
-  const mobileNav = page.getByRole('navigation', { name: 'Mobile primary navigation' });
-  if (await mobileNav.isVisible()) {
-    await mobileNav.getByRole('button', { name: 'Tools', exact: true }).click();
+
+  const desktopNav = page.getByRole('navigation', { name: 'Primary navigation' });
+  if (await desktopNav.isVisible()) {
+    await expect(desktopNav.getByRole('button')).toHaveCount(3);
+    await expect(desktopNav.getByRole('button', { name: 'Work', exact: true })).toHaveAttribute('aria-current', 'page');
+    await expect(desktopNav.getByRole('button', { name: 'Visualize', exact: true })).toBeVisible();
+    await expect(desktopNav.getByRole('button', { name: 'Learn', exact: true })).toBeVisible();
   } else {
-    await page.getByRole('navigation', { name: 'Primary navigation' }).getByRole('button', { name: 'Tools', exact: true }).click();
+    const mobileNav = page.getByRole('navigation', { name: 'Mobile primary navigation' });
+    await expect(mobileNav.getByRole('button')).toHaveCount(3);
+    await expect(mobileNav.getByRole('button', { name: 'Work', exact: true })).toHaveAttribute('aria-current', 'page');
   }
+
+  const workNav = page.getByRole('navigation', { name: 'Work section navigation' });
+  await expect(workNav.getByRole('button')).toHaveCount(3);
+  await workNav.getByRole('button', { name: 'Tools', exact: true }).click();
   await expect(page).toHaveTitle('Tools · MathLab');
+  await expect(workNav.getByRole('button', { name: 'Tools', exact: true })).toHaveAttribute('aria-current', 'page');
+
+  const primary = (await desktopNav.isVisible()) ? desktopNav : page.getByRole('navigation', { name: 'Mobile primary navigation' });
+  await primary.getByRole('button', { name: 'Learn', exact: true }).click();
+  await expect(page).toHaveTitle('Learn · MathLab');
+
+  const learnNav = page.getByRole('navigation', { name: 'Learn section navigation' });
+  await expect(learnNav.getByRole('button')).toHaveCount(2);
+  await learnNav.getByRole('button', { name: 'Reference', exact: true }).click();
+  await expect(page).toHaveTitle('Reference · MathLab');
+
   const overflow = await page.evaluate(() => document.documentElement.scrollWidth - window.innerWidth);
   expect(overflow).toBeLessThanOrEqual(1);
 });
@@ -156,7 +177,7 @@ test('installed service worker supports an offline application reload', async ({
     await navigator.serviceWorker.ready;
   });
   await page.reload();
-  await expect(page).toHaveTitle('Workspace · MathLab');
+  await expect(page).toHaveTitle('Work · MathLab');
 
   await context.setOffline(true);
   try {
