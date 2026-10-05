@@ -75,8 +75,8 @@ export function Workspace({
   const usedBy = persistedObject ? dependentObjects(controller.state.objects, persistedObject.name) : [];
 
   const commit = (parsed: ParsedMath) => {
-    if (!controller.hydrated) {
-      setResolutionMessage('Workspace storage is still loading. Commit will unlock when the saved workspace is ready.');
+    if (!controller.hydrated || !worksheet.hydrated) {
+      setResolutionMessage('Local workspace history is still loading. Commit will unlock when both object and worksheet storage are ready.');
       return;
     }
     setSubmitted(parsed);
@@ -147,7 +147,7 @@ export function Workspace({
         </div>
       </div>
 
-      <MathInput initialValue={editorSource} canSubmit={controller.hydrated} onChangeParsed={onActiveParsed} onSubmit={commit} />
+      <MathInput initialValue={editorSource} canSubmit={controller.hydrated && worksheet.hydrated} onChangeParsed={onActiveParsed} onSubmit={commit} />
 
       <AssumptionBar
         assumptions={controller.state.assumptions}
