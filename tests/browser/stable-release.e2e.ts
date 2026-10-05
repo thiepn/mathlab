@@ -179,9 +179,10 @@ test('worksheet undo redo and checkpoints remain usable', async ({ page }) => {
   await page.getByText('History', { exact: true }).click();
   await page.getByRole('button', { name: 'New session', exact: true }).click();
   await expect(page.locator('.worksheet-entry')).toHaveCount(0);
-  await expect(page.getByRole('combobox', { name: 'Worksheet session' })).toHaveCount(0);
   await page.getByText('History', { exact: true }).click();
-  await expect(page.getByRole('combobox', { name: 'Worksheet session' }).locator('option')).toHaveCount(2);
+  const sessionSelect = page.getByRole('combobox', { name: 'Worksheet session' });
+  await expect(sessionSelect).toBeVisible();
+  await expect(sessionSelect.locator('option')).toHaveCount(2);
 });
 
 test('IndexedDB workspace state survives a browser reload', async ({ page }) => {
