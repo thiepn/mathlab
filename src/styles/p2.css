@@ -415,3 +415,31 @@
     grid-template-columns: 1fr;
   }
 }
+
+
+/* P2 adds a reusable-result action to the existing result toolbar.
+   On phone widths the complete control set must form rows instead of overlapping. */
+@media (max-width: 760px) {
+  .algebra-result .result-view-controls {
+    width: 100%;
+    max-width: 100%;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(82px, 1fr));
+    gap: 4px;
+    border: 0;
+  }
+
+  .algebra-result .result-view-controls button {
+    min-width: 0;
+    width: 100%;
+    min-height: 38px;
+    border: 1px solid var(--ml-line);
+    border-radius: var(--ml-radius-xs);
+    white-space: normal;
+    overflow-wrap: anywhere;
+  }
+
+  .algebra-result .result-view-controls button:last-child {
+    border-right: 1px solid var(--ml-line);
+  }
+}
