@@ -48,13 +48,13 @@ test('consolidated primary and contextual navigation works without page overflow
   const desktopNav = page.getByRole('navigation', { name: 'Primary navigation' });
   if (await desktopNav.isVisible()) {
     await expect(desktopNav.getByRole('button')).toHaveCount(3);
-    await expect(desktopNav.getByRole('button', { name: 'Work', exact: true })).toHaveAttribute('aria-current', 'page');
+    await expect(desktopNav.getByRole('button', { name: 'Work', exact: true })).toHaveAttribute('aria-current', 'location');
     await expect(desktopNav.getByRole('button', { name: 'Visualize', exact: true })).toBeVisible();
     await expect(desktopNav.getByRole('button', { name: 'Learn', exact: true })).toBeVisible();
   } else {
     const mobileNav = page.getByRole('navigation', { name: 'Mobile primary navigation' });
     await expect(mobileNav.getByRole('button')).toHaveCount(3);
-    await expect(mobileNav.getByRole('button', { name: 'Work', exact: true })).toHaveAttribute('aria-current', 'page');
+    await expect(mobileNav.getByRole('button', { name: 'Work', exact: true })).toHaveAttribute('aria-current', 'location');
   }
 
   const workNav = page.getByRole('navigation', { name: 'Work section navigation' });
