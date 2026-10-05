@@ -1,8 +1,13 @@
 import { useMemo, useState } from 'react';
 import { PRACTICE_COURSES } from '../../lib/math/practice';
-import { ALL_TOOL_CATALOG } from '../allToolCatalog';
-import { TOOL_CATEGORIES, type ToolCatalogItem, type ToolCategory } from '../toolCatalog';
-import { courseAccentIndex, toolsForCourse } from '../learningSurfaces';
+import {
+  CAPABILITY_CATEGORIES,
+  CAPABILITY_REGISTRY,
+  capabilitiesForCourse,
+  type CapabilityDescriptor,
+} from '../capabilityRegistry';
+import type { ToolCategory } from '../toolCatalog';
+import { courseAccentIndex } from '../learningSurfaces';
 import {
   COMPLETENESS_DOMAINS,
   completenessBreadthPercent,
@@ -13,13 +18,12 @@ import { MathValue } from './MathValue';
 
 type ReferenceScope = 'all' | string;
 
-function toolMatches(tool: ToolCatalogItem, query: string): boolean {
+function toolMatches(tool: CapabilityDescriptor, query: string): boolean {
   if (!query) return true;
-  const haystack = [tool.label, tool.category, tool.description, tool.example, ...tool.aliases, ...tool.objectKinds].join(' ').toLowerCase();
-  return haystack.includes(query);
+  return tool.searchText.includes(query);
 }
 
-function ToolReferenceCard({ tool }: { tool: ToolCatalogItem }) {
+function ToolReferenceCard({ tool }: { tool: CapabilityDescriptor }) {
   return (
     <article className="m6-reference-tool">
       <header><div><span>{tool.category}</span><strong>{tool.label}</strong></div><em>{tool.objectKinds.length ? tool.objectKinds.join(' · ') : 'Proof workflow'}</em></header>
@@ -36,7 +40,7 @@ export function CourseReferencePage() {
   const normalizedQuery = query.trim().toLowerCase();
   const selectedCourse = PRACTICE_COURSES.find((course) => course.id === scope);
   const scopedTools = useMemo(
-    () => scope === 'all' ? ALL_TOOL_CATALOG : toolsForCourse(scope, ALL_TOOL_CATALOG),
+    () => scope === 'all' ? CAPABILITY_REGISTRY : capabilitiesForCourse(scope),
     [scope],
   );
   const filteredTools = useMemo(() => scopedTools.filter((tool) => toolMatches(tool, normalizedQuery)), [scopedTools, normalizedQuery]);
@@ -48,7 +52,7 @@ export function CourseReferencePage() {
   }, [selectedCourse, normalizedQuery]);
 
   const groupedTools = useMemo(
-    () => TOOL_CATEGORIES
+    () => CAPABILITY_CATEGORIES
       .map((category) => ({ category, tools: filteredTools.filter((tool) => tool.category === category) }))
       .filter((group) => group.tools.length),
     [filteredTools],
