@@ -160,6 +160,8 @@ test('primary touch controls meet the WCAG 2.2 24px minimum target size', async 
   const targets = [page.getByRole('button', { name: /Commit/ })];
   const mobileNav = page.getByRole('navigation', { name: 'Mobile primary navigation' });
   if (await mobileNav.isVisible()) targets.push(mobileNav.getByRole('button', { name: 'Work', exact: true }));
+  const workNav = page.getByRole('navigation', { name: 'Work section navigation' });
+  if (await workNav.isVisible()) targets.push(workNav.getByRole('button', { name: 'Tools', exact: true }));
 
   for (const target of targets) {
     const box = await target.boundingBox();
