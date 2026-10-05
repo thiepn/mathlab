@@ -37,7 +37,7 @@ export function CommandPalette({ onClose, objects, onNew, onOpenObject, onRoute,
     ...ALL_TOOL_CATALOG.map((tool) => ({
       id: `tool:${tool.id}`,
       label: tool.label,
-      detail: `${tool.category} · ${tool.phase} · ${tool.description}`,
+      detail: `${tool.category} · ${tool.description}`,
       search: toolSearchText(tool),
       badge: 'Tool',
       run: () => onTool(tool.id),
