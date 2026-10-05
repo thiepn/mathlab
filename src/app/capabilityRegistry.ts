@@ -12,6 +12,8 @@ import { E11_TOOL_CATALOG } from './e11ToolCatalog';
 import { TOOL_CATALOG, TOOL_CATEGORIES, type ToolCatalogItem, type ToolCategory } from './toolCatalog';
 import { operationNeedsControls, operationPriority } from './workspaceOperations';
 
+export type CapabilityCategory = ToolCategory;
+
 export type CapabilityCourseId =
   | 'algebra'
   | 'calculus'
