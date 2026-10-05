@@ -98,7 +98,7 @@ MathLab AST
 classification / MathML / LaTeX
 ```
 
-The parser intentionally owns syntax only. It does not simplify expressions or decide mathematical truth. P2 adds symbol-table and object semantics; later computation phases translate the AST through the `MathEngine` abstraction.
+The parser intentionally owns syntax only. It does not simplify expressions or decide mathematical truth. P2 adds symbol-table and object semantics; later computation phases translate the AST through the `MathEngine` abstraction. Post-v2 P3 extends the grammar with a dedicated piecewise node while preserving this boundary.
 
 ### P1 source modules
 
@@ -215,7 +215,48 @@ The active result panel and worksheet history share the same structured `MathRes
 
 Undo/redo is intentionally worksheet-scoped. It does not rewrite semantic-object history or override native text-input undo. Manual checkpoints store immutable active-session snapshots. Worksheet import/export uses a separate `mathlab-worksheet` packet so the established `mathlab-workspace` format is not silently broadened.
 
-## P3 workspace layer
+## Post-v2 P3 input & interaction layer
+
+P3 keeps linear source text as the canonical editable representation and adds a structured interaction layer around it.
+
+```text
+Keyboard / touch
+  ↓
+selection-aware templates + delimiter editing
+  ↓
+Universal Input source
+  ↓
+normalizer → parser → AST
+  ↓
+semantic object → capabilities → engine
+```
+
+The interaction layer is split deliberately:
+
+- `src/lib/math/inputEditing.ts` owns pure cursor/selection transformations and categorized templates;
+- `src/app/components/MathKeypad.tsx` presents those templates accessibly on desktop and touch layouts;
+- `MathInput.tsx` coordinates autocomplete, input history, paired delimiters, Tab structural navigation and commit shortcuts;
+- the parser remains the authority on whether the generated source is valid mathematics.
+
+### Piecewise representation
+
+Piecewise mathematics is a first-class AST node rather than a generic function call:
+
+```text
+piecewise(value, condition; value, condition; otherwise)
+```
+
+Each branch stores a value AST and a condition AST. Conditions may be comparisons/equalities or deterministic logical combinations of conditions.
+
+The piecewise node participates in symbol collection, domain inference, substitution, simplification, plain/LaTeX serialization and native MathML rendering. Exact point evaluation substitutes the requested input and collapses a decidable branch. Numeric visualization evaluates conditions per sample.
+
+The capability layer deliberately exposes only point evaluation and graphing for piecewise functions. Existing global symbolic derivative/integral/profile algorithms are not allowed to consume piecewise objects until branch-boundary correctness is implemented and certified. This keeps input breadth from silently exceeding mathematical correctness.
+
+### Interaction accessibility
+
+On narrow screens the legacy row of tiny helper keys collapses into one **Math keypad** trigger. The keypad itself uses categorized 44px-class touch controls and remains inside the same source-input model. The accessibility suite opens the keypad during 320px + 200% reflow certification and includes a keypad key in touch-target checks.
+
+## Legacy P3 workspace layer
 
 P3 makes semantic state durable and user-manageable without changing the computation boundary.
 
