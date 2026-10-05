@@ -1,9 +1,8 @@
 import { Fragment, useEffect, useMemo, useState } from 'react';
 import { domainSymbol } from '../../lib/math/assumptions';
-import { capabilitiesFor } from '../../lib/math/capabilitiesE5';
 import { shapeLabel } from '../../lib/math/semantic';
 import type { SemanticDiagnostic, SemanticMathObject } from '../../lib/math/types';
-import { operationNeedsControls } from '../workspaceOperations';
+import { resolveCapabilitiesForObject } from '../capabilityRegistry';
 import { E1OperationControls, isE1ControlledOperation } from './E1OperationControls';
 import { E5OperationControls, isE5ControlledOperation } from './E5OperationControls';
 
@@ -56,8 +55,8 @@ function initialControls(object: SemanticMathObject | null): ControlState {
 }
 
 export function ContextPanel({ object, persisted, pinned = false, dependents = [], diagnostics = [], onRename, onDuplicate, onTogglePin, onDelete, onAction, runningOperation }: ContextPanelProps) {
-  const actions = capabilitiesFor(object);
-  const groups = [...new Set(actions.map((item) => item.group))];
+  const actions = resolveCapabilitiesForObject(object);
+  const groups = [...new Set(actions.map((item) => item.runtimeGroup))];
   const [renaming, setRenaming] = useState(false);
   const [name, setName] = useState(object?.name ?? '');
   const [renameError, setRenameError] = useState('');
@@ -130,7 +129,7 @@ export function ContextPanel({ object, persisted, pinned = false, dependents = [
 
       {object && <section className="context-section semantic-context"><h2>Meaning</h2><dl><div><dt>{object.kind==='function'?'Parameters':'Variables'}</dt><dd>{(object.kind==='function'?object.parameters:object.variables).join(', ')||'—'}</dd></div><div><dt>Depends on</dt><dd>{dependencyText}</dd></div><div><dt>Used by</dt><dd>{dependents.map((item)=>item.name).filter(Boolean).join(', ')||'—'}</dd></div><div><dt>Assumptions</dt><dd>{object.assumptions.length||'—'}</dd></div></dl></section>}
 
-      {groups.map((group)=><section className="context-section" key={group}><h2>{group}</h2>{actions.filter((item)=>item.group===group).map((item)=><Fragment key={item.id}><button className={`context-action ${item.available?'is-available':item.applicable?'is-locked':'is-inapplicable'}`} disabled={!item.available||running} title={item.available ? `Run ${item.label}` : item.reason} onClick={()=>{if(!item.available)return;if(operationNeedsControls(item.id)){setControlOpen((value)=>value===item.id?'':item.id);}else onAction?.(item.id);}}><span>{runningOperation===item.id?'Computing…':item.label}</span><span className="phase-lock">{item.available ? item.id === 'graph' ? 'OPEN' : 'RUN' : 'N/A'}</span></button>{item.available&&renderControl(item.id)}</Fragment>)}</section>)}
+      {groups.map((group)=><section className="context-section" key={group}><h2>{group}</h2>{actions.filter((item)=>item.runtimeGroup===group).map((item)=><Fragment key={item.id}><button className={`context-action ${item.available?'is-available':item.applicable?'is-locked':'is-inapplicable'}`} disabled={!item.available||running} title={item.available ? `Run ${item.label}` : item.reason} onClick={()=>{if(!item.available)return;if(item.needsConfiguration){setControlOpen((value)=>value===item.id?'':item.id);}else onAction?.(item.id);}}><span>{runningOperation===item.id?'Computing…':item.label}</span><span className="phase-lock">{item.available ? item.id === 'graph' ? 'OPEN' : 'RUN' : 'N/A'}</span></button>{item.available&&renderControl(item.id)}</Fragment>)}</section>)}
 
       {diagnostics.length>0&&<div className="context-diagnostic">{diagnostics[0].message}</div>}
       <div className="context-footnote">MathLab exposes only operations that match the resolved object. Numerical workflows keep tolerances, starting points, convergence state, and local/global claim boundaries explicit.</div>
