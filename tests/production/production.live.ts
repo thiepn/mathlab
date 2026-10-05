@@ -77,6 +77,21 @@ test('live Worker-backed mathematics executes with exact provenance', async ({ p
   await expect(result.getByText('EXACT', { exact: true })).toBeVisible();
 });
 
+test('live worksheet persists across a production reload', async ({ page }) => {
+  await openWorkspace(page);
+  await expect(page.locator('.worksheet-save')).toHaveText('Saved');
+
+  const input = page.getByRole('textbox', { name: 'Mathematical input' });
+  await input.fill('production_worksheet_probe := 7');
+  await page.getByRole('button', { name: /Commit/ }).click();
+  await expect(page.locator('.worksheet-entry-input')).toHaveCount(1);
+  await expect(page.locator('.worksheet-save')).toHaveText('Saved');
+
+  await page.reload({ waitUntil: 'domcontentloaded' });
+  await expect(page.getByRole('region', { name: 'Mathematical worksheet' })).toBeVisible();
+  await expect(page.locator('.worksheet-entry-input')).toContainText('production_worksheet_probe');
+});
+
 test('live IndexedDB workspace persists across a production reload', async ({ page }) => {
   await openWorkspace(page);
   const input = page.getByRole('textbox', { name: 'Mathematical input' });
