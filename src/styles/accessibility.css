@@ -69,6 +69,18 @@
     min-width: 0;
     overflow-wrap: anywhere;
   }
+
+  .assumption-heading > div:first-child {
+    min-width: 0;
+    flex-wrap: wrap;
+    justify-content: flex-start;
+  }
+
+  .assumption-heading small {
+    min-width: 0;
+    max-width: 100%;
+    overflow-wrap: anywhere;
+  }
 }
 
 @media (max-width: 820px) {
