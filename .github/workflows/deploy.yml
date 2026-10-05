@@ -41,6 +41,9 @@ jobs:
       - name: Accessibility and device certification audit
         run: npm run audit:accessibility
 
+      - name: Mathematical worksheet audit
+        run: npm run audit:worksheet
+
       - name: Install dependencies
         run: npm ci
 
