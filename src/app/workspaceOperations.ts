@@ -22,7 +22,7 @@ export const OPERATIONS_REQUIRING_CONTROLS = new Set([
   'lemma-rewrite','inequality-consequence','finite-quantifier-proof','induction-certificate','analysis-theorem-certificate','linear-algebra-theorem-certificate','finite-group-theorem-certificate',
 ]);
 
-const PRIORITY = [
+export const PREFERRED_OPERATION_ORDER = [
   'solve','solve-inequality','solve-system','simplify','factor','expand',
   'gradient','jacobian','hessian','multivariable-critical-points','second-derivative-test',
   'vector-field-profile','divergence','curl','conservative-field','scalar-potential',
@@ -43,11 +43,15 @@ export function operationNeedsControls(operation: string): boolean {
   return OPERATIONS_REQUIRING_CONTROLS.has(operation);
 }
 
+export function operationPriority(operation: string): number {
+  const index = PREFERRED_OPERATION_ORDER.indexOf(operation);
+  return index === -1 ? PREFERRED_OPERATION_ORDER.length + 20 : index;
+}
+
 export function preferredWorkspaceActions(actions: ObjectCapability[], limit = 6): ObjectCapability[] {
   const available = actions.filter((item) => item.available);
   const score = (item: ObjectCapability) => {
-    const index = PRIORITY.indexOf(item.id);
-    return index === -1 ? PRIORITY.length + 20 : index;
+    return operationPriority(item.id);
   };
   return [...available]
     .filter((item) => !operationNeedsControls(item.id))
