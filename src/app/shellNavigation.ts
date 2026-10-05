@@ -23,7 +23,7 @@ export const SECTION_NAV: Readonly<Record<PrimarySection, readonly SectionDestin
   work: [
     { route: 'workspace', label: 'Workbench' },
     { route: 'tools', label: 'Tools' },
-    { route: 'proof', label: 'Proof & Verify' },
+    { route: 'proof', label: 'Proof' },
   ],
   visualize: [],
   learn: [
