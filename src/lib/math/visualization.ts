@@ -1,4 +1,5 @@
 import type { AstNode } from './ast';
+import { evaluateConditionWith, selectPiecewiseBranch } from './piecewise';
 import {
   factorAst,
   polynomialCoefficient,
@@ -102,6 +103,10 @@ export function evaluateNumeric(node: AstNode, variable: string, x: number): num
         case '/': return Math.abs(right) <= Number.EPSILON ? Number.NaN : finite(left / right);
         case '^': return finite(Math.pow(left, right));
       }
+    }
+    case 'piecewise': {
+      const selected = selectPiecewiseBranch(node, (condition) => evaluateConditionWith(condition, (candidate) => evaluateNumeric(candidate, variable, x)));
+      return selected ? evaluateNumeric(selected, variable, x) : Number.NaN;
     }
     case 'call': {
       if (node.args.length !== 1) return Number.NaN;
