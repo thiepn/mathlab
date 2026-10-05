@@ -71,13 +71,12 @@ export function WorksheetTimeline({ controller, excludeResultId, onUseSource }: 
   };
 
   return (
-    <section className="worksheet-timeline" aria-labelledby="worksheet-title">
+    <section className="worksheet-timeline" aria-labelledby="worksheet-heading">
       <header className="worksheet-header">
         <div className="worksheet-heading">
-          <span className="section-kicker">Mathematical worksheet</span>
+          <span className="section-kicker" id="worksheet-heading">Mathematical worksheet</span>
           <div className="worksheet-title-row">
             <input
-              id="worksheet-title"
               value={title}
               aria-label="Worksheet session title"
               onChange={(event) => setTitle(event.target.value)}
