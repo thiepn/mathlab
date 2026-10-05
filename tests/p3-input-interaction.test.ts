@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { simplifyAst } from '../src/lib/math/algebra';
-import { capabilitiesFor } from '../src/lib/math/capabilities';
+import { capabilitiesFor } from '../src/lib/math/capabilitiesE5';
 import { evaluateAt } from '../src/lib/math/calculus';
 import { astToLatex, astToPlainText } from '../src/lib/math/format';
 import {
@@ -124,5 +124,6 @@ describe('P3 piecewise mathematics', () => {
     expect(capabilities.find((item) => item.id === 'evaluate-function')?.available).toBe(true);
     expect(capabilities.find((item) => item.id === 'graph')?.available).toBe(true);
     expect(capabilities.find((item) => item.id === 'derivative')?.available).toBe(false);
+    expect(capabilities.filter((item) => item.available).map((item) => item.id).sort()).toEqual(['evaluate-function', 'graph']);
   });
 });
