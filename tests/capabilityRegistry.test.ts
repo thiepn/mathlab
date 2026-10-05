@@ -30,6 +30,8 @@ describe('P4 unified capability registry', () => {
     expect(CAPABILITY_REGISTRY.find((capability) => capabilitySearchText(capability).includes('spectrum'))?.operation).toBe('eigen');
     expect(findCapability('taylor-polynomial')?.needsConfiguration).toBe(true);
     expect(findCapability('gradient')?.needsConfiguration).toBe(false);
+    expect(findCapability('e6-advanced-distributions')?.operation).toBe('distribution-profile');
+    expect(findCapability('distribution-profile')?.legacyIds).toContain('e6-advanced-distributions');
 
     const calculus = capabilitiesForCourse('calculus');
     expect(calculus.some((capability) => capability.category === 'Vector Calculus')).toBe(true);
