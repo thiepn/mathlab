@@ -78,15 +78,16 @@ export function useWorksheet() {
   );
 
   const mutateActive = useCallback((mutator: (session: WorksheetSession) => WorksheetSession) => {
+    if (!activeSession) return;
+    setPast((items) => [...items, structuredClone(activeSession)].slice(-MAX_UNDO));
+    setFuture([]);
     setState((current) => {
       const active = current.sessions.find((session) => session.id === current.activeSessionId);
       if (!active) return current;
-      setPast((items) => [...items, structuredClone(active)].slice(-MAX_UNDO));
-      setFuture([]);
       const next = mutator(active);
       return replaceSession(current, { ...next, updatedAt: Date.now() });
     });
-  }, []);
+  }, [activeSession]);
 
   const recordInput = useCallback((source: string, normalizedSource: string, kind: string, resolution?: SemanticResolution) => {
     const entry = {
@@ -172,32 +173,20 @@ export function useWorksheet() {
   }, []);
 
   const undo = useCallback(() => {
-    setPast((items) => {
-      const previous = items.at(-1);
-      if (!previous) return items;
-      setState((current) => {
-        const active = current.sessions.find((session) => session.id === current.activeSessionId);
-        if (!active || active.id !== previous.id) return current;
-        setFuture((futureItems) => [structuredClone(active), ...futureItems].slice(0, MAX_UNDO));
-        return replaceSession(current, { ...structuredClone(previous), updatedAt: Date.now() });
-      });
-      return items.slice(0, -1);
-    });
-  }, []);
+    const previous = past.at(-1);
+    if (!previous || !activeSession || previous.id !== activeSession.id) return;
+    setPast(past.slice(0, -1));
+    setFuture([structuredClone(activeSession), ...future].slice(0, MAX_UNDO));
+    setState((current) => replaceSession(current, { ...structuredClone(previous), updatedAt: Date.now() }));
+  }, [past, future, activeSession]);
 
   const redo = useCallback(() => {
-    setFuture((items) => {
-      const next = items[0];
-      if (!next) return items;
-      setState((current) => {
-        const active = current.sessions.find((session) => session.id === current.activeSessionId);
-        if (!active || active.id !== next.id) return current;
-        setPast((pastItems) => [...pastItems, structuredClone(active)].slice(-MAX_UNDO));
-        return replaceSession(current, { ...structuredClone(next), updatedAt: Date.now() });
-      });
-      return items.slice(1);
-    });
-  }, []);
+    const next = future[0];
+    if (!next || !activeSession || next.id !== activeSession.id) return;
+    setFuture(future.slice(1));
+    setPast([...past, structuredClone(activeSession)].slice(-MAX_UNDO));
+    setState((current) => replaceSession(current, { ...structuredClone(next), updatedAt: Date.now() }));
+  }, [past, future, activeSession]);
 
   const checkpoint = useCallback(async (label?: string) => {
     if (!activeSession) return;
