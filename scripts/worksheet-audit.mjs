@@ -13,6 +13,7 @@ for (const file of [
   'src/app/components/WorksheetTimeline.tsx',
   'tests/worksheetPersistence.test.ts',
   'tests/browser/stable-release.e2e.ts',
+  'tests/production/production.live.ts',
   'docs/P2_MATHEMATICAL_WORKSHEET_ACCEPTANCE.md',
 ]) pass(existsSync(join(root, file)), `missing P2 worksheet artifact: ${file}`);
 
@@ -54,6 +55,9 @@ for (const marker of [
   'worksheet persists committed mathematics and results across reload',
   'worksheet undo redo and checkpoints remain usable',
 ]) pass(browser.includes(marker), `P2 browser acceptance marker missing: ${marker}`);
+
+const production = text('tests/production/production.live.ts');
+pass(production.includes('live worksheet persists across a production reload'), 'P2 live production worksheet verification is missing.');
 
 if (failures.length) {
   console.error(`MathLab P2 worksheet audit failed (${failures.length} issue${failures.length === 1 ? '' : 's'}):`);
