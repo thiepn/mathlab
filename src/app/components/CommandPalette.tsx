@@ -1,8 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import type { SemanticMathObject } from '../../lib/math/types';
-import { ALL_TOOL_CATALOG } from '../allToolCatalog';
+import { CAPABILITY_REGISTRY, capabilitySearchText } from '../capabilityRegistry';
 import type { Route } from '../hooks/useHashRoute';
-import { toolSearchText } from '../toolCatalog';
 
 interface CommandPaletteProps {
   onClose: () => void;
@@ -34,11 +33,11 @@ export function CommandPalette({ onClose, objects, onNew, onOpenObject, onRoute,
     { id: 'proof', label: 'Work · Proof & Verify', detail: 'Verify transformations and logical entailment', search: 'work proof verify check', badge: 'Page', run: () => onRoute('proof') },
     { id: 'practice', label: 'Learn', detail: 'Adaptive practice, review, and exams', search: 'learn practice course exam review', badge: 'Section', run: () => onRoute('practice') },
     { id: 'reference', label: 'Learn · Reference', detail: 'Curriculum and capability map', search: 'learn reference curriculum course', badge: 'Page', run: () => onRoute('reference') },
-    ...ALL_TOOL_CATALOG.map((tool) => ({
+    ...CAPABILITY_REGISTRY.map((tool) => ({
       id: `tool:${tool.id}`,
       label: tool.label,
       detail: `${tool.category} · ${tool.description}`,
-      search: toolSearchText(tool),
+      search: capabilitySearchText(tool),
       badge: 'Tool',
       run: () => onTool(tool.id),
     })),
