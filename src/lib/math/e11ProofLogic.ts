@@ -24,6 +24,7 @@ export function rewriteAst(node:AstNode,from:AstNode,to:AstNode,all:boolean,stat
   if(node.type==='unary')return{...node,operand:rewriteAst(node.operand,from,to,all,state)};
   if(node.type==='binary')return{...node,left:rewriteAst(node.left,from,to,all,state),right:rewriteAst(node.right,from,to,all,state)};
   if(node.type==='call')return{...node,args:node.args.map(arg=>rewriteAst(arg,from,to,all,state))};
+  if(node.type==='piecewise')return{...node,branches:node.branches.map(branch=>({value:rewriteAst(branch.value,from,to,all,state),condition:rewriteAst(branch.condition,from,to,all,state)})),otherwise:node.otherwise?rewriteAst(node.otherwise,from,to,all,state):undefined};
   if(node.type==='matrix')return{...node,rows:node.rows.map(row=>row.map(cell=>rewriteAst(cell,from,to,all,state)))};
   if(node.type==='system'||node.type==='set')return{...node,items:node.items.map(item=>rewriteAst(item,from,to,all,state))};
   return{...node,left:rewriteAst(node.left,from,to,all,state),right:rewriteAst(node.right,from,to,all,state)};
