@@ -43,7 +43,7 @@ export function ToolsPage({ currentObject, initialToolId = '', onRun, onConfigur
   const selectedCapability = selected ? capabilities.find((capability) => capability.id === selected.operation) : undefined;
   const readyCount = currentObject ? ALL_TOOLS.filter((tool) => capabilities.some((capability) => capability.id === tool.operation && capability.available)).length : 0;
 
-  const statusFor = (tool: ToolCatalogItem) => {
+  const statusFor = (tool: CapabilityDescriptor) => {
     if (tool.specialRoute === 'visualize') return { label: 'Visualization workspace', tone: 'route' };
     if (tool.specialRoute === 'proof') return { label: 'Proof workspace', tone: 'route' };
     const capability = capabilities.find((item) => item.id === tool.operation);
@@ -52,7 +52,7 @@ export function ToolsPage({ currentObject, initialToolId = '', onRun, onConfigur
     return { label: 'Try example', tone: 'example' };
   };
 
-  const openSpecialRoute = (tool: ToolCatalogItem) => {
+  const openSpecialRoute = (tool: CapabilityDescriptor) => {
     if (tool.specialRoute === 'visualize') sessionStorage.setItem('mathlab:e3-mode', tool.operation);
     onConfigure(tool);
   };
