@@ -126,6 +126,8 @@ version: 1
 worksheet: WorksheetState
 ```
 
+Exact engine payloads may contain native BigInt values. Worksheet JSON export therefore uses an explicit tagged BigInt encoding and restores those values during import instead of relying on unsafe raw JSON serialization.
+
 Import validates format, version, size and structural boundaries before replacing local worksheet sessions. The previous autosave remains available through Recovery.
 
 Workspace-object export remains separate so P2 does not silently change the established `mathlab-workspace` exchange contract.
