@@ -362,14 +362,9 @@
     justify-content: flex-start;
   }
 
-  .worksheet-more {
-    position: static;
-  }
-
   .worksheet-history-menu {
-    left: 16px;
-    right: 16px;
-    width: auto;
+    right: 0;
+    width: min(360px, calc(100vw - 32px));
   }
 
   .worksheet-entry {
