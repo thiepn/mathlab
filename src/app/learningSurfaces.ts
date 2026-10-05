@@ -1,18 +1,10 @@
 import type { MathResult } from '../lib/math/types';
-import { TOOL_CATALOG, type ToolCatalogItem, type ToolCategory } from './toolCatalog';
+import { CAPABILITY_REGISTRY, COURSE_CAPABILITY_CATEGORIES, capabilitiesForCourse } from './capabilityRegistry';
+import type { ToolCatalogItem, ToolCategory } from './toolCatalog';
 
 export type ProofOutcome = 'verified' | 'conditionally-valid' | 'invalid' | 'not-proven' | 'pending';
 
-export const COURSE_TOOL_CATEGORIES: Record<string, ToolCategory[]> = {
-  algebra: ['Algebra'],
-  calculus: ['Calculus', 'Visualization'],
-  'linear-algebra': ['Linear Algebra'],
-  analysis: ['Analysis'],
-  probability: ['Probability & Statistics'],
-  discrete: ['Discrete Math & Algorithms'],
-  numerical: ['Numerical Math & ODEs'],
-  proof: ['Proof & Verification'],
-};
+export const COURSE_TOOL_CATEGORIES: Record<string, readonly ToolCategory[]> = COURSE_CAPABILITY_CATEGORIES;
 
 export const PROOF_OUTCOME_COPY: Record<ProofOutcome, { label: string; description: string }> = {
   verified: { label: 'Verified', description: 'The supported exact rules certify this work.' },
@@ -22,7 +14,8 @@ export const PROOF_OUTCOME_COPY: Record<ProofOutcome, { label: string; descripti
   pending: { label: 'Awaiting verification', description: 'Enter the work you want MathLab to check, then run the deterministic verifier.' },
 };
 
-export function toolsForCourse(courseId: string, catalog: ToolCatalogItem[] = TOOL_CATALOG): ToolCatalogItem[] {
+export function toolsForCourse(courseId: string, catalog: readonly ToolCatalogItem[] = CAPABILITY_REGISTRY): ToolCatalogItem[] {
+  if (catalog === CAPABILITY_REGISTRY) return [...capabilitiesForCourse(courseId)];
   const categories = COURSE_TOOL_CATEGORIES[courseId] ?? [];
   return catalog.filter((tool) => categories.includes(tool.category));
 }
