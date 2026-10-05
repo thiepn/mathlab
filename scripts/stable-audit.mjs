@@ -27,7 +27,11 @@ for (const file of [
   'public/sw.js',
   'docs/RELEASE_CERTIFICATION.md',
   'docs/P2_MATHEMATICAL_WORKSHEET_ACCEPTANCE.md',
+  'docs/P3_INPUT_INTERACTION_ACCEPTANCE.md',
+  'docs/P4_UNIFIED_CAPABILITY_ARCHITECTURE.md',
   'scripts/worksheet-audit.mjs',
+  'scripts/input-interaction-audit.mjs',
+  'scripts/capability-registry-audit.mjs',
 ]) pass(existsSync(join(root, file)), `missing stable-release artifact: ${file}`);
 
 const config = text('playwright.config.mjs');
