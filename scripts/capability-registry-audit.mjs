@@ -43,6 +43,7 @@ for (const file of publicConsumers) {
   pass(!source.includes('capabilitiesE5'), `${file} still reads runtime capability metadata directly`);
   pass(!source.includes('toolSearchText'), `${file} still owns legacy tool search metadata`);
   pass(!source.includes('toolNeedsConfiguration'), `${file} still owns legacy tool configuration policy`);
+  pass(!source.includes("from '../toolCatalog'") && !source.includes("from './toolCatalog'"), `${file} still imports the legacy tool catalog directly`);
 }
 
 const compatibilityCatalog = read('src/app/allToolCatalog.ts');
