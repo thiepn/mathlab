@@ -130,6 +130,60 @@ test('workspace commits mathematics and executes the Worker engine', async ({ pa
   await expect(result.getByText('EXACT', { exact: true })).toBeVisible();
 });
 
+test('worksheet persists committed mathematics and results across reload', async ({ page }) => {
+  await openWorkspace(page);
+  await expect(page.locator('.worksheet-save')).toHaveText('Saved');
+
+  const input = page.getByRole('textbox', { name: 'Mathematical input' });
+  await input.fill('x^2-1');
+  await page.getByRole('button', { name: /Commit/ }).click();
+  await expect(page.locator('.worksheet-entry-input')).toHaveCount(1);
+
+  await page.getByRole('button', { name: /^Factor/ }).click();
+  await expect(page.locator('#mathlab-result')).toBeVisible({ timeout: 15_000 });
+  await expect(page.getByRole('button', { name: 'Use result', exact: true })).toBeVisible();
+  await page.getByRole('button', { name: 'Clear', exact: true }).click();
+
+  await expect(page.locator('.worksheet-entry-result')).toHaveCount(1);
+  await expect(page.locator('.worksheet-save')).toHaveText('Saved');
+  await page.reload();
+
+  await expect(page.getByRole('region', { name: 'Mathematical worksheet' })).toBeVisible();
+  await expect(page.locator('.worksheet-entry-input')).toHaveCount(1);
+  await expect(page.locator('.worksheet-entry-result')).toHaveCount(1);
+
+  await page.locator('.worksheet-entry-result').getByRole('button', { name: 'Use result', exact: true }).click();
+  await expect(input).not.toHaveValue('x^2-1');
+  await expect(input).not.toHaveValue('');
+});
+
+test('worksheet undo redo and checkpoints remain usable', async ({ page }) => {
+  await openWorkspace(page);
+  await expect(page.locator('.worksheet-save')).toHaveText('Saved');
+
+  const input = page.getByRole('textbox', { name: 'Mathematical input' });
+  await input.fill('x+1');
+  await page.getByRole('button', { name: /Commit/ }).click();
+  await expect(page.locator('.worksheet-entry-input')).toHaveCount(1);
+
+  await page.getByRole('button', { name: 'Undo', exact: true }).click();
+  await expect(page.locator('.worksheet-entry-input')).toHaveCount(0);
+  await page.getByRole('button', { name: 'Redo', exact: true }).click();
+  await expect(page.locator('.worksheet-entry-input')).toHaveCount(1);
+
+  await page.getByRole('button', { name: 'Checkpoint', exact: true }).click();
+  await page.getByText('History', { exact: true }).click();
+  await expect(page.getByText('Saved checkpoints', { exact: true })).toBeVisible();
+  await expect(page.locator('.worksheet-checkpoints button')).toHaveCount(1);
+
+  await page.getByText('History', { exact: true }).click();
+  await page.getByRole('button', { name: 'New session', exact: true }).click();
+  await expect(page.locator('.worksheet-entry')).toHaveCount(0);
+  await expect(page.getByRole('combobox', { name: 'Worksheet session' })).toHaveCount(0);
+  await page.getByText('History', { exact: true }).click();
+  await expect(page.getByRole('combobox', { name: 'Worksheet session' }).locator('option')).toHaveCount(2);
+});
+
 test('IndexedDB workspace state survives a browser reload', async ({ page }) => {
   await openWorkspace(page);
   const input = page.getByRole('textbox', { name: 'Mathematical input' });
