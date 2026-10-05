@@ -357,6 +357,51 @@ function cachedExactAnnotations(ast: AstNode, variable: string): GraphAnnotation
   return annotations;
 }
 
+function piecewiseConditionBoundaries(ast: AstNode, variable: string): number[] {
+  const out: number[] = [];
+
+  const boundaryFromCondition = (condition: AstNode) => {
+    if (condition.type === 'comparison' || condition.type === 'equation') {
+      try {
+        const solved = solveEquation({ type: 'equation', left: condition.left, right: condition.right }, variable);
+        if (solved.status === 'solved') {
+          for (const solution of solved.solutions) {
+            const value = numericAst(solution);
+            if (value !== null && Number.isFinite(value)) out.push(value);
+          }
+        }
+      } catch {
+        // A condition boundary that the exact solver cannot isolate remains a sampled boundary.
+      }
+      return;
+    }
+    if (condition.type === 'call' && ['and','or','xor','implies','iff','not'].includes(condition.name)) {
+      condition.args.forEach(boundaryFromCondition);
+    }
+  };
+
+  const visit = (node: AstNode) => {
+    if (node.type === 'piecewise') {
+      for (const branch of node.branches) {
+        boundaryFromCondition(branch.condition);
+        visit(branch.value);
+      }
+      if (node.otherwise) visit(node.otherwise);
+      return;
+    }
+    if (node.type === 'unary') visit(node.operand);
+    else if (node.type === 'binary' || node.type === 'equation' || node.type === 'comparison' || node.type === 'definition') {
+      visit(node.left);
+      visit(node.right);
+    } else if (node.type === 'call') node.args.forEach(visit);
+    else if (node.type === 'matrix') node.rows.flat().forEach(visit);
+    else if (node.type === 'system' || node.type === 'set') node.items.forEach(visit);
+  };
+
+  visit(ast);
+  return [...new Set(out.map((value) => Number(value.toPrecision(14))))].sort((a, b) => a - b);
+}
+
 function knownBreaks(annotations: GraphAnnotation[]): number[] {
   return annotations
     .filter((item) => (item.kind === 'vertical-asymptote' || item.kind === 'hole') && item.x !== undefined)
@@ -462,7 +507,8 @@ export function buildGraphSeries(input: GraphSeriesInput, viewport: GraphViewpor
   const annotations = cachedExactAnnotations(ast, input.variable);
   const exactZeros = annotations.filter((item) => item.kind === 'zero' && item.exact);
   const samples = Math.max(81, Math.min(2401, Math.round(options.samples ?? DEFAULT_SAMPLES)));
-  const segments = sampleSegments(ast, input.variable, viewport, samples, knownBreaks(annotations));
+  const breaks = [...new Set([...knownBreaks(annotations), ...piecewiseConditionBoundaries(ast, input.variable)])].sort((a, b) => a - b);
+  const segments = sampleSegments(ast, input.variable, viewport, samples, breaks);
   const numericZeros = options.detectNumericZeros === false ? [] : numericZeroAnnotations(ast, input.variable, segments, exactZeros, viewport);
   const finalAnnotations = mergeAnnotations([...annotations, ...numericZeros]);
   const warnings: string[] = [];
