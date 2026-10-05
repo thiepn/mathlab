@@ -23,7 +23,7 @@ function isMobileProject(name: string) {
     || name === 'ipad-webkit';
 }
 
-test('boots cleanly and every primary route is reachable', async ({ page }) => {
+test('boots cleanly and every routed surface is reachable', async ({ page }) => {
   const pageErrors: string[] = [];
   const consoleErrors: string[] = [];
   page.on('pageerror', (error) => pageErrors.push(error.message));
