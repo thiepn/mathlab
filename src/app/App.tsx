@@ -202,11 +202,14 @@ export function App() {
     setToolsOpen(toolNeedsConfiguration(tool));
   };
 
+  const activeSection = primarySectionForRoute(route);
+  const hasSectionNavigation = activeSection !== 'visualize';
+
   return (
     <div className="app-shell">
       <a className="skip-link" href="#mathlab-main">Skip to main content</a>
       <Header route={route} online={online} onRoute={setRoute} onCommand={() => setCommandOpen(true)} onMobileMenu={openWorkspaceObjects} />
-      <div className={`app-grid ${route === 'workspace' ? 'is-workspace-route' : 'is-focus-route'}`} id="mathlab-main" tabIndex={-1}>
+      <div className={`app-grid ${route === 'workspace' ? 'is-workspace-route' : 'is-focus-route'} ${hasSectionNavigation ? 'has-section-nav' : 'without-section-nav'}`} id="mathlab-main" tabIndex={-1}>
         {route === 'workspace' && (
           <ObjectSidebar
             open={drawerOpen}
@@ -284,7 +287,7 @@ export function App() {
 
       <nav className="mobile-nav mobile-only mobile-nav-primary" aria-label="Mobile primary navigation">
         {PRIMARY_NAV.map((destination) => {
-          const active = primarySectionForRoute(route) === destination.id;
+          const active = activeSection === destination.id;
           return (
             <button
               key={destination.id}
