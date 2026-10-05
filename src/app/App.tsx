@@ -120,6 +120,7 @@ export function App() {
         setActiveParsed(parseMath(''));
         setRoute('workspace');
         setToolsOpen(false);
+        setEditorSourceOverride(null);
       }
       if ((event.ctrlKey || event.metaKey) && event.key === '.') {
         event.preventDefault();
@@ -212,7 +213,8 @@ export function App() {
       setRoute('workspace');
       return;
     }
-    controller.commitParsed(parsed);
+    const resolution = controller.commitParsed(parsed);
+    if (resolution.object) worksheet.recordInput(resolution.object.source, parsed.normalizedSource, resolution.object.kind, resolution);
     setActiveParsed(parsed);
     clearResult();
     setRoute('workspace');
