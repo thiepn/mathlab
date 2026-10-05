@@ -49,6 +49,9 @@ for (const file of publicConsumers) {
 const compatibilityCatalog = read('src/app/allToolCatalog.ts');
 pass(compatibilityCatalog.includes('CAPABILITY_REGISTRY'), 'legacy allToolCatalog must delegate to the canonical registry');
 
+const e3Catalog = read('src/app/e3VisualTools.ts');
+pass(!e3Catalog.includes('TOOL_CATALOG.push'), 'E3 visualization metadata must not mutate the legacy catalog by import side effect');
+
 const learning = read('src/app/learningSurfaces.ts');
 pass(learning.includes('COURSE_CAPABILITY_CATEGORIES'), 'legacy course-tool mapping must delegate to registry course ownership');
 
