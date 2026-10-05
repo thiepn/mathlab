@@ -24,6 +24,7 @@ export const OPERATIONS_REQUIRING_CONTROLS = new Set([
 
 export const PREFERRED_OPERATION_ORDER = [
   'solve','solve-inequality','solve-system','simplify','factor','expand',
+  'function-profile','derivative','differentiate','integrate','zeros','graph',
   'gradient','jacobian','hessian','multivariable-critical-points','second-derivative-test',
   'vector-field-profile','divergence','curl','conservative-field','scalar-potential',
   'pde-profile','pde-modal-solution','pde-separation-template',
@@ -34,7 +35,7 @@ export const PREFERRED_OPERATION_ORDER = [
   'laplace-transform','inverse-laplace-transform','fourier-transform','inverse-fourier-transform','discrete-fourier-transform','inverse-discrete-fourier-transform',
   'numerical-lu','numerical-cholesky','numerical-qr','numerical-eigen','numerical-svd','pseudoinverse','numerical-rank','spectral-condition','conjugate-gradient','numerical-optimize','nonlinear-system-solve',
   'joint-distribution-profile','covariance-correlation-matrix','chi-square-independence','one-way-anova','multiple-linear-regression','regression-diagnostics','mann-whitney','wilcoxon-signed-rank','markov-profile',
-  'function-profile','derivative','differentiate','integrate','zeros','graph','det','rref','rank','inverse','eigen','linear-profile','descriptive-statistics',
+  'det','rref','rank','inverse','eigen','linear-profile','descriptive-statistics',
   'distribution-profile','evaluate-probability','logic-profile','graph-profile','recurrence-profile','numerical-linear-solve',
   'condition-estimate','set-profile','relation-profile','complexity-profile','inspect-exact','inspect-decimal',
 ];
