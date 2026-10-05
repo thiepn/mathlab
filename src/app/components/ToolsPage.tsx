@@ -5,9 +5,9 @@ import {
   CAPABILITY_REGISTRY,
   capabilitySearchText,
   resolveCapabilitiesForObject,
+  type CapabilityCategory,
   type CapabilityDescriptor,
 } from '../capabilityRegistry';
-import type { ToolCategory } from '../toolCatalog';
 import { MathValue } from './MathValue';
 
 interface ToolsPageProps {
@@ -26,7 +26,7 @@ function kindLabel(kind: SemanticMathObject['kind']) {
 
 export function ToolsPage({ currentObject, initialToolId = '', onRun, onConfigure, onTryExample }: ToolsPageProps) {
   const [query, setQuery] = useState('');
-  const [category, setCategory] = useState<ToolCategory | 'All'>('All');
+  const [category, setCategory] = useState<CapabilityCategory | 'All'>('All');
   const [selectedId, setSelectedId] = useState(initialToolId || ALL_TOOLS[0]?.id || '');
   const capabilities = useMemo(() => resolveCapabilitiesForObject(currentObject), [currentObject]);
 
