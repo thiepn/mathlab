@@ -63,6 +63,22 @@ test('production manifest, icons and v2 service worker are published', async ({ 
   }
 });
 
+test('live structured input and piecewise preview work', async ({ page }) => {
+  await openWorkspace(page);
+  const input = page.getByRole('textbox', { name: 'Mathematical input' });
+
+  await page.getByRole('button', { name: 'Math keypad', exact: true }).click();
+  const keypad = page.getByRole('region', { name: 'Math keypad' });
+  await expect(keypad).toBeVisible();
+  await keypad.getByRole('tab', { name: 'Structure' }).click();
+  await keypad.getByRole('button', { name: /Piecewise function/ }).click();
+
+  await expect(input).toHaveValue('f(x) := piecewise(x^2, x < 0; 2x + 1, x >= 0)');
+  await expect(page.locator('.live-preview-panel math')).toBeVisible();
+  await page.getByRole('button', { name: /Commit/ }).click();
+  await expect(page.getByText(/Piecewise mathematics is first-class input/)).toBeVisible();
+});
+
 test('live Worker-backed mathematics executes with exact provenance', async ({ page }) => {
   await openWorkspace(page);
   const input = page.getByRole('textbox', { name: 'Mathematical input' });
