@@ -4,7 +4,8 @@ import type { ToolCatalogItem, ToolCategory } from './toolCatalog';
 
 export type ProofOutcome = 'verified' | 'conditionally-valid' | 'invalid' | 'not-proven' | 'pending';
 
-export const COURSE_TOOL_CATEGORIES = COURSE_CAPABILITY_CATEGORIES;
+export const COURSE_TOOL_CATEGORIES: Readonly<Record<string, readonly ToolCategory[]>> =
+  COURSE_CAPABILITY_CATEGORIES as Readonly<Record<string, readonly ToolCategory[]>>;
 
 export const PROOF_OUTCOME_COPY: Record<ProofOutcome, { label: string; description: string }> = {
   verified: { label: 'Verified', description: 'The supported exact rules certify this work.' },
