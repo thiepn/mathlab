@@ -54,6 +54,12 @@ pass(learning.includes('COURSE_CAPABILITY_CATEGORIES'), 'legacy course-tool mapp
 const toolsTest = read('tests/toolsDiscovery.test.ts');
 pass(toolsTest.includes('CAPABILITY_REGISTRY'), 'tool discovery tests must certify the registry rather than the legacy catalog');
 
+const browser = read('tests/browser/stable-release.e2e.ts');
+pass(browser.includes('unified capability registry keeps Workspace, Tools, Search, Reference and Practice aligned'), 'P4 cross-surface browser parity test is missing');
+
+const production = read('tests/production/production.live.ts');
+pass(production.includes('live unified capability registry keeps Tools and Reference search aligned'), 'P4 live production registry verification is missing');
+
 if (failures.length) {
   console.error(`MathLab P4 unified capability audit failed (${failures.length} issue${failures.length === 1 ? '' : 's'}):`);
   for (const failure of failures) console.error(`- ${failure}`);
