@@ -198,7 +198,7 @@ export function parseWorksheetImport(raw: string): WorksheetState {
   let decoded: unknown;
   try {
     decoded = JSON.parse(raw, (_key, value: unknown) => {
-      if (isRecord(value) && Object.keys(value).length === 1 && typeof value[BIGINT_TAG] === 'string' && /^-?\\d+$/.test(value[BIGINT_TAG])) {
+      if (isRecord(value) && Object.keys(value).length === 1 && typeof value[BIGINT_TAG] === 'string' && /^-?\d+$/.test(value[BIGINT_TAG])) {
         return BigInt(value[BIGINT_TAG]);
       }
       return value;
