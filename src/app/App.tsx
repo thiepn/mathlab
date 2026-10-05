@@ -19,6 +19,7 @@ import { CommandPalette } from './components/CommandPalette';
 import { useHashRoute } from './hooks/useHashRoute';
 import { useMathWorkspace } from './hooks/useMathWorkspace';
 import { toolNeedsConfiguration, type ToolCatalogItem } from './toolCatalog';
+import { PRIMARY_NAV, ROUTE_TITLES, primarySectionForRoute } from './shellNavigation';
 
 export function App() {
   const [route, setRoute] = useHashRoute();
@@ -48,8 +49,7 @@ export function App() {
   useEffect(() => () => workerClient.current?.dispose(), []);
 
   useEffect(() => {
-    const label = route === 'proof' ? 'Proof Lab' : route[0].toUpperCase() + route.slice(1);
-    document.title = `${label} · MathLab`;
+    document.title = `${ROUTE_TITLES[route]} · MathLab`;
     if (route !== 'workspace') {
       setToolsOpen(false);
       setDrawerOpen(false);
@@ -282,13 +282,20 @@ export function App() {
         </>
       )}
 
-      <nav className="mobile-nav mobile-only mobile-nav-six" aria-label="Mobile primary navigation">
-        <button className={route === 'workspace' ? 'is-active' : ''} onClick={() => setRoute('workspace')}>Workspace</button>
-        <button className={route === 'tools' ? 'is-active' : ''} onClick={() => setRoute('tools')}>Tools</button>
-        <button className={route === 'visualize' ? 'is-active' : ''} onClick={() => setRoute('visualize')}>Visualize</button>
-        <button className={route === 'proof' ? 'is-active' : ''} onClick={() => setRoute('proof')}>Proof</button>
-        <button className={route === 'practice' ? 'is-active' : ''} onClick={() => setRoute('practice')}>Practice</button>
-        <button className={route === 'reference' ? 'is-active' : ''} onClick={() => setRoute('reference')}>Reference</button>
+      <nav className="mobile-nav mobile-only mobile-nav-primary" aria-label="Mobile primary navigation">
+        {PRIMARY_NAV.map((destination) => {
+          const active = primarySectionForRoute(route) === destination.id;
+          return (
+            <button
+              key={destination.id}
+              className={active ? 'is-active' : ''}
+              onClick={() => setRoute(destination.route)}
+              aria-current={active ? 'page' : undefined}
+            >
+              {destination.label}
+            </button>
+          );
+        })}
       </nav>
       {drawerOpen && <button className="drawer-backdrop mobile-only" onClick={() => setDrawerOpen(false)} aria-label="Close objects" />}
       {commandOpen && (
