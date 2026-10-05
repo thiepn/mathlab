@@ -50,8 +50,11 @@ for (const marker of [
 ]) pass(input.includes(marker), `Universal Input P3 integration missing: ${marker}`);
 
 const capabilities = text('src/lib/math/capabilities.ts');
-pass(capabilities.includes('containsPiecewise(object.valueAst)'), 'piecewise capability boundary is not enforced');
-pass(capabilities.includes("new Set(['evaluate-function', 'graph'])"), 'piecewise function capability allowlist changed');
+const extendedCapabilities = text('src/lib/math/capabilitiesE5.ts');
+pass(capabilities.includes('containsPiecewise(object.valueAst)'), 'piecewise base capability boundary is not enforced');
+pass(capabilities.includes("new Set(['evaluate-function', 'graph'])"), 'piecewise base capability allowlist changed');
+pass(extendedCapabilities.includes('containsPiecewise(object.valueAst)'), 'piecewise capability boundary must be re-enforced after E5–E11 aggregation');
+pass(extendedCapabilities.includes("new Set(['evaluate-function','graph'])"), 'final piecewise capability allowlist changed');
 
 const browser = text('tests/browser/stable-release.e2e.ts');
 for (const marker of [
