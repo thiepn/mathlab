@@ -104,4 +104,5 @@ GitHub Actions additionally runs dependency security checks, real Chromium/Firef
 - `docs/E12_MATHEMATICAL_REAUDIT.md` — current mathematical coverage
 - `docs/RELEASE_CERTIFICATION.md` — stable-release evidence
 - `docs/ACCESSIBILITY_DEVICE_CERTIFICATION.md` — accessibility/device evidence boundary
+- `docs/P1_PRODUCT_SHELL_ACCEPTANCE.md` — Work / Visualize / Learn shell contract
 - `docs/SECURITY_REVIEW.md` — current security model
