@@ -47,6 +47,9 @@ jobs:
       - name: Input and interaction audit
         run: npm run audit:input
 
+      - name: Unified capability registry audit
+        run: npm run audit:capabilities
+
       - name: Install dependencies
         run: npm ci
 
