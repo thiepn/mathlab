@@ -1,19 +1,24 @@
 import { useEffect, useMemo, useState } from 'react';
-import { capabilitiesFor } from '../../lib/math/capabilitiesE5';
 import type { SemanticMathObject } from '../../lib/math/types';
-import { ALL_TOOL_CATALOG } from '../allToolCatalog';
-import { TOOL_CATEGORIES, toolNeedsConfiguration, toolSearchText, type ToolCatalogItem, type ToolCategory } from '../toolCatalog';
+import {
+  CAPABILITY_CATEGORIES,
+  CAPABILITY_REGISTRY,
+  capabilitySearchText,
+  resolveCapabilitiesForObject,
+  type CapabilityDescriptor,
+} from '../capabilityRegistry';
+import type { ToolCategory } from '../toolCatalog';
 import { MathValue } from './MathValue';
 
 interface ToolsPageProps {
   currentObject: SemanticMathObject | null;
   initialToolId?: string;
-  onRun: (tool: ToolCatalogItem) => void;
-  onConfigure: (tool: ToolCatalogItem) => void;
-  onTryExample: (tool: ToolCatalogItem) => void;
+  onRun: (tool: CapabilityDescriptor) => void;
+  onConfigure: (tool: CapabilityDescriptor) => void;
+  onTryExample: (tool: CapabilityDescriptor) => void;
 }
 
-const ALL_TOOLS: ToolCatalogItem[] = ALL_TOOL_CATALOG;
+const ALL_TOOLS = CAPABILITY_REGISTRY;
 
 function kindLabel(kind: SemanticMathObject['kind']) {
   return kind.replace('finite-set', 'set').replace('ode', 'ODE');
@@ -23,7 +28,7 @@ export function ToolsPage({ currentObject, initialToolId = '', onRun, onConfigur
   const [query, setQuery] = useState('');
   const [category, setCategory] = useState<ToolCategory | 'All'>('All');
   const [selectedId, setSelectedId] = useState(initialToolId || ALL_TOOLS[0]?.id || '');
-  const capabilities = useMemo(() => capabilitiesFor(currentObject), [currentObject]);
+  const capabilities = useMemo(() => resolveCapabilitiesForObject(currentObject), [currentObject]);
 
   useEffect(() => {
     if (!initialToolId) return;
@@ -33,7 +38,7 @@ export function ToolsPage({ currentObject, initialToolId = '', onRun, onConfigur
   }, [initialToolId]);
 
   const normalized = query.trim().toLowerCase();
-  const filtered = ALL_TOOLS.filter((tool) => (category === 'All' || tool.category === category) && (!normalized || toolSearchText(tool).includes(normalized)));
+  const filtered = ALL_TOOLS.filter((tool) => (category === 'All' || tool.category === category) && (!normalized || capabilitySearchText(tool).includes(normalized)));
   const selected = ALL_TOOLS.find((tool) => tool.id === selectedId) ?? filtered[0] ?? ALL_TOOLS[0];
   const selectedCapability = selected ? capabilities.find((capability) => capability.id === selected.operation) : undefined;
   const readyCount = currentObject ? ALL_TOOLS.filter((tool) => capabilities.some((capability) => capability.id === tool.operation && capability.available)).length : 0;
@@ -42,7 +47,7 @@ export function ToolsPage({ currentObject, initialToolId = '', onRun, onConfigur
     if (tool.specialRoute === 'visualize') return { label: 'Visualization workspace', tone: 'route' };
     if (tool.specialRoute === 'proof') return { label: 'Proof workspace', tone: 'route' };
     const capability = capabilities.find((item) => item.id === tool.operation);
-    if (capability?.available) return { label: toolNeedsConfiguration(tool) ? 'Configure' : 'Ready now', tone: 'ready' };
+    if (capability?.available) return { label: tool.needsConfiguration ? 'Configure' : 'Ready now', tone: 'ready' };
     if (capability && !capability.applicable) return { label: 'Input needs adjustment', tone: 'blocked' };
     return { label: 'Try example', tone: 'example' };
   };
@@ -74,7 +79,7 @@ export function ToolsPage({ currentObject, initialToolId = '', onRun, onConfigur
           {query && <button onClick={() => setQuery('')}>Clear</button>}
         </div>
         <div className="tool-category-strip" role="group" aria-label="Tool categories">
-          {(['All', ...TOOL_CATEGORIES] as const).map((item) => (
+          {(['All', ...CAPABILITY_CATEGORIES] as const).map((item) => (
             <button key={item} className={category === item ? 'is-active' : ''} onClick={() => setCategory(item)}>{item}</button>
           ))}
         </div>
@@ -129,7 +134,7 @@ export function ToolsPage({ currentObject, initialToolId = '', onRun, onConfigur
                   <button onClick={() => onTryExample(selected)}>Start from example</button>
                 </>
               ) : selectedCapability?.available ? (
-                toolNeedsConfiguration(selected)
+                selected.needsConfiguration
                   ? <button className="primary-action" onClick={() => onConfigure(selected)}>Configure for current work</button>
                   : <button className="primary-action" onClick={() => onRun(selected)}>{selected.operation === 'graph' ? 'Open visualization' : 'Run on current work'}</button>
               ) : (
