@@ -6,11 +6,13 @@ import { dependentObjects } from '../../lib/math/workspaceLifecycle';
 import { resolveSemanticObject, shapeLabel } from '../../lib/math/semantic';
 import type { MathResult } from '../../lib/math/types';
 import type { MathWorkspaceController } from '../hooks/useMathWorkspace';
+import type { WorksheetController } from '../hooks/useWorksheet';
 import { AssumptionBar } from './AssumptionBar';
 import { MathInput } from './MathInput';
 import { MathPreview } from './MathPreview';
 import { AlgebraResult } from './AlgebraResult';
 import { WorkspaceActions } from './WorkspaceActions';
+import { WorksheetTimeline } from './WorksheetTimeline';
 
 interface WorkspaceProps {
   controller: MathWorkspaceController;
@@ -23,6 +25,10 @@ interface WorkspaceProps {
   onOpenTools: () => void;
   onOpenProof: () => void;
   runningOperation?: string;
+  worksheet: WorksheetController;
+  editorSourceOverride?: string | null;
+  onReuseSource: (source: string) => void;
+  onCommitComplete?: () => void;
 }
 
 function downloadWorkspace(raw: string) {
@@ -49,12 +55,16 @@ export function Workspace({
   onOpenTools,
   onOpenProof,
   runningOperation = '',
+  worksheet,
+  editorSourceOverride = null,
+  onReuseSource,
+  onCommitComplete,
 }: WorkspaceProps) {
   const [submitted, setSubmitted] = useState<ParsedMath | null>(null);
   const [resolutionMessage, setResolutionMessage] = useState('');
   const [transferMessage, setTransferMessage] = useState('');
   const importRef = useRef<HTMLInputElement>(null);
-  const editorSource = controller.activeObject?.source ?? '';
+  const editorSource = editorSourceOverride ?? controller.activeObject?.source ?? '';
 
   const resolution = useMemo(
     () => submitted ? resolveSemanticObject(submitted, controller.state.objects, controller.state.assumptions) : null,
@@ -73,8 +83,12 @@ export function Workspace({
     const result = controller.commitParsed(parsed);
     const error = result.diagnostics.find((item) => item.severity === 'error');
     if (error) setResolutionMessage(error.message);
-    else if (result.object?.name && result.isDefinition) setResolutionMessage(result.shadowedObjectId ? `Updated ${result.object.name}.` : `Saved ${result.object.name} to the workspace.`);
-    else setResolutionMessage('Working expression ready. Anonymous work stays temporary.');
+    else if (result.object) {
+      worksheet.recordInput(result.object.source, parsed.normalizedSource, result.object.kind, result);
+      if (result.object.name && result.isDefinition) setResolutionMessage(result.shadowedObjectId ? `Updated ${result.object.name}.` : `Saved ${result.object.name} to the workspace.`);
+      else setResolutionMessage('Working expression ready. Anonymous work stays temporary.');
+      onCommitComplete?.();
+    }
   };
 
   const importFile = async (file?: File) => {
@@ -175,7 +189,13 @@ export function Workspace({
         onOpenProof={onOpenProof}
       />
 
-      <AlgebraResult result={mathResult} status={engineStatus} error={engineError} onClear={onClearResult} />
+      <AlgebraResult result={mathResult} status={engineStatus} error={engineError} onClear={onClearResult} onUseResult={onReuseSource} />
+
+      <WorksheetTimeline
+        controller={worksheet}
+        excludeResultId={mathResult?.id}
+        onUseSource={onReuseSource}
+      />
 
       {object && (object.dependencies.length > 0 || usedBy.length > 0 || object.assumptions.length > 0) && (
         <details className="workspace-relations m3-relations">
