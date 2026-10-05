@@ -7,7 +7,17 @@ const pass = (condition, message) => { if (!condition) failures.push(message); }
 const text = (path) => readFileSync(join(root, path), 'utf8');
 
 const pkg = JSON.parse(text('package.json'));
+const lock = JSON.parse(text('package-lock.json'));
 pass(pkg.version === '2.0.0', 'package version must be stable 2.0.0');
+pass(lock.lockfileVersion === 3, 'package-lock.json must use npm lockfileVersion 3');
+pass(lock.packages?.['']?.version === pkg.version, 'package-lock root version must match package.json');
+for (const groupName of ['dependencies', 'devDependencies']) {
+  const declared = pkg[groupName] ?? {};
+  const lockedRoot = lock.packages?.['']?.[groupName] ?? {};
+  for (const [name, version] of Object.entries(declared)) {
+    pass(lockedRoot[name] === version, `package-lock root ${groupName}.${name} must match package.json`);
+  }
+}
 pass(pkg.engines?.node === '^20.19.0 || >=22.12.0', 'Node engine must match the supported Vite 7 runtime floor');
 pass(pkg.devDependencies?.vite === '7.3.5', 'Vite must stay pinned to the security-patched 7.3.5 release');
 pass(pkg.devDependencies?.vitest === '3.2.7', 'Vitest must stay pinned to the security-patched 3.2.7 release');
@@ -15,7 +25,7 @@ for (const [groupName, group] of Object.entries({ dependencies: pkg.dependencies
   for (const [name, version] of Object.entries(group)) pass(/^\d+\.\d+\.\d+(?:-[0-9A-Za-z.-]+)?$/.test(String(version)), `${groupName}.${name} must be pinned to an exact release version`);
 }
 
-for (const file of ['public/manifest.webmanifest','public/sw.js','public/mathlab-mark.svg','public/mathlab-icon-192.png','public/mathlab-icon-512.png','public/mathlab-maskable-512.png','public/apple-touch-icon.png','docs/P15_ACCEPTANCE.md','docs/RELEASE_CERTIFICATION.md','docs/SECURITY_REVIEW.md']) {
+for (const file of ['package-lock.json','public/manifest.webmanifest','public/sw.js','public/mathlab-mark.svg','public/mathlab-icon-192.png','public/mathlab-icon-512.png','public/mathlab-maskable-512.png','public/apple-touch-icon.png','docs/P15_ACCEPTANCE.md','docs/RELEASE_CERTIFICATION.md','docs/SECURITY_REVIEW.md']) {
   pass(existsSync(join(root, file)), `missing release artifact: ${file}`);
 }
 
@@ -91,7 +101,7 @@ for (const path of entries) {
   pass(!path.split('/').includes('node_modules'), `release package contains node_modules: ${path}`);
   pass(!path.split('/').includes('dist'), `release package contains dist output: ${path}`);
   pass(!name.endsWith('.tsbuildinfo'), `release package contains TypeScript build state: ${path}`);
-  pass(!['package-lock.json','yarn.lock','pnpm-lock.yaml'].includes(name), `release package contains generated lockfile: ${path}`);
+  pass(!['yarn.lock','pnpm-lock.yaml'].includes(name), `release package contains an unexpected alternate lockfile: ${path}`);
 }
 
 if (failures.length) {
