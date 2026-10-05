@@ -8,9 +8,10 @@ interface AlgebraResultProps {
   status: 'idle' | 'running' | 'error' | 'done';
   error?: string;
   onClear?: () => void;
+  onUseResult?: (source: string) => void;
 }
 
-const operationLabels: Record<string, string> = {
+export const operationLabels: Record<string, string> = {
   'inspect-exact': 'Exact form', 'inspect-decimal': 'Decimal form', simplify: 'Simplify', expand: 'Expand', factor: 'Factor',
   'polynomial-division': 'Polynomial division', 'partial-fractions': 'Partial fractions', solve: 'Solve equation',
   'solve-inequality': 'Solve inequality', 'solve-system': 'Solve linear system', substitute: 'Substitute',
@@ -43,7 +44,7 @@ const operationLabels: Record<string, string> = {
   'verify-transition': 'Verify transformation', 'verify-chain': 'Verify work chain', 'verify-entailment': 'Logic entailment', verify: 'Check solution',
 };
 
-export function AlgebraResult({ result, status, error, onClear }: AlgebraResultProps) {
+export function AlgebraResult({ result, status, error, onClear, onUseResult }: AlgebraResultProps) {
   const [view, setView] = useState<'answer' | 'steps'>('answer');
   useEffect(() => setView('answer'), [result?.id]);
   if (status === 'idle' && !result) return null;
@@ -52,7 +53,7 @@ export function AlgebraResult({ result, status, error, onClear }: AlgebraResultP
       <div className="result-heading algebra-result-heading">
         <div><span className="section-kicker">MathLab local mathematics engine</span><strong>{result ? operationLabels[result.operation] ?? result.operation : status === 'running' ? 'Computing' : 'Could not compute'}</strong></div>
         <div className="result-view-controls">
-          {result && <><button className={view === 'answer' ? 'is-active' : ''} onClick={() => setView('answer')}>Answer</button><button className={view === 'steps' ? 'is-active' : ''} onClick={() => setView('steps')}>Steps <span>{result.steps.length}</span></button>{result.resultAst && <button onClick={() => void navigator.clipboard?.writeText(astToPlainText(result.resultAst!))}>Copy</button>}{result.resultAst && <button onClick={() => void navigator.clipboard?.writeText(astToLatex(result.resultAst!))}>LaTeX</button>}</>}
+          {result && <><button className={view === 'answer' ? 'is-active' : ''} onClick={() => setView('answer')}>Answer</button><button className={view === 'steps' ? 'is-active' : ''} onClick={() => setView('steps')}>Steps <span>{result.steps.length}</span></button>{result.resultAst && <button onClick={() => void navigator.clipboard?.writeText(astToPlainText(result.resultAst!))}>Copy</button>}{result.resultAst && <button onClick={() => void navigator.clipboard?.writeText(astToLatex(result.resultAst!))}>LaTeX</button>}{onUseResult && <button onClick={() => onUseResult(result.resultAst ? astToPlainText(result.resultAst) : result.display)}>Use result</button>}</>}
           {onClear && <button onClick={onClear}>Clear</button>}
         </div>
       </div>
