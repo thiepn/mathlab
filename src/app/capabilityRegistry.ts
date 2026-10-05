@@ -29,6 +29,8 @@ export interface CapabilityDescriptor extends ToolCatalogItem {
   needsConfiguration: boolean;
   preferredRank: number;
   courseIds: CapabilityCourseId[];
+  legacyIds: string[];
+  sourcePhases: string[];
 }
 
 export interface ResolvedCapability extends CapabilityDescriptor {
@@ -57,13 +59,20 @@ export const COURSE_CAPABILITY_CATEGORIES: Record<CapabilityCourseId, readonly T
   proof: ['Proof & Verification'],
 };
 
-function searchText(tool: ToolCatalogItem): string {
+interface MergedTool extends ToolCatalogItem {
+  legacyIds: string[];
+  sourcePhases: string[];
+}
+
+function searchText(tool: MergedTool): string {
   return [
     tool.id,
+    ...tool.legacyIds,
     tool.operation,
     tool.label,
     tool.category,
     tool.phase,
+    ...tool.sourcePhases,
     tool.description,
     tool.objectKinds.join(' '),
     ...tool.aliases,
@@ -76,7 +85,7 @@ function courseIdsFor(category: ToolCategory): CapabilityCourseId[] {
     .map(([courseId]) => courseId);
 }
 
-function descriptor(tool: ToolCatalogItem): CapabilityDescriptor {
+function descriptor(tool: MergedTool): CapabilityDescriptor {
   return {
     ...tool,
     searchText: searchText(tool),
@@ -86,17 +95,35 @@ function descriptor(tool: ToolCatalogItem): CapabilityDescriptor {
   };
 }
 
-function uniqueTools(tools: ToolCatalogItem[]): ToolCatalogItem[] {
-  const byId = new Map<string, ToolCatalogItem>();
+function mergeToolsByOperation(tools: ToolCatalogItem[]): MergedTool[] {
+  const byOperation = new Map<string, MergedTool>();
+
   for (const tool of tools) {
-    if (!byId.has(tool.id)) byId.set(tool.id, tool);
+    const existing = byOperation.get(tool.operation);
+    if (!existing) {
+      byOperation.set(tool.operation, {
+        ...tool,
+        aliases: [...tool.aliases],
+        objectKinds: [...tool.objectKinds],
+        legacyIds: [],
+        sourcePhases: [tool.phase],
+      });
+      continue;
+    }
+
+    if (tool.id !== existing.id && !existing.legacyIds.includes(tool.id)) existing.legacyIds.push(tool.id);
+    existing.aliases = [...new Set([...existing.aliases, tool.label, ...tool.aliases])];
+    existing.objectKinds = [...new Set([...existing.objectKinds, ...tool.objectKinds])];
+    existing.sourcePhases = [...new Set([...existing.sourcePhases, tool.phase])];
+    if (!existing.specialRoute && tool.specialRoute) existing.specialRoute = tool.specialRoute;
   }
-  return [...byId.values()];
+
+  return [...byOperation.values()];
 }
 
 // TOOL_CATALOG remains an internal metadata provider for the older P4–E3 surface.
 // All user-facing consumers should use CAPABILITY_REGISTRY instead.
-const SOURCE_TOOLS = uniqueTools([
+const SOURCE_TOOLS = mergeToolsByOperation([
   ...TOOL_CATALOG,
   ...E3_VISUAL_TOOLS,
   ...E4_TOOL_CATALOG,
@@ -111,7 +138,11 @@ const SOURCE_TOOLS = uniqueTools([
 
 export const CAPABILITY_REGISTRY: readonly CapabilityDescriptor[] = SOURCE_TOOLS.map(descriptor);
 
-const byId = new Map(CAPABILITY_REGISTRY.map((item) => [item.id, item] as const));
+const byId = new Map<string, CapabilityDescriptor>();
+for (const item of CAPABILITY_REGISTRY) {
+  byId.set(item.id, item);
+  for (const legacyId of item.legacyIds) byId.set(legacyId, item);
+}
 const byOperation = new Map(CAPABILITY_REGISTRY.map((item) => [item.operation, item] as const));
 
 export function findCapability(id: string): CapabilityDescriptor | undefined {
@@ -160,6 +191,8 @@ export function resolveCapabilitiesForObject(object: SemanticMathObject | null):
         needsConfiguration: operationNeedsControls(state.id),
         preferredRank: operationPriority(state.id),
         courseIds: [],
+        legacyIds: [],
+        sourcePhases: [state.phase],
       };
       return {
         ...fallback,
