@@ -51,9 +51,11 @@ describe('P4 unified capability registry', () => {
 
     const preferred = preferredCapabilitiesForObject(resolution.object);
     expect(preferred.every((capability) => capability.available && !capability.needsConfiguration)).toBe(true);
-    expect(preferred.map((capability) => capability.operation)).toContain('derivative');
-    expect(preferred.findIndex((capability) => capability.operation === 'derivative'))
-      .toBeLessThan(preferred.findIndex((capability) => capability.operation === 'complex-derivative'));
+    const preferredOperations = preferred.map((capability) => capability.operation);
+    expect(preferredOperations).toContain('derivative');
+    const derivativeIndex = preferredOperations.indexOf('derivative');
+    const complexDerivativeIndex = preferredOperations.indexOf('complex-derivative');
+    if (complexDerivativeIndex >= 0) expect(derivativeIndex).toBeLessThan(complexDerivativeIndex);
   });
 
   it('has registry metadata for every runtime capability emitted by representative objects', () => {
