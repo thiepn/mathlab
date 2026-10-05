@@ -44,9 +44,9 @@ export function WorkspaceActions({ object, runningOperation = '', onRun, onOpenT
               key={item.id}
               className={index === 0 ? 'is-primary' : ''}
               disabled={Boolean(runningOperation)}
-              onClick={() => onRun(item.id)}
+              onClick={() => onRun(item.operation)}
             >
-              <span>{runningOperation === item.id ? 'Computing…' : item.label}</span>
+              <span>{runningOperation === item.operation ? 'Computing…' : item.label}</span>
               <small>{item.runtimeGroup}</small>
             </button>
           ))}
