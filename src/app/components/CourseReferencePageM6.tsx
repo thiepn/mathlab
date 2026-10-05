@@ -99,8 +99,8 @@ export function CourseReferencePage() {
       <div className="m6-reference-layout">
         <aside className="m6-reference-nav">
           <span className="section-kicker">Browse</span>
-          <button className={scope === 'all' ? 'is-active' : ''} onClick={() => setScope('all')}><span>All capabilities</span><strong>{ALL_TOOL_CATALOG.length}</strong></button>
-          {PRACTICE_COURSES.map((course) => <button key={course.id} className={`${scope === course.id ? 'is-active' : ''} course-accent-${courseAccentIndex(course.id)}`} onClick={() => setScope(course.id)}><span>{course.title}</span><strong>{toolsForCourse(course.id, ALL_TOOL_CATALOG).length}</strong></button>)}
+          <button className={scope === 'all' ? 'is-active' : ''} onClick={() => setScope('all')}><span>All capabilities</span><strong>{CAPABILITY_REGISTRY.length}</strong></button>
+          {PRACTICE_COURSES.map((course) => <button key={course.id} className={`${scope === course.id ? 'is-active' : ''} course-accent-${courseAccentIndex(course.id)}`} onClick={() => setScope(course.id)}><span>{course.title}</span><strong>{capabilitiesForCourse(course.id).length}</strong></button>)}
           <div className="m6-reference-nav-actions"><button onClick={() => { window.location.hash = '/tools'; }}>Open Tools catalog</button><button onClick={() => { window.location.hash = '/practice'; }}>Go to Practice</button></div>
         </aside>
 
