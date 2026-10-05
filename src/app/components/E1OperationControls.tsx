@@ -92,7 +92,7 @@ export function E1OperationControls({ operation, object, running, onAction }: E1
   return (
     <div className="operation-control e1-operation-control">
       <label><span>Equality constraint</span><input value={constraint} onChange={(event) => setConstraint(event.target.value)} placeholder={`${parameters[0] ?? 'x'} + ${parameters[1] ?? 'y'} = 1`} /></label>
-      <small>E1 currently handles one equality constraint when the stationarity equations reduce to a unique exact linear system.</small>
+      <small>This workflow currently handles one equality constraint when the stationarity equations reduce to a unique exact linear system.</small>
       <button disabled={!constraint.trim() || running} onClick={() => onAction?.('lagrange-multipliers', { constraint: constraint.trim() })}>Solve Lagrange system</button>
     </div>
   );

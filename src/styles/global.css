@@ -50,6 +50,33 @@ a:focus-visible,
 
 ::selection { background: #cfdbff; color: var(--ml-ink); }
 
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    transition-delay: 0ms !important;
+  }
+}
+
+@media (forced-colors: active) {
+  button:focus-visible,
+  input:focus-visible,
+  textarea:focus-visible,
+  select:focus-visible,
+  a:focus-visible,
+  [tabindex]:focus-visible {
+    outline: 3px solid Highlight;
+    outline-offset: 2px;
+  }
+
+  button, input, textarea, select, a {
+    forced-color-adjust: auto;
+  }
+}
+
 @media (max-width: 820px) {
   html { font-size: 16px; }
 }

@@ -73,7 +73,7 @@ export function ToolsPage({ currentObject, initialToolId = '', onRun, onConfigur
           <input value={query} onChange={(event) => setQuery(event.target.value)} placeholder="Search ANOVA, regression, Markov, SVD, BFGS, RK45, Bayes, RREF…" aria-label="Search tools" />
           {query && <button onClick={() => setQuery('')}>Clear</button>}
         </div>
-        <div className="tool-category-strip" role="list" aria-label="Tool categories">
+        <div className="tool-category-strip" role="group" aria-label="Tool categories">
           {(['All', ...TOOL_CATEGORIES] as const).map((item) => (
             <button key={item} className={category === item ? 'is-active' : ''} onClick={() => setCategory(item)}>{item}</button>
           ))}
@@ -90,7 +90,7 @@ export function ToolsPage({ currentObject, initialToolId = '', onRun, onConfigur
               return (
                 <button key={tool.id} className={`tool-card ${selected?.id === tool.id ? 'is-selected' : ''}`} onClick={() => setSelectedId(tool.id)}>
                   <span className="tool-card-main"><strong>{tool.label}</strong><small>{tool.description}</small></span>
-                  <span className="tool-card-meta"><i className={`tool-status status-${status.tone}`}>{status.label}</i><b>{tool.phase}</b></span>
+                  <span className="tool-card-meta"><i className={`tool-status status-${status.tone}`}>{status.label}</i><b>{tool.category}</b></span>
                 </button>
               );
             })}
@@ -100,7 +100,7 @@ export function ToolsPage({ currentObject, initialToolId = '', onRun, onConfigur
         {selected && (
           <aside className="tool-detail" aria-label={`${selected.label} details`}>
             <div className="tool-detail-heading">
-              <span>{selected.category} · {selected.phase}</span>
+              <span>{selected.category}</span>
               <h2>{selected.label}</h2>
               <p>{selected.description}</p>
             </div>

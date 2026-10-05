@@ -129,7 +129,7 @@ export function Workspace({
               <button disabled={!controller.hydrated} onClick={() => void restore()}>Restore recovery</button>
             </div>
           </details>
-          <input ref={importRef} className="visually-hidden" type="file" accept="application/json,.json" disabled={!controller.hydrated} onChange={(event) => void importFile(event.target.files?.[0])} />
+          <input ref={importRef} className="visually-hidden" type="file" accept="application/json,.json" aria-label="Import workspace JSON" disabled={!controller.hydrated} onChange={(event) => void importFile(event.target.files?.[0])} />
         </div>
       </div>
 

@@ -1,50 +1,96 @@
-# MathLab v2.0.0-rc.1 Security Review
+# MathLab v2.0.0 Security Review
 
 ## Application boundary
 
-MathLab remains a client-only, local-first application. There is no application analytics, telemetry, account backend, remote mathematics service, `eval`, dynamic `Function`, or application-layer network fetch path. Runtime `fetch` is confined to the service worker and same-origin caching behavior.
+MathLab is a client-only, local-first application.
 
-## Toolchain
+The shipped product has:
 
-### Vite
+- no analytics or telemetry backend;
+- no account backend;
+- no remote mathematics service;
+- no application use of `eval` or dynamic `Function`;
+- no application-layer remote fetch path for mathematical computation.
 
-MathLab pins Vite `7.3.5`, the patched 7.x line selected during release hardening. Dev and preview servers default explicitly to loopback (`127.0.0.1`). Production source maps remain disabled.
+Runtime network activity is limited to static application delivery and the service worker's same-origin cache behavior.
 
-### Vitest
+## Dependency and toolchain boundary
 
-MathLab pins Vitest `3.2.7` and executes the complete regression suite in Node mode through GitHub Actions.
+MathLab pins its direct React, Vite, Vitest, TypeScript, Playwright and accessibility dependencies.
 
-### React
+Pull-request and deployment workflows perform a real npm dependency installation and execute:
 
-MathLab declares client-side `react` and `react-dom`; it does not declare `react-server-dom-*` or an RSC framework. React Server Component vulnerability classes therefore do not describe the shipped MathLab architecture.
+```bash
+npm audit --audit-level=high
+```
 
-## Browser/PWA metadata
+The security claim is therefore scoped to the exact dependency graph resolved and audited at the tested commit. It is not a permanent assertion that future registry resolution or newly published advisories cannot change dependency risk.
 
-- PWA `id`, `start_url`, and `scope` remain relative for `/mathlab/` subpath deployment.
-- Referrer policy is `no-referrer`.
-- Service-worker runtime caching rejects cross-origin requests and caches only successful basic same-origin responses.
-- Navigation fallback is explicit.
-- old MathLab cache generations are removed during activation.
-- release icons and manifest artifacts remain part of the static release audit.
+The repository now commits npm lockfile v3 and both pull-request and deployment workflows use `npm ci`, making the transitive dependency graph reproducible at the certified commit.
 
-## Persistence and execution hardening
+## Vite
 
-The inherited P15 release audit continues to enforce:
+MathLab uses Vite `7.3.5`. Production source maps are disabled.
 
-- top-level error boundary;
-- Worker crash listener and 30-second timeout;
-- workspace/practice recovery snapshots;
+## Vitest
+
+MathLab uses Vitest `3.2.7` and runs the complete deterministic regression suite in GitHub Actions.
+
+## React
+
+MathLab uses client-side `react` and `react-dom` only. It does not ship an RSC framework or `react-server-dom-*` package.
+
+## Browser and PWA boundary
+
+- manifest `id`, `start_url`, and `scope` are relative for the `/mathlab/` deployment;
+- referrer policy is `no-referrer`;
+- service-worker runtime caching rejects cross-origin requests;
+- only successful basic same-origin responses are cached;
+- navigation fallback is explicit;
+- obsolete MathLab cache generations are deleted during activation;
+- manifest and icon contracts are included in automated release checks.
+
+## Persistence hardening
+
+Workspace and practice persistence use IndexedDB and include:
+
+- schema/version handling;
+- last-known-good recovery snapshots;
+- blocked/version-change handling;
+- oversized/corrupt workspace import rejection;
+- explicit replacement confirmation before import;
+- bounded histories where applicable.
+
+Browser-local storage is not presented as a remote backup.
+
+## Execution hardening
+
+Mathematical operations run through a dedicated Worker boundary.
+
+The release controls include:
+
+- Worker error/crash handling;
+- a 30-second operation timeout;
+- structured operation requests rather than runtime code evaluation;
+- deterministic exact/approximate/heuristic provenance;
+- explicit unsupported-operation failures.
+
+## Application safety controls
+
+The inherited release audits enforce:
+
+- top-level React error handling;
+- no application `eval` or dynamic `Function`;
+- no hidden application-layer remote mathematics calls;
 - workspace import-size guard;
-- no application `eval` / dynamic `Function`;
-- no application-layer `fetch` / `XMLHttpRequest` path;
-- no generated build/cache artifacts inside the source release tree.
+- recovery storage;
+- required PWA artifacts;
+- no generated build/cache artifacts committed into the source release tree.
 
-E12 does not weaken any of these controls while expanding the release identity to v2 RC1.
+## Stable-release boundary
 
-## Current dependency evidence
+**v2.0.0 is the current stable release.**
 
-GitHub Actions performs a real npm dependency installation for every E12 pull-request gate. At the E12 certification checkpoint, npm reports **one low-severity advisory** and no high/critical advisory in the install summary. This is a non-blocking RC maintenance item, not evidence that future installs are permanently vulnerability-free.
+Any source, dependency, workflow, PWA, accessibility, or release-control change invalidates prior exact-head certification and requires fresh automated evidence before the new head is treated as certified.
 
-## Stable-release security boundary
-
-`v2.0.0-rc.1` is a source release candidate. Stable `v2.0.0` still requires a fresh final dependency-advisory review together with real browser/device/PWA validation. Security claims must remain scoped to the exact dependency graph and source SHA actually certified.
+Physical Android/iPhone/iPad behavior and assistive-technology validation are separately documented in `ACCESSIBILITY_DEVICE_CERTIFICATION.md` and must not be inferred from browser emulation alone.

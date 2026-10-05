@@ -38,14 +38,14 @@ jobs:
       - name: Stable release audit
         run: npm run audit:stable
 
+      - name: Accessibility and device certification audit
+        run: npm run audit:accessibility
+
       - name: Install dependencies
-        run: npm install --no-package-lock
+        run: npm ci
 
       - name: Dependency security gate
-        run: |
-          npm install --package-lock-only --ignore-scripts --no-audit --no-fund
-          npm audit --audit-level=high
-          rm package-lock.json
+        run: npm audit --audit-level=high
 
       - name: Run tests
         run: npm run test
@@ -56,7 +56,7 @@ jobs:
       - name: Install certified browser engines
         run: npx playwright install --with-deps chromium firefox webkit
 
-      - name: Cross-browser stable release smoke
+      - name: Cross-browser stable and accessibility certification
         run: npm run test:e2e
 
       - name: Configure GitHub Pages
@@ -110,7 +110,7 @@ jobs:
           node-version: "22"
 
       - name: Install dependencies
-        run: npm install --no-package-lock
+        run: npm ci
 
       - name: Wait for custom-domain deployment
         run: node scripts/wait-for-production.mjs
