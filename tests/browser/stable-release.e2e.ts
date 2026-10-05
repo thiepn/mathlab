@@ -122,7 +122,7 @@ test('unified capability registry keeps Workspace, Tools, Search, Reference and 
   await page.keyboard.press('Control+K');
   const command = page.getByRole('dialog', { name: 'Search MathLab' });
   await command.getByPlaceholder(/Search ANOVA/).fill('spectrum');
-  await expect(command.getByText('Eigenvalues', { exact: true })).toBeVisible();
+  await expect(command.getByRole('button', { name: /Eigenvalues/ })).toBeVisible();
   await page.keyboard.press('Escape');
 
   await page.goto('/#/reference');
