@@ -35,6 +35,7 @@ import {
   parseWorksheetImport,
   saveWorksheet,
   saveWorksheetCheckpoint,
+  stringifyWorksheetExport,
 } from '../src/lib/storage/worksheet';
 
 function withInput(state: WorksheetState, source: string, updatedAt: number): WorksheetState {
@@ -133,5 +134,36 @@ describe('P2 worksheet persistence', () => {
       operation: 'factor',
       result: { exactness: 'exact' },
     });
+  });
+
+  it('round-trips exact BigInt result payloads through worksheet JSON export', () => {
+    const state = emptyWorksheet();
+    const result: MathResult<{ numerator: bigint; denominator: bigint }> = {
+      id: 'result:bigint',
+      operation: 'inspect-exact',
+      input: '1/3',
+      exactness: 'exact',
+      value: { numerator: 1n, denominator: 3n },
+      display: '1/3',
+      assumptions: [],
+      warnings: [],
+      steps: [],
+      createdAt: 600,
+    };
+    state.sessions[0].entries.push({
+      id: 'worksheet-result:bigint',
+      type: 'result',
+      input: result.input,
+      operation: result.operation,
+      result,
+      createdAt: result.createdAt,
+    });
+
+    const raw = stringifyWorksheetExport(state);
+    expect(raw).toContain('__mathlab_bigint__');
+    const restored = parseWorksheetImport(raw);
+    const entry = restored.sessions[0].entries[0];
+    if (entry?.type !== 'result') throw new Error('Expected restored result entry.');
+    expect((entry.result.value as { numerator: bigint }).numerator).toBe(1n);
   });
 });
