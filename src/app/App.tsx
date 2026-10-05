@@ -18,6 +18,7 @@ import { CourseReferencePage } from './components/CourseReferencePage';
 import { CommandPalette } from './components/CommandPalette';
 import { useHashRoute } from './hooks/useHashRoute';
 import { useMathWorkspace } from './hooks/useMathWorkspace';
+import { useWorksheet } from './hooks/useWorksheet';
 import { toolNeedsConfiguration, type ToolCatalogItem } from './toolCatalog';
 import { PRIMARY_NAV, ROUTE_TITLES, primarySectionForRoute } from './shellNavigation';
 
@@ -33,8 +34,10 @@ export function App() {
   const [engineStatus, setEngineStatus] = useState<'idle' | 'running' | 'error' | 'done'>('idle');
   const [engineError, setEngineError] = useState('');
   const [runningOperation, setRunningOperation] = useState('');
+  const [editorSourceOverride, setEditorSourceOverride] = useState<string | null>(null);
   const workerClient = useRef<MathWorkerClient | null>(null);
   const controller = useMathWorkspace();
+  const worksheet = useWorksheet();
 
   const liveResolution = useMemo(
     () => resolveSemanticObject(activeParsed, controller.state.objects, controller.state.assumptions),
@@ -91,6 +94,7 @@ export function App() {
           .map((item) => ({ name: item.name!, ast: item.valueAst })),
       });
       setMathResult(result);
+      worksheet.recordResult(result);
       setEngineStatus('done');
       setToolsOpen(false);
       window.requestAnimationFrame(() => document.getElementById('mathlab-result')?.scrollIntoView({ behavior: 'smooth', block: 'start' }));
@@ -116,6 +120,7 @@ export function App() {
         setActiveParsed(parseMath(''));
         setRoute('workspace');
         setToolsOpen(false);
+        setEditorSourceOverride(null);
       }
       if ((event.ctrlKey || event.metaKey) && event.key === '.') {
         event.preventDefault();
@@ -137,6 +142,7 @@ export function App() {
     setActiveParsed(parseMath(object?.source ?? ''));
     setDrawerOpen(false);
     setToolsOpen(false);
+    setEditorSourceOverride(null);
   };
 
   const openObject = (id: string) => {
@@ -151,6 +157,19 @@ export function App() {
     setRoute('workspace');
     setDrawerOpen(false);
     setToolsOpen(false);
+    setEditorSourceOverride(null);
+  };
+
+  const reuseWorksheetSource = (source: string) => {
+    controller.clearSelection();
+    const parsed = parseMath(source);
+    setEditorSourceOverride(source);
+    setActiveParsed(parsed);
+    clearResult();
+    setRoute('workspace');
+    setDrawerOpen(false);
+    setToolsOpen(false);
+    window.requestAnimationFrame(() => document.querySelector<HTMLInputElement>('[aria-label="Mathematical input"]')?.focus());
   };
 
   const requestDelete = (id: string) => {
@@ -194,7 +213,8 @@ export function App() {
       setRoute('workspace');
       return;
     }
-    controller.commitParsed(parsed);
+    const resolution = controller.commitParsed(parsed);
+    if (resolution.object) worksheet.recordInput(resolution.object.source, parsed.normalizedSource, resolution.object.kind, resolution);
     setActiveParsed(parsed);
     clearResult();
     setRoute('workspace');
@@ -240,6 +260,10 @@ export function App() {
             onOpenTools={() => setToolsOpen(true)}
             onOpenProof={() => setRoute('proof')}
             runningOperation={runningOperation}
+            worksheet={worksheet}
+            editorSourceOverride={editorSourceOverride}
+            onReuseSource={reuseWorksheetSource}
+            onCommitComplete={() => setEditorSourceOverride(null)}
           />
         )}
         {route === 'tools' && (

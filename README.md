@@ -25,7 +25,7 @@ MathLab exposes three primary destinations rather than six competing top-level p
 ### Work
 The day-to-day mathematical environment.
 
-- **Workbench** — keyboard-first mathematical input, native MathML preview, persistent objects, assumptions, dependencies, exact/approximate result provenance, IndexedDB persistence and workspace exchange;
+- **Workbench** — keyboard-first mathematical input, native MathML preview, persistent objects, assumptions and dependencies, plus a durable multi-session mathematical worksheet with chronological inputs/results, result reuse, undo/redo, checkpoints and recovery;
 - **Tools** — searchable complete capability catalog with contextual availability, examples and direct handoff back into the workbench;
 - **Proof** — deterministic transformation, derivation-chain and theorem verification with explicit **verified**, **conditionally valid**, **invalid**, and **not proven** outcomes.
 
@@ -105,4 +105,5 @@ GitHub Actions additionally runs dependency security checks, real Chromium/Firef
 - `docs/RELEASE_CERTIFICATION.md` — stable-release evidence
 - `docs/ACCESSIBILITY_DEVICE_CERTIFICATION.md` — accessibility/device evidence boundary
 - `docs/P1_PRODUCT_SHELL_ACCEPTANCE.md` — Work / Visualize / Learn shell contract
+- `docs/P2_MATHEMATICAL_WORKSHEET_ACCEPTANCE.md` — persistent mathematical worksheet contract
 - `docs/SECURITY_REVIEW.md` — current security model

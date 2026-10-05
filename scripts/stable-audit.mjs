@@ -11,6 +11,7 @@ pass(pkg.version === '2.0.0', 'stable gate requires package identity 2.0.0');
 pass(pkg.devDependencies?.['@playwright/test'] === '1.62.1', 'Playwright must stay pinned to 1.62.1 for this certification record');
 pass(pkg.scripts?.['test:e2e'] === 'playwright test --config=playwright.config.mjs', 'test:e2e must execute the stable Playwright configuration');
 pass(typeof pkg.scripts?.['audit:stable'] === 'string', 'audit:stable script missing');
+pass(pkg.scripts?.['audit:worksheet'] === 'node scripts/worksheet-audit.mjs', 'P2 audit:worksheet script is missing or changed');
 
 for (const file of [
   'playwright.config.mjs',
@@ -23,6 +24,8 @@ for (const file of [
   '.github/workflows/deploy.yml',
   'public/sw.js',
   'docs/RELEASE_CERTIFICATION.md',
+  'docs/P2_MATHEMATICAL_WORKSHEET_ACCEPTANCE.md',
+  'scripts/worksheet-audit.mjs',
 ]) pass(existsSync(join(root, file)), `missing stable-release artifact: ${file}`);
 
 const config = text('playwright.config.mjs');
@@ -95,6 +98,7 @@ pass(release.includes('physical-device') || release.includes('physical device'),
 
 const ci = text('.github/workflows/ci.yml');
 pass(ci.includes('npm run audit:stable'), 'CI must run stable release audit');
+pass(ci.includes('npm run audit:worksheet'), 'CI must run P2 mathematical worksheet audit');
 pass(ci.includes('npm audit --audit-level=high'), 'CI must reject high/critical dependency advisories');
 pass(ci.includes('playwright install --with-deps chromium firefox webkit'), 'CI must install all certified browser engines');
 pass(ci.includes('npm run test:e2e'), 'CI must execute stable browser certification');
@@ -102,6 +106,7 @@ pass(ci.includes('playwright.production.config.mjs --list'), 'CI must validate t
 
 const deploy = text('.github/workflows/deploy.yml');
 pass(deploy.includes('npm run audit:stable'), 'Pages deployment must run stable release audit');
+pass(deploy.includes('npm run audit:worksheet'), 'Pages deployment must run P2 mathematical worksheet audit');
 pass(deploy.includes('npm audit --audit-level=high'), 'Pages deployment must reject high/critical dependency advisories');
 pass(deploy.includes('verify-production:'), 'Pages workflow must contain a post-deploy live verification job');
 pass(deploy.includes('needs: deploy'), 'live production verification must run only after Pages deployment completes');

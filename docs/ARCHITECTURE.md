@@ -181,6 +181,40 @@ P2 does not activate mathematical engines, but it can already reject structurall
 
 ---
 
+## P2 post-v2 worksheet layer
+
+The post-v2 Mathematical Worksheet is deliberately separate from the semantic-object workspace schema.
+
+```text
+Semantic object workspace
+  ├─ named mathematical objects
+  ├─ assumptions
+  ├─ dependencies
+  └─ object lifecycle
+
+Mathematical worksheet
+  ├─ sessions
+  ├─ committed input entries
+  ├─ deterministic MathResult entries
+  ├─ worksheet undo / redo
+  ├─ autosave recovery
+  └─ manual checkpoints
+```
+
+The separation prevents chronological calculation history from becoming another source of mathematical truth. Saved objects remain authoritative for symbols, assumptions and dependencies; worksheet entries record how a user worked with those objects.
+
+Successful Workbench commits call `worksheet.recordInput`. Successful Worker operations call `worksheet.recordResult`. Failed parses, semantic commits and engine operations remain transient and are not written as durable mathematical history.
+
+Worksheet state uses its own versioned IndexedDB records:
+
+- `worksheet:p2:default`
+- `worksheet:p2:recovery`
+- `worksheet:p2:checkpoints`
+
+The active result panel and worksheet history share the same structured `MathResult`. While a result is active it is suppressed from the timeline to avoid duplicate presentation; clearing the active result or reloading exposes the already-persisted worksheet result.
+
+Undo/redo is intentionally worksheet-scoped. It does not rewrite semantic-object history or override native text-input undo. Manual checkpoints store immutable active-session snapshots. Worksheet import/export uses a separate `mathlab-worksheet` packet so the established `mathlab-workspace` format is not silently broadened.
+
 ## P3 workspace layer
 
 P3 makes semantic state durable and user-manageable without changing the computation boundary.
