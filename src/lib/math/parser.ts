@@ -10,7 +10,7 @@ import { normalizeMathSource } from './normalize';
 const KNOWN_FUNCTIONS = new Set([
   'sin', 'cos', 'tan', 'sec', 'csc', 'cot',
   'asin', 'acos', 'atan', 'sinh', 'cosh', 'tanh',
-  'sqrt', 'ln', 'log', 'exp', 'abs', 'floor', 'ceil',
+  'sqrt', 'ln', 'log', 'exp', 'abs', 'floor', 'ceil', 'piecewise',
   // P10 + E6 data/probability constructors and exact probability helpers.
   'data', 'bernoulli', 'binomial', 'geometric', 'poisson', 'uniform', 'normal',
   'exponential', 'chisquare', 'studentt', 'fdist', 'jointpmf',
