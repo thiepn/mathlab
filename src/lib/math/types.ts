@@ -108,7 +108,8 @@ export type SemanticDiagnosticCode =
   | 'name-conflict'
   | 'invalid-definition-head'
   | 'assumption-parse-error'
-  | 'assumption-conflict';
+  | 'assumption-conflict'
+  | 'piecewise-limited';
 
 export interface SemanticDiagnostic {
   severity: 'error' | 'warning' | 'info';
