@@ -20,6 +20,7 @@ function rewriteRecursiveTerm(node:AstNode,functionName:string,stepVariable:stri
   if(node.type==='unary')return{...node,operand:rewriteRecursiveTerm(node.operand,functionName,stepVariable,replacement,state)};
   if(node.type==='binary')return{...node,left:rewriteRecursiveTerm(node.left,functionName,stepVariable,replacement,state),right:rewriteRecursiveTerm(node.right,functionName,stepVariable,replacement,state)};
   if(node.type==='call')return{...node,args:node.args.map(arg=>rewriteRecursiveTerm(arg,functionName,stepVariable,replacement,state))};
+  if(node.type==='piecewise')return{...node,branches:node.branches.map(branch=>({value:rewriteRecursiveTerm(branch.value,functionName,stepVariable,replacement,state),condition:rewriteRecursiveTerm(branch.condition,functionName,stepVariable,replacement,state)})),otherwise:node.otherwise?rewriteRecursiveTerm(node.otherwise,functionName,stepVariable,replacement,state):undefined};
   if(node.type==='matrix')return{...node,rows:node.rows.map(row=>row.map(cell=>rewriteRecursiveTerm(cell,functionName,stepVariable,replacement,state)))};
   if(node.type==='system'||node.type==='set')return{...node,items:node.items.map(item=>rewriteRecursiveTerm(item,functionName,stepVariable,replacement,state))};
   return{...node,left:rewriteRecursiveTerm(node.left,functionName,stepVariable,replacement,state),right:rewriteRecursiveTerm(node.right,functionName,stepVariable,replacement,state)};
