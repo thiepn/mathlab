@@ -62,8 +62,8 @@
   background: var(--ml-blue);
 }
 
-.app-grid.is-focus-route,
-.app-grid.is-focus-route > main {
+.app-grid.is-focus-route.has-section-nav,
+.app-grid.is-focus-route.has-section-nav > main {
   min-height: calc(100vh - var(--ml-header-height) - var(--ml-section-nav-height));
 }
 
@@ -128,8 +128,8 @@
     right: 10px;
   }
 
-  .app-grid.is-focus-route,
-  .app-grid.is-focus-route > main {
+  .app-grid.is-focus-route.has-section-nav,
+  .app-grid.is-focus-route.has-section-nav > main {
     min-height: calc(100vh - 60px - var(--ml-section-nav-height));
   }
 
