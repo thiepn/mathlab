@@ -37,6 +37,9 @@
      creating a page-level horizontal scrollbar. */
   .workspace-main,
   .m3-workspace-main,
+  .section-nav,
+  .section-nav__inner,
+  .section-nav__item,
   .input-zone,
   .math-input-shell,
   .math-helper-row,
@@ -102,7 +105,7 @@
      Restore the intended off-canvas drawer on phones so it does not occupy document flow. */
   .app-grid.is-workspace-route .object-sidebar {
     position: fixed;
-    top: 60px;
+    top: calc(60px + var(--ml-section-nav-height, 44px));
     right: auto;
     bottom: 0;
     left: 0;
@@ -112,16 +115,16 @@
     overflow-y: auto;
   }
 
-  .mobile-nav.mobile-nav-six {
-    grid-template-columns: repeat(6, minmax(0, 1fr));
+  .mobile-nav.mobile-nav-primary {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
   }
 
-  .mobile-nav.mobile-nav-six button {
+  .mobile-nav.mobile-nav-primary button {
     min-width: 0;
-    padding-inline: 1px;
+    padding-inline: 4px;
     white-space: normal;
     overflow-wrap: anywhere;
-    line-height: 1.05;
+    line-height: 1.1;
   }
 }
 

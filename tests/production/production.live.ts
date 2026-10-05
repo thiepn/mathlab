@@ -10,7 +10,7 @@ function routeURL(route: string) {
 
 async function openWorkspace(page: Page) {
   await page.goto(routeURL('workspace'), { waitUntil: 'domcontentloaded' });
-  await expect(page).toHaveTitle('Workspace · MathLab');
+  await expect(page).toHaveTitle('Work · MathLab');
   await expect(page.locator('.release-badge')).toHaveText('v2.0');
   await expect(page.locator('.save-state')).toHaveText('Saved locally');
   await expect(page.getByRole('textbox', { name: 'Mathematical input' })).toBeVisible();
@@ -139,7 +139,7 @@ test('deployed service worker supports an offline reload', async ({ page, contex
   await context.setOffline(true);
   try {
     await page.reload({ waitUntil: 'domcontentloaded' });
-    await expect(page).toHaveTitle('Workspace · MathLab');
+    await expect(page).toHaveTitle('Work · MathLab');
     await expect(page.locator('.release-badge')).toHaveText('v2.0');
     await expect(page.getByRole('textbox', { name: 'Mathematical input' })).toBeVisible();
   } finally {

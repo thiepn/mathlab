@@ -41,12 +41,26 @@ P1 can evolve the parser without forcing UI rewrites.
 
 ## Routing
 
-P0 uses a tiny hash router with no additional dependency. It is GitHub Pages/static-host compatible and exposes stable top-level spaces:
+MathLab uses a tiny hash router with no additional dependency and remains GitHub Pages/static-host compatible.
 
-- Workspace
-- Visualize
-- Practice
-- Reference
+P1 separates **primary information architecture** from **stable deep routes**.
+
+Primary sections:
+
+- **Work**
+- **Visualize**
+- **Learn**
+
+Stable routes remain:
+
+- `#/workspace` — Work / Workbench
+- `#/tools` — Work / Tools
+- `#/proof` — Work / Proof
+- `#/visualize` — Visualize
+- `#/practice` — Learn / Practice
+- `#/reference` — Learn / Reference
+
+`shellNavigation.ts` is the shell-level source of truth for primary-section ownership, labels and section navigation. Existing route URLs are intentionally preserved so bookmarks, direct links and browser history remain compatible.
 
 ## PWA
 

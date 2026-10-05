@@ -17,6 +17,7 @@ for (const file of [
   'playwright.production.config.mjs',
   'tests/browser/stable-release.e2e.ts',
   'tests/production/production.live.ts',
+  'src/app/shellNavigation.ts',
   'scripts/wait-for-production.mjs',
   '.github/workflows/ci.yml',
   '.github/workflows/deploy.yml',
@@ -33,14 +34,24 @@ pass(config.includes("testMatch: /.*\\.e2e\\.ts/"), 'Playwright must stay isolat
 
 const browser = text('tests/browser/stable-release.e2e.ts');
 for (const marker of [
-  'every primary route is reachable',
-  'without horizontal page overflow',
+  'every routed surface is reachable',
+  'consolidated primary and contextual navigation works without page overflow',
   'standard release widths remain structurally responsive',
   'command palette opens from the keyboard',
   'executes the Worker engine',
   'IndexedDB workspace state survives a browser reload',
   'offline application reload',
 ]) pass(browser.includes(marker), `browser stable suite missing: ${marker}`);
+
+const shellNavigation = text('src/app/shellNavigation.ts');
+for (const marker of [
+  "{ id: 'work', label: 'Work', route: 'workspace' }",
+  "{ id: 'visualize', label: 'Visualize', route: 'visualize' }",
+  "{ id: 'learn', label: 'Learn', route: 'practice' }",
+  "{ route: 'tools', label: 'Tools' }",
+  "{ route: 'proof', label: 'Proof' }",
+  "{ route: 'reference', label: 'Reference' }",
+]) pass(shellNavigation.includes(marker), `P1 shell navigation contract missing: ${marker}`);
 
 const productionConfig = text('playwright.production.config.mjs');
 pass(productionConfig.includes("https://thiepn.dev/mathlab/"), 'production Playwright gate must target the canonical custom domain');
@@ -73,6 +84,9 @@ const header = text('src/app/components/Header.tsx');
 pass(header.includes('v2.0.0 stable release'), 'stable UI title is missing');
 pass(header.includes('>v2.0</span>'), 'stable UI badge is missing');
 pass(!header.includes('RC1') && !header.includes('2.0.0-rc.1'), 'stable UI must not retain RC identity');
+pass(header.includes('PRIMARY_NAV') && header.includes('SECTION_NAV'), 'header must use the consolidated P1 shell navigation model');
+const appShell = text('src/app/App.tsx');
+pass(appShell.includes('mobile-nav-primary') && !appShell.includes('mobile-nav-six'), 'mobile shell must expose three primary destinations instead of the legacy six-tab bar');
 
 const release = text('docs/RELEASE_CERTIFICATION.md');
 pass(release.includes('v2.0.0'), 'stable certification record must identify v2.0.0');

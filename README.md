@@ -18,39 +18,27 @@ Input → AST → Semantic Object → Capability
 
 That means a function, matrix, distribution, graph, recurrence, ODE, or other supported object can be saved once and reused across compatible operations.
 
-## Core surfaces
+## Product shell
 
-### Workspace
-- keyboard-first universal mathematical input with LaTeX normalization and native MathML preview;
-- persistent named objects, assumptions, dependencies and recent activity;
-- contextual operations chosen from the object's actual capabilities;
-- exact/approximate result provenance and deterministic derivation steps where available;
-- IndexedDB persistence, recovery snapshots and JSON import/export.
+MathLab exposes three primary destinations rather than six competing top-level pages.
 
-### Tools
-- searchable catalog backed by the complete stable capability registry;
-- contextual availability and explicit reasons when an operation cannot run;
-- examples that can be opened directly in the workspace.
+### Work
+The day-to-day mathematical environment.
 
-### Visualization
-- Cartesian, parametric, polar and implicit curves;
-- contours and scalar fields;
-- vector/gradient fields and phase portraits;
-- graph and parametric 3D surfaces;
-- feature overlays, keyboard pan/zoom, SVG export and PNG export.
+- **Workbench** — keyboard-first mathematical input, native MathML preview, persistent objects, assumptions, dependencies, exact/approximate result provenance, IndexedDB persistence and workspace exchange;
+- **Tools** — searchable complete capability catalog with contextual availability, examples and direct handoff back into the workbench;
+- **Proof** — deterministic transformation, derivation-chain and theorem verification with explicit **verified**, **conditionally valid**, **invalid**, and **not proven** outcomes.
 
-### Proof & verification
-- exact transformation verification;
-- derivation-chain checking;
-- propositional entailment;
-- bounded equality-lemma, finite-quantifier and induction certificates;
-- explicit outcomes: **verified**, **conditionally valid**, **invalid**, or **not proven**.
+### Visualize
+A dedicated exploration environment for Cartesian, parametric, polar and implicit curves; contours/scalar fields; vector and gradient fields; phase portraits; 3D surfaces; feature overlays; keyboard pan/zoom; and SVG/PNG export.
 
-### Practice & reference
-- course-oriented generated and authored exercises;
-- adaptive review, spaced scheduling, exams and mastery tracking;
-- mathematical reference generated from the stable capability set;
-- fixed 22-domain completeness audit that distinguishes breadth from maturity.
+### Learn
+The learning environment.
+
+- **Practice** — course-oriented authored/generated exercises, adaptive review, spaced scheduling, exams and mastery tracking;
+- **Reference** — mathematical capability/course reference generated from the stable engine plus the fixed 22-domain completeness audit.
+
+The six underlying hash routes remain stable deep links, but the interface groups them by user intent: **do mathematics, explore it visually, or learn it**.
 
 ## Mathematical coverage
 
@@ -116,4 +104,5 @@ GitHub Actions additionally runs dependency security checks, real Chromium/Firef
 - `docs/E12_MATHEMATICAL_REAUDIT.md` — current mathematical coverage
 - `docs/RELEASE_CERTIFICATION.md` — stable-release evidence
 - `docs/ACCESSIBILITY_DEVICE_CERTIFICATION.md` — accessibility/device evidence boundary
+- `docs/P1_PRODUCT_SHELL_ACCEPTANCE.md` — Work / Visualize / Learn shell contract
 - `docs/SECURITY_REVIEW.md` — current security model

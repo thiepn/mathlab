@@ -28,12 +28,12 @@ export function CommandPalette({ onClose, objects, onNew, onOpenObject, onRoute,
 
   const items = useMemo<CommandItem[]>(() => [
     { id: 'new', label: 'New work', detail: 'Start an empty mathematical scratch workspace', search: 'new work scratch input', badge: 'Action', run: onNew },
-    { id: 'workspace', label: 'Workspace', detail: 'Open the mathematical workspace', search: 'workspace calculate input', badge: 'Page', run: () => onRoute('workspace') },
-    { id: 'tools', label: 'Tools', detail: 'Browse the complete mathematical tool catalog', search: 'tools catalog functions features operations', badge: 'Page', run: () => onRoute('tools') },
+    { id: 'workspace', label: 'Work', detail: 'Open the mathematical workbench', search: 'work workspace calculate input', badge: 'Section', run: () => onRoute('workspace') },
+    { id: 'tools', label: 'Work · Tools', detail: 'Browse the complete mathematical tool catalog', search: 'work tools catalog functions features operations', badge: 'Page', run: () => onRoute('tools') },
     { id: 'visualize', label: 'Visualize', detail: 'Interactive mathematical visualization', search: 'visualize graph plot', badge: 'Page', run: () => onRoute('visualize') },
-    { id: 'proof', label: 'Proof Lab', detail: 'Verify transformations and logical entailment', search: 'proof verify check work', badge: 'Page', run: () => onRoute('proof') },
-    { id: 'practice', label: 'Practice', detail: 'Adaptive courses, review, and exams', search: 'practice course exam review', badge: 'Page', run: () => onRoute('practice') },
-    { id: 'reference', label: 'Course Reference', detail: 'Curriculum and capability map', search: 'reference curriculum course', badge: 'Page', run: () => onRoute('reference') },
+    { id: 'proof', label: 'Work · Proof & Verify', detail: 'Verify transformations and logical entailment', search: 'work proof verify check', badge: 'Page', run: () => onRoute('proof') },
+    { id: 'practice', label: 'Learn', detail: 'Adaptive practice, review, and exams', search: 'learn practice course exam review', badge: 'Section', run: () => onRoute('practice') },
+    { id: 'reference', label: 'Learn · Reference', detail: 'Curriculum and capability map', search: 'learn reference curriculum course', badge: 'Page', run: () => onRoute('reference') },
     ...ALL_TOOL_CATALOG.map((tool) => ({
       id: `tool:${tool.id}`,
       label: tool.label,
