@@ -37,6 +37,9 @@
      creating a page-level horizontal scrollbar. */
   .workspace-main,
   .m3-workspace-main,
+  .section-nav,
+  .section-nav__inner,
+  .section-nav__item,
   .input-zone,
   .math-input-shell,
   .math-helper-row,
