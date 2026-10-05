@@ -7,7 +7,6 @@ import type {
 } from '../../lib/math/worksheetTypes';
 import {
   createCheckpoint,
-  createWorksheetExport,
   createWorksheetSession,
   emptyWorksheet,
   loadRecoveryWorksheet,
@@ -17,6 +16,7 @@ import {
   parseWorksheetImport,
   saveWorksheet,
   saveWorksheetCheckpoint,
+  stringifyWorksheetExport,
 } from '../../lib/storage/worksheet';
 
 const MAX_UNDO = 40;
@@ -147,10 +147,10 @@ export function useWorksheet() {
   }, [mutateActive]);
 
   const renameSession = useCallback((title: string) => {
-    const trimmed = title.trim();
-    if (!trimmed) return;
-    mutateActive((session) => ({ ...session, title: trimmed.slice(0, 180) }));
-  }, [mutateActive]);
+    const trimmed = title.trim().slice(0, 180);
+    if (!trimmed || trimmed === activeSession?.title) return;
+    mutateActive((session) => ({ ...session, title: trimmed }));
+  }, [mutateActive, activeSession?.title]);
 
   const newSession = useCallback(() => {
     const session = createWorksheetSession();
@@ -222,7 +222,7 @@ export function useWorksheet() {
     return true;
   }, []);
 
-  const exportWorksheet = useCallback(() => JSON.stringify(createWorksheetExport(state), null, 2), [state]);
+  const exportWorksheet = useCallback(() => stringifyWorksheetExport(state), [state]);
 
   const importWorksheet = useCallback((raw: string) => {
     setPast([]);
