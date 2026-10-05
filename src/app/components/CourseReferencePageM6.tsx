@@ -119,7 +119,7 @@ export function CourseReferencePage() {
 
           {groupedTools.length > 0 ? (
             <section className="m6-reference-tools">
-              {groupedTools.map((group: { category: ToolCategory; tools: ToolCatalogItem[] }) => (
+              {groupedTools.map((group: { category: ToolCategory; tools: CapabilityDescriptor[] }) => (
                 <section key={group.category} className="m6-reference-group">
                   <header><div><span className="section-kicker">Capability group</span><h3>{group.category}</h3></div><strong>{group.tools.length} tool{group.tools.length === 1 ? '' : 's'}</strong></header>
                   <div className="m6-reference-tool-grid">{group.tools.map((tool) => <ToolReferenceCard key={tool.id} tool={tool} />)}</div>
