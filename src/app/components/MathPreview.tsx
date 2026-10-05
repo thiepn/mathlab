@@ -94,17 +94,17 @@ export function renderMathNode(node: AstNode): ReactNode {
     case 'piecewise': return (
       <mrow>
         <mo stretchy="true">{'{'}</mo>
-        <mtable columnalign="left left">
+        <mtable>
           {node.branches.map((branch, index) => (
             <mtr key={index}>
               <mtd>{renderMathNode(branch.value)}</mtd>
-              <mtd><mtext>if </mtext>{renderMathNode(branch.condition)}</mtd>
+              <mtd><mrow><mi mathvariant="normal">if</mi><mo> </mo>{renderMathNode(branch.condition)}</mrow></mtd>
             </mtr>
           ))}
           {node.otherwise && (
             <mtr>
               <mtd>{renderMathNode(node.otherwise)}</mtd>
-              <mtd><mtext>otherwise</mtext></mtd>
+              <mtd><mi mathvariant="normal">otherwise</mi></mtd>
             </mtr>
           )}
         </mtable>
