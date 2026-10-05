@@ -20,7 +20,9 @@ P4 introduces `src/app/capabilityRegistry.ts` as the single public composition l
 
 ## Canonical descriptor
 
-Each registry descriptor owns the stable user-facing metadata for one capability:
+Each registry descriptor owns the stable user-facing metadata for one capability. Historical discovery entries that point to the same engine operation are merged into that descriptor; their old ids and labels remain searchable/lookup aliases rather than creating duplicate canonical capabilities.
+
+Each descriptor owns:
 
 - registry id;
 - engine operation id;
