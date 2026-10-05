@@ -5,7 +5,7 @@ import { dependentObjects } from '../lib/math/workspaceLifecycle';
 import { resolveSemanticObject } from '../lib/math/semantic';
 import type { MathResult } from '../lib/math/types';
 import { MathWorkerClient } from '../lib/worker/client';
-import { findAllTool } from './allToolCatalog';
+import { findCapability, type CapabilityDescriptor } from './capabilityRegistry';
 import { Header } from './components/Header';
 import { ObjectSidebar } from './components/ObjectSidebar';
 import { ContextPanel } from './components/ContextPanel';
@@ -19,7 +19,7 @@ import { CommandPalette } from './components/CommandPalette';
 import { useHashRoute } from './hooks/useHashRoute';
 import { useMathWorkspace } from './hooks/useMathWorkspace';
 import { useWorksheet } from './hooks/useWorksheet';
-import { toolNeedsConfiguration, type ToolCatalogItem } from './toolCatalog';
+
 import { PRIMARY_NAV, ROUTE_TITLES, primarySectionForRoute } from './shellNavigation';
 
 export function App() {
@@ -191,21 +191,21 @@ export function App() {
     setRoute('tools');
   };
 
-  const runCatalogTool = (tool: ToolCatalogItem) => {
+  const runCatalogTool = (tool: CapabilityDescriptor) => {
     if (tool.specialRoute === 'proof') { setRoute('proof'); return; }
     if (tool.operation === 'graph' || tool.specialRoute === 'visualize') { setRoute('visualize'); return; }
     setRoute('workspace');
     void executeOperation(tool.operation);
   };
 
-  const configureCatalogTool = (tool: ToolCatalogItem) => {
+  const configureCatalogTool = (tool: CapabilityDescriptor) => {
     if (tool.specialRoute === 'proof') { setRoute('proof'); return; }
     if (tool.operation === 'graph' || tool.specialRoute === 'visualize') { setRoute('visualize'); return; }
     setRoute('workspace');
     setToolsOpen(true);
   };
 
-  const tryToolExample = (tool: ToolCatalogItem) => {
+  const tryToolExample = (tool: CapabilityDescriptor) => {
     if (tool.specialRoute === 'proof') { setRoute('proof'); return; }
     const parsed = parseMath(tool.example);
     if (!parsed.ast || parsed.diagnostics.some((item) => item.severity === 'error')) {
@@ -219,7 +219,7 @@ export function App() {
     clearResult();
     setRoute('workspace');
     setDrawerOpen(false);
-    setToolsOpen(toolNeedsConfiguration(tool));
+    setToolsOpen(tool.needsConfiguration);
   };
 
   const activeSection = primarySectionForRoute(route);
@@ -333,7 +333,7 @@ export function App() {
           onOpenObject={openObject}
           onRoute={(nextRoute) => setRoute(nextRoute)}
           onTool={(toolId) => {
-            const tool = findAllTool(toolId);
+            const tool = findCapability(toolId);
             if (tool) openCatalogTool(tool.id);
           }}
         />
