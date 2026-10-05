@@ -40,13 +40,13 @@ export function ToolsPage({ currentObject, initialToolId = '', onRun, onConfigur
   const normalized = query.trim().toLowerCase();
   const filtered = ALL_TOOLS.filter((tool) => (category === 'All' || tool.category === category) && (!normalized || capabilitySearchText(tool).includes(normalized)));
   const selected = ALL_TOOLS.find((tool) => tool.id === selectedId) ?? filtered[0] ?? ALL_TOOLS[0];
-  const selectedCapability = selected ? capabilities.find((capability) => capability.id === selected.operation) : undefined;
-  const readyCount = currentObject ? ALL_TOOLS.filter((tool) => capabilities.some((capability) => capability.id === tool.operation && capability.available)).length : 0;
+  const selectedCapability = selected ? capabilities.find((capability) => capability.operation === selected.operation) : undefined;
+  const readyCount = currentObject ? ALL_TOOLS.filter((tool) => capabilities.some((capability) => capability.operation === tool.operation && capability.available)).length : 0;
 
   const statusFor = (tool: CapabilityDescriptor) => {
     if (tool.specialRoute === 'visualize') return { label: 'Visualization workspace', tone: 'route' };
     if (tool.specialRoute === 'proof') return { label: 'Proof workspace', tone: 'route' };
-    const capability = capabilities.find((item) => item.id === tool.operation);
+    const capability = capabilities.find((item) => item.operation === tool.operation);
     if (capability?.available) return { label: tool.needsConfiguration ? 'Configure' : 'Ready now', tone: 'ready' };
     if (capability && !capability.applicable) return { label: 'Input needs adjustment', tone: 'blocked' };
     return { label: 'Try example', tone: 'example' };
