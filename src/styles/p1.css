@@ -118,7 +118,9 @@
     min-height: 44px;
     padding-inline: 8px;
     font-size: .84rem;
-    white-space: nowrap;
+    line-height: 1.12;
+    white-space: normal;
+    overflow-wrap: anywhere;
   }
 
   .section-nav__item.is-active::after {
@@ -150,5 +152,7 @@
   .section-nav__item {
     padding-inline: 5px;
     font-size: .78rem;
+    white-space: normal;
+    overflow-wrap: anywhere;
   }
 }
