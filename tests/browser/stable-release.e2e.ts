@@ -182,7 +182,7 @@ test('installed service worker supports an offline application reload', async ({
   await context.setOffline(true);
   try {
     await page.reload({ waitUntil: 'domcontentloaded' });
-    await expect(page).toHaveTitle('Workspace · MathLab');
+    await expect(page).toHaveTitle('Work · MathLab');
     await expect(page.getByRole('textbox', { name: 'Mathematical input' })).toBeVisible();
   } finally {
     await context.setOffline(false);
