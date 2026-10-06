@@ -15,7 +15,9 @@ test('P7 time-series workflow is reachable and executable through the shared too
   const timeSeriesAction = drawer.locator('button.context-action').filter({ hasText: 'Time-series trend & autocorrelation' });
   await timeSeriesAction.scrollIntoViewIfNeeded();
   await expect(timeSeriesAction).toBeVisible();
-  await timeSeriesAction.click();
+  const accessibleTimeSeriesAction = drawer.getByRole('button', { name: /Time-series trend & autocorrelation/ });
+  await expect(accessibleTimeSeriesAction).toBeVisible();
+  await accessibleTimeSeriesAction.click();
   await drawer.getByLabel('Maximum ACF lag').fill('4');
   await drawer.getByRole('button', { name: 'Analyze time series' }).click();
 
