@@ -216,6 +216,13 @@ export function useMathWorkspace() {
     setState({ ...imported, activity: [importLog, ...imported.activity].slice(0, 100), updatedAt: Date.now() });
   }, []);
 
+  const importSharedCopy = useCallback((shared: MathWorkspaceState, title: string) => {
+    const imported = parseWorkspaceImport(JSON.stringify(createWorkspaceExport(shared)));
+    const importLog = activity('imported', `Copied shared snapshot “${title.slice(0, 80)}” with ${imported.objects.length} object${imported.objects.length === 1 ? '' : 's'}`);
+    setWorkingObject(null);
+    setState({ ...imported, activity: [importLog], updatedAt: Date.now() });
+  }, []);
+
   const restoreRecovery = useCallback(async () => {
     const recovered = await loadRecoveryWorkspace();
     if (!recovered) return false;
@@ -250,6 +257,7 @@ export function useMathWorkspace() {
     togglePin,
     exportWorkspace,
     importWorkspace,
+    importSharedCopy,
     restoreRecovery,
     resetWorkspace,
     assumptionDiagnostics,
