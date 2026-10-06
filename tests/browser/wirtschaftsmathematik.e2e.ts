@@ -12,8 +12,10 @@ test('P7 time-series workflow is reachable and executable through the shared too
   await page.getByRole('button', { name: /All tools/ }).click();
 
   const drawer = page.getByRole('dialog', { name: 'Tools and object inspector' });
-  await expect(drawer.getByText('Time series & forecasting', { exact: true })).toBeVisible();
-  await drawer.getByRole('button', { name: /Time-series trend & autocorrelation/ }).click();
+  const timeSeriesAction = drawer.getByRole('button', { name: /Time-series trend & autocorrelation/ });
+  await timeSeriesAction.scrollIntoViewIfNeeded();
+  await expect(timeSeriesAction).toBeVisible();
+  await timeSeriesAction.click();
   await drawer.getByLabel('Maximum ACF lag').fill('4');
   await drawer.getByRole('button', { name: 'Analyze time series' }).click();
 
