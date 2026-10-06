@@ -4,7 +4,7 @@ MathLab is a **local-first university mathematics workbench** built around persi
 
 **Current stable release: v2.0.0**
 
-The stable v2 engine spans algebra, calculus, multivariable/vector calculus, visualization, linear algebra, real and complex analysis, probability/statistics, numerical mathematics, ODEs, transforms, discrete mathematics/algorithms, number theory, finite algebraic structures, foundational topology/geometry, PDE templates, optimization, practice, and deterministic proof verification. Post-v2 P7 adds broader Wirtschaftsmathematik workflows for operations research, time series/forecasting, and data-driven numerical fitting.
+The stable v2 engine spans algebra, calculus, multivariable/vector calculus, visualization, linear algebra, real and complex analysis, probability/statistics, numerical mathematics, ODEs, transforms, discrete mathematics/algorithms, number theory, finite algebraic structures, foundational topology/geometry, PDE templates, optimization, practice, and deterministic proof verification. Post-v2 P7 adds broader Wirtschaftsmathematik workflows for operations research, time series/forecasting, and data-driven numerical fitting. P8 adds local-first sharing through immutable, integrity-verified read-only snapshots and explicit recipient copies.
 
 ## Product model
 
@@ -109,6 +109,7 @@ GitHub Actions additionally runs dependency security checks, real Chromium/Firef
 - `docs/P5_LEARNING_V2.md` — concept model, worked examples, guided-practice architecture and engine-curriculum parity
 - `docs/P6_DYNAMIC_EXPLORATION.md` — parameter sliders, linked formula/graph/table state and trace architecture
 - `docs/P7_WIRTSCHAFTSMATHEMATIK.md` — simplex/assignment/transportation, time-series forecasting and QR curve-fitting boundaries
+- `docs/P8_SHARING_COLLABORATION.md` — immutable share links/files, SHA-256 verification, read-only review and local-copy boundaries
 - `docs/P2_MATHEMATICAL_WORKSHEET_ACCEPTANCE.md` — persistent mathematical worksheet contract
 - `docs/P3_INPUT_INTERACTION_ACCEPTANCE.md` — structured input, keypad and piecewise contract
 - `docs/P4_UNIFIED_CAPABILITY_ARCHITECTURE.md` — canonical capability registry and consumer contract
