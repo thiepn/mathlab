@@ -20,6 +20,7 @@ export const OPERATIONS_REQUIRING_CONTROLS = new Set([
   'extended-gcd','modular-inverse','linear-congruence','linear-diophantine',
   'subgroup-check','metric-ball','topology-subset-profile',
   'lemma-rewrite','inequality-consequence','finite-quantifier-proof','induction-certificate','analysis-theorem-certificate','linear-algebra-theorem-certificate','finite-group-theorem-certificate',
+  'simplex-linear-program','assignment-problem','transportation-problem','time-series-profile','exponential-smoothing','polynomial-least-squares',
 ]);
 
 export const PREFERRED_OPERATION_ORDER = [
@@ -34,7 +35,8 @@ export const PREFERRED_OPERATION_ORDER = [
   'ode-profile','ode-symbolic-solve','laplace-ode-solve','ode-equilibria','ode-stability','ode-linearize','ode-to-system','ode-adaptive-solve',
   'laplace-transform','inverse-laplace-transform','fourier-transform','inverse-fourier-transform','discrete-fourier-transform','inverse-discrete-fourier-transform',
   'numerical-lu','numerical-cholesky','numerical-qr','numerical-eigen','numerical-svd','pseudoinverse','numerical-rank','spectral-condition','conjugate-gradient','numerical-optimize','nonlinear-system-solve',
-  'joint-distribution-profile','covariance-correlation-matrix','chi-square-independence','one-way-anova','multiple-linear-regression','regression-diagnostics','mann-whitney','wilcoxon-signed-rank','markov-profile',
+  'joint-distribution-profile','covariance-correlation-matrix','chi-square-independence','one-way-anova','multiple-linear-regression','regression-diagnostics','mann-whitney','wilcoxon-signed-rank','markov-profile','time-series-profile',
+  'simplex-linear-program','assignment-problem','transportation-problem','polynomial-least-squares','exponential-smoothing',
   'det','rref','rank','inverse','eigen','linear-profile','descriptive-statistics',
   'distribution-profile','evaluate-probability','logic-profile','graph-profile','recurrence-profile','numerical-linear-solve',
   'condition-estimate','set-profile','relation-profile','complexity-profile','inspect-exact','inspect-decimal',
