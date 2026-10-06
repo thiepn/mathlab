@@ -14,7 +14,7 @@ test('P5 learning pathway reaches a worked example and concept-guided practice',
   await conceptNav.getByRole('button', { name: /Domain-safe transformations/ }).click();
 
   await expect(pathway.locator('.p5-concept-detail').getByRole('heading', { name: 'Domain-safe transformations' })).toBeVisible();
-  await expect(pathway.getByText('Worked example')).toBeVisible();
+  await expect(pathway.getByText('Worked example', { exact: true })).toBeVisible();
   await expect(pathway.getByText('Cancellation with an excluded value')).toBeVisible();
   await expect(pathway.getByText('Engine connection')).toBeVisible();
 
