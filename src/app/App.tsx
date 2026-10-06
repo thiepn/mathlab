@@ -15,6 +15,7 @@ import { VisualizationPage } from './components/VisualizationPage';
 import { ProofLabPage } from './components/ProofLabPage';
 import { PracticePage } from './components/PracticePage';
 import { CourseReferencePage } from './components/CourseReferencePage';
+import { SharedSnapshotPage } from './components/SharedSnapshotPage';
 import { CommandPalette } from './components/CommandPalette';
 import { useHashRoute } from './hooks/useHashRoute';
 import { useMathWorkspace } from './hooks/useMathWorkspace';
@@ -264,6 +265,7 @@ export function App() {
             editorSourceOverride={editorSourceOverride}
             onReuseSource={reuseWorksheetSource}
             onCommitComplete={() => setEditorSourceOverride(null)}
+            onOpenSharedSnapshot={() => setRoute('share')}
           />
         )}
         {route === 'tools' && (
@@ -279,6 +281,7 @@ export function App() {
         {route === 'proof' && <ProofLabPage initialSource={contextObject?.source ?? ''} />}
         {route === 'practice' && <PracticePage />}
         {route === 'reference' && <CourseReferencePage />}
+        {route === 'share' && <SharedSnapshotPage workspace={controller} worksheet={worksheet} onOpenWorkspace={() => setRoute('workspace')} />}
       </div>
 
       {route === 'workspace' && toolsOpen && (
