@@ -50,6 +50,17 @@ The following checks require external hardware or real assistive-technology envi
 
 These items are post-release compatibility evidence. They must not be marked complete solely because the Playwright emulation and axe gates pass.
 
+## P9 physical qualification readiness
+
+P9 does not convert browser emulation into physical-device evidence. Instead it stabilizes the conditions under which the external matrix can be executed reproducibly:
+
+- route-level lazy chunks are production-budgeted and certified in real browser engines;
+- service-worker cache generations are tied to the deployed build so installed-PWA upgrade tests do not mix old/new chunks;
+- local storage health and persistence state can be inspected from the Workspace data menu;
+- the live-production verifier checks the build-scoped service-worker registration on the custom domain.
+
+For an external physical run, record the exact deployed commit, device model, OS/browser or assistive-technology version, installed-vs-browser mode, orientation, date, and evidence for each row in the matrix above. A Playwright or axe pass alone must never be entered as physical evidence.
+
 ## Acceptance rule
 
 The accessibility/device stage is repository-complete when:
