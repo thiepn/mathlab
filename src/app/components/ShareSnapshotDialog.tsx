@@ -68,7 +68,7 @@ export function ShareSnapshotDialog({ workspace, worksheet, onClose }: Props) {
 
       <div className="p8-share-privacy">
         <strong>Local-first sharing</strong>
-        <p>The snapshot is immutable and SHA-256 checked. Link data stays in the URL fragment and is not sent to MathLab’s static host. A recipient opens it read-only and must explicitly copy it before editing.</p>
+        <p>The snapshot is immutable and SHA-256 checked. Link data stays in the URL fragment and is not sent to MathLab’s static host. It is not encrypted: anyone with the link can read it, and the URL may remain in browser or synced history. A recipient opens it read-only and must explicitly copy it before editing.</p>
       </div>
 
       <div className="p8-share-actions">
