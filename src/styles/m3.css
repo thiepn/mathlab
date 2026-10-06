@@ -313,6 +313,7 @@
   font-size: 1.3rem;
 }
 .workspace-tools-drawer > .context-panel {
+  display: block;
   position: static;
   width: auto;
   height: 100%;

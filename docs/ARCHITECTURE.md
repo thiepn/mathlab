@@ -271,6 +271,39 @@ Guided practice is built by `buildGuidedConceptSession`. It selects only exercis
 
 The Practice UI consumes the concept model through `LearningPathPanel`. Course practice, adaptive review, exams and progress remain available, so P5 extends the learning path without forking persistence or replacing the deterministic verifier.
 
+## Post-v2 P7 Wirtschaftsmathematik architecture
+
+P7 is the first post-v2 phase to add selective mathematical breadth after the locked E12 certification baseline. It does not alter the historical E-series scorecard.
+
+```text
+matrix / dataset / vector
+        │
+        ├─ canonical capability registry
+        │      ├─ Optimization & OR
+        │      ├─ Probability & Statistics
+        │      └─ Numerical Math & ODEs
+        │
+        ↓
+P7MathEngine extends E11MathEngine
+        │
+        ├─ simplex LP
+        ├─ Hungarian assignment
+        ├─ balanced min-cost transportation
+        ├─ time-series trend + ACF
+        ├─ simple exponential smoothing
+        └─ Householder-QR polynomial fit
+        ↓
+structured MathResult
+```
+
+The production worker now instantiates `P7MathEngine`; unknown operations fall through the full E11→…→base engine inheritance chain unchanged.
+
+`capabilitiesP7.ts` contributes only shape-compatible post-v2 operations. The existing `capabilitiesE5.ts` aggregator remains the single runtime capability composition point, while `p7ToolCatalog.ts` feeds the canonical P4 registry.
+
+Operations research receives a dedicated `Optimization & OR` tool category. That category is mapped to the existing numerical course for engine/curriculum parity instead of introducing a parallel learning architecture.
+
+P7 intentionally distinguishes exact model structure from approximate numerical execution. LP, assignment, transportation, smoothing, autocorrelation and polynomial fitting all return structured diagnostics and explicit scope warnings rather than pretending binary64 output is symbolic proof.
+
 ## Post-v2 P6 dynamic exploration architecture
 
 P6 extends the existing visualization stack with one temporary exploration state rather than creating a second graph or evaluator subsystem.

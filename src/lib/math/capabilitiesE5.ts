@@ -5,6 +5,7 @@ import { e8CapabilitiesForObject } from './capabilitiesE8';
 import { e9CapabilitiesForObject } from './capabilitiesE9';
 import { e10CapabilitiesForObject } from './capabilitiesE10';
 import { e11CapabilitiesForObject } from './capabilitiesE11';
+import { p7CapabilitiesForObject } from './capabilitiesP7';
 import type { SemanticMathObject } from './types';
 import { containsPiecewise } from './piecewise';
 
@@ -66,7 +67,7 @@ export function capabilitiesFor(object:SemanticMathObject|null):ObjectCapability
   if(!object)return[];
   const base=E10_KINDS.has(object.kind)?[]:baseCapabilitiesFor(object);
   const inherited=[...base,...matrixCapabilities(object),...functionCapabilities(object)];
-  const aggregated=[...filterBaseCapabilitiesForE6(object,inherited),...e6CapabilitiesForObject(object),...e7CapabilitiesForObject(object),...e8CapabilitiesForObject(object),...e9CapabilitiesForObject(object),...e10CapabilitiesForObject(object),...e11CapabilitiesForObject(object)];
+  const aggregated=[...filterBaseCapabilitiesForE6(object,inherited),...e6CapabilitiesForObject(object),...e7CapabilitiesForObject(object),...e8CapabilitiesForObject(object),...e9CapabilitiesForObject(object),...e10CapabilitiesForObject(object),...e11CapabilitiesForObject(object),...p7CapabilitiesForObject(object)];
   if(!containsPiecewise(object.valueAst))return aggregated;
   const allowed=new Set(['evaluate-function','graph']);
   return aggregated.map((item)=>allowed.has(item.id)
