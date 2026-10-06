@@ -227,6 +227,27 @@
   line-height: 1.5;
 }
 
+.p6-renderer-note {
+  min-width: 0;
+  display: grid;
+  align-content: start;
+  gap: 8px;
+  padding: 18px;
+  border: 1px solid var(--ml-border);
+  background: var(--ml-white);
+}
+
+.p6-renderer-note strong {
+  font-size: var(--ml-text-md);
+}
+
+.p6-renderer-note p {
+  margin: 0;
+  color: var(--ml-ink-muted);
+  font-size: var(--ml-text-sm);
+  line-height: 1.55;
+}
+
 .p6-table-card {
   grid-column: 1 / -1;
 }
@@ -370,6 +391,7 @@
   .p6-formula-card,
   .p6-evaluation-card,
   .p6-table-card,
+  .p6-renderer-note,
   .p6-link-state {
     border-color: CanvasText;
   }
