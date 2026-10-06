@@ -18,8 +18,10 @@ jobs:
         with:
           node-version: "22"
           cache: npm
-      - name: Regenerate lockfile
-        run: npm install --package-lock-only --ignore-scripts
+      - name: Regenerate lockfile from package manifest
+        run: |
+          rm package-lock.json
+          npm install --package-lock-only --ignore-scripts
       - name: Verify high-severity security gate
         run: npm audit --audit-level=high
       - name: Commit generated lockfile
