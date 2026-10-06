@@ -5,7 +5,7 @@ import { dependentObjects } from '../lib/math/workspaceLifecycle';
 import { resolveSemanticObject } from '../lib/math/semantic';
 import type { MathResult } from '../lib/math/types';
 import { MathWorkerClient } from '../lib/worker/client';
-import { findCapability, type CapabilityDescriptor } from './capabilityRegistry';
+import type { CapabilityDescriptor } from './capabilityRegistry';
 import { Header } from './components/Header';
 import { ObjectSidebar } from './components/ObjectSidebar';
 import { Workspace } from './components/Workspace';
@@ -341,8 +341,10 @@ export function App() {
           onOpenObject={openObject}
           onRoute={(nextRoute) => setRoute(nextRoute)}
           onTool={(toolId) => {
-            const tool = findCapability(toolId);
-            if (tool) openCatalogTool(tool.id);
+            void import('./capabilityRegistry').then(({ findCapability }) => {
+              const tool = findCapability(toolId);
+              if (tool) openCatalogTool(tool.id);
+            });
           }}
         /></Suspense>
       )}
