@@ -1,9 +1,9 @@
 import type { SemanticMathObject } from '../lib/math/types';
 import { operationNeedsControls } from './workspaceOperations';
 
-export type ToolCategory = 'Algebra'|'Calculus'|'Vector Calculus'|'Visualization'|'Linear Algebra'|'Analysis'|'Probability & Statistics'|'Discrete Math & Algorithms'|'Numerical Math & ODEs'|'Proof & Verification';
+export type ToolCategory = 'Algebra'|'Calculus'|'Vector Calculus'|'Visualization'|'Linear Algebra'|'Analysis'|'Probability & Statistics'|'Discrete Math & Algorithms'|'Numerical Math & ODEs'|'Optimization & OR'|'Proof & Verification';
 export interface ToolCatalogItem { id:string; operation:string; label:string; category:ToolCategory; phase:string; objectKinds:SemanticMathObject['kind'][]; description:string; example:string; aliases:string[]; specialRoute?:'proof'|'visualize'; }
-export const TOOL_CATEGORIES:ToolCategory[]=['Algebra','Calculus','Vector Calculus','Visualization','Linear Algebra','Analysis','Probability & Statistics','Discrete Math & Algorithms','Numerical Math & ODEs','Proof & Verification'];
+export const TOOL_CATEGORIES:ToolCategory[]=['Algebra','Calculus','Vector Calculus','Visualization','Linear Algebra','Analysis','Probability & Statistics','Optimization & OR','Discrete Math & Algorithms','Numerical Math & ODEs','Proof & Verification'];
 
 const defaultExample:Record<SemanticMathObject['kind'],string>={scalar:'1/3',expression:'x^2 - 1',equation:'2*x + 5 = 11',inequality:'x^2 >= 0',system:'x+y=3; x-y=1',function:'f(x) := x^3 - 3*x',vector:'[1,2,3]',matrix:'[[1,2],[3,4]]',sequence:'a_n := 1/n',dataset:'data(1,2,3,4,5)',distribution:'binomial(10,1/2)',probability:'bayes(1/100,9/10,27/1000)',proposition:'implies(and(p,q),p','finite-set':'set(1,2,3)',relation:'relation(3, [[1,1],[2,2],[3,3]])',graph:'graph(4, [[1,2],[2,3],[3,4]])',recurrence:'linrec2(0,1,1,1)',complexity:'complexity(n*log(n))',combinatorics:'starsbars(5,3)',ode:'ivp(y,0,1)',pde:'heatpde(1,1,[1])','finite-group':'group([[1,2],[2,1]])','finite-ring':'ring([[1,2],[2,1]],[[1,1],[1,2]])',homomorphism:'grouphom([[1,2],[2,1]],[[1,2],[2,1]],[1,2])','metric-space':'metricspace([[0,1],[1,0]])',topology:'topology([[0,0],[1,1]])','point-set':'pointset([[0,0],[1,1]])',geometry:'rectregion(0,1,0,1)',unknown:'x^2 - 1'};
 const multivariableExample='f(x,y) := x^2 + 3*x*y + y^2';
