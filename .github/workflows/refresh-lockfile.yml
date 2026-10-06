@@ -22,9 +22,11 @@ jobs:
         run: |
           npm --version
           rm package-lock.json
-          npx --yes npm@10.9.4 install --package-lock-only --ignore-scripts
+          npm install --package-lock-only --ignore-scripts --legacy-peer-deps
+      - name: Validate generated lockfile with normal npm ci
+        run: npm ci --ignore-scripts
       - name: Verify high-severity security gate
-        run: npx --yes npm@10.9.4 audit --audit-level=high
+        run: npm audit --audit-level=high
       - name: Commit generated lockfile
         run: |
           git config user.name "github-actions[bot]"
