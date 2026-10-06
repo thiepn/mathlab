@@ -82,7 +82,7 @@ describe('Post-v2 P7 Wirtschaftsmathematik', () => {
     const result = polynomialLeastSquares(ast('[[0,1],[1,2],[2,5],[3,10],[4,17]]'), 2, 5);
     expect(result.display).toContain('R²=1');
     const modelText = result.sections[0].facts.find((fact) => fact.label === 'Model')?.display ?? '';
-    expect(modelText.replace(/\\s+/g, '')).toContain('x^2');
+    expect(modelText.replace(/\s+/g, '')).toContain('x^2');
     const prediction = result.sections[0].facts.find((fact) => fact.label.includes('Prediction'))?.display;
     expect(Number(prediction)).toBeCloseTo(26, 8);
   });
