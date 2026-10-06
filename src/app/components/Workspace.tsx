@@ -172,13 +172,15 @@ export function Workspace({
               <button disabled={!controller.hydrated} onClick={() => importRef.current?.click()}>Import workspace</button>
               <button disabled={!controller.hydrated} onClick={() => void restore()}>Restore recovery</button>
               <button onClick={onOpenSharedSnapshot}>Open shared snapshot</button>
-              <div className={`p9-storage-health is-${storageHealth?.pressure ?? 'unknown'}`} role="status">
-                <strong>{storageChecking ? 'Checking local storage…' : storageHealth?.indexedDbReady === false ? 'Local storage unavailable' : 'Local storage health'}</strong>
-                {storageHealth && <span>
-                  {storageHealth.indexedDbReady ? 'IndexedDB ready' : storageHealth.message ?? 'IndexedDB unavailable'}
-                  {storagePercent !== null ? ` · ${storagePercent}% of browser quota used` : ''}
-                  {storageHealth.persisted === true ? ' · durable storage granted' : storageHealth.persisted === false ? ' · eviction protection not granted' : ''}
-                </span>}
+              <div className={`p9-storage-health is-${storageHealth?.pressure ?? 'unknown'}`}>
+                <div role="status" aria-live="polite">
+                  <strong>{storageChecking ? 'Checking local storage…' : storageHealth?.indexedDbReady === false ? 'Local storage unavailable' : 'Local storage health'}</strong>
+                  {storageHealth && <span>
+                    {storageHealth.indexedDbReady ? 'IndexedDB ready' : storageHealth.message ?? 'IndexedDB unavailable'}
+                    {storagePercent !== null ? ` · ${storagePercent}% of browser quota used` : ''}
+                    {storageHealth.persisted === true ? ' · durable storage granted' : storageHealth.persisted === false ? ' · eviction protection not granted' : ''}
+                  </span>}
+                </div>
                 {storageHealth?.persistenceSupported && storageHealth.persisted === false && <button type="button" onClick={() => void makeStoragePersistent()}>Request durable storage</button>}
               </div>
             </div>
