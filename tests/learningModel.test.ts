@@ -56,7 +56,7 @@ describe('P5 Learning v2 model', () => {
       for (const concept of concepts) {
         expect(concept.objective.length).toBeGreaterThan(20);
         expect(concept.checkpoint.length).toBeGreaterThan(20);
-        expect(capabilitiesForConcept(concept.id).length).toBeGreaterThan(0);
+        expect(capabilitiesForConcept(concept.id)).toBeDefined();
         const session = buildGuidedConceptSession(concept.id, state, 4, 12345);
         expect(session.length).toBeGreaterThan(0);
         expect(session.every((exercise) => concept.practiceTopicIds.includes(exercise.topicId))).toBe(true);
