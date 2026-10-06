@@ -9,6 +9,8 @@ const requiredFiles = [
   'docs/P5_LEARNING_V2.md',
   'docs/ROADMAP.md',
   'package.json',
+  '.github/workflows/ci.yml',
+  '.github/workflows/deploy.yml',
 ];
 
 const files = new Map();
@@ -36,6 +38,8 @@ requireText('docs/ROADMAP.md', '| **P5 — Learning v2** |', 'Roadmap does not r
 requireText('docs/ROADMAP.md', '| **P5 — Learning v2** | Concept/course model, worked examples, guided practice and current-engine curriculum parity. | **Complete** |', 'Roadmap does not mark P5 complete');
 requireText('package.json', '"audit:learning"', 'Package scripts do not expose the P5 audit');
 requireText('package.json', 'npm run audit:learning', 'Release gate does not execute the P5 audit');
+requireText('.github/workflows/ci.yml', 'npm run audit:learning', 'Pull-request CI does not execute the P5 audit');
+requireText('.github/workflows/deploy.yml', 'npm run audit:learning', 'Deployment CI does not execute the P5 audit');
 
 if (failures.length) {
   console.error('P5 Learning v2 audit failed:');
