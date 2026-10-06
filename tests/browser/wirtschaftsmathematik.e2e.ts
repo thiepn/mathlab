@@ -12,7 +12,7 @@ test('P7 time-series workflow is reachable and executable through the shared too
   await page.getByRole('button', { name: /All tools/ }).click();
 
   const drawer = page.getByRole('dialog', { name: 'Tools and object inspector' });
-  const timeSeriesAction = drawer.getByRole('button', { name: /Time-series trend & autocorrelation/ });
+  const timeSeriesAction = drawer.locator('button.context-action').filter({ hasText: 'Time-series trend & autocorrelation' });
   await timeSeriesAction.scrollIntoViewIfNeeded();
   await expect(timeSeriesAction).toBeVisible();
   await timeSeriesAction.click();
