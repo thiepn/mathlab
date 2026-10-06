@@ -20,6 +20,7 @@ interface GraphCanvasProps {
   presentations?: Record<string, SeriesPresentation>;
   interactionMode?: 'pan' | 'trace';
   onTraceChange?: (trace: GraphTraceSnapshot | null) => void;
+  traceX?: number | null;
   onReset?: () => void;
 }
 
@@ -45,6 +46,7 @@ export const GraphCanvas = forwardRef<SVGSVGElement, GraphCanvasProps>(function 
   presentations = {},
   interactionMode = 'pan',
   onTraceChange,
+  traceX = null,
   onReset,
 }, forwardedRef) {
   const shellRef = useRef<HTMLDivElement>(null);
@@ -164,8 +166,20 @@ export const GraphCanvas = forwardRef<SVGSVGElement, GraphCanvasProps>(function 
     if (event.key === '0') { event.preventDefault(); onReset?.(); }
   };
 
-  const traceValues = cursor && overlays.trace ? series.flatMap((item, index) => {
-    const y = evaluateNumeric(item.ast, item.variable, cursor.x);
+  const controlledX = traceX !== null && Number.isFinite(traceX) ? traceX : null;
+  const controlledCursor = controlledX !== null
+    && controlledX >= viewport.xMin
+    && controlledX <= viewport.xMax
+    ? (() => {
+        const first = series.find((item) => Number.isFinite(evaluateNumeric(item.ast, item.variable, controlledX)));
+        const y = first ? evaluateNumeric(first.ast, first.variable, controlledX) : 0;
+        return { x: controlledX, y, sx: xToScreen(controlledX), sy: yToScreen(y) };
+      })()
+    : null;
+  const visibleCursor = controlledCursor ?? cursor;
+
+  const traceValues = visibleCursor && overlays.trace ? series.flatMap((item, index) => {
+    const y = evaluateNumeric(item.ast, item.variable, visibleCursor.x);
     if (!Number.isFinite(y)) return [];
     const presentation = presentationFor(item.id, index, presentations);
     return [{ id: item.id, name: item.name, y, sy: yToScreen(y), colorSlot: presentation.colorSlot }];
@@ -247,10 +261,10 @@ export const GraphCanvas = forwardRef<SVGSVGElement, GraphCanvasProps>(function 
             );
           })}
 
-          {cursor && overlays.trace && <g className="graph-trace" aria-hidden="true">
-            <line x1={cursor.sx} x2={cursor.sx} y1={plot.top} y2={plot.top + plot.height} />
-            <line x1={plot.left} x2={plot.left + plot.width} y1={cursor.sy} y2={cursor.sy} />
-            {traceValues.map((value) => <circle key={value.id} className={`graph-trace-point graph-series-${value.colorSlot}`} cx={cursor.sx} cy={value.sy} r="4.5" />)}
+          {visibleCursor && overlays.trace && <g className="graph-trace" aria-hidden="true">
+            <line x1={visibleCursor.sx} x2={visibleCursor.sx} y1={plot.top} y2={plot.top + plot.height} />
+            <line x1={plot.left} x2={plot.left + plot.width} y1={visibleCursor.sy} y2={visibleCursor.sy} />
+            {traceValues.map((value) => <circle key={value.id} className={`graph-trace-point graph-series-${value.colorSlot}`} cx={visibleCursor.sx} cy={value.sy} r="4.5" />)}
           </g>}
         </g>
 
@@ -261,10 +275,10 @@ export const GraphCanvas = forwardRef<SVGSVGElement, GraphCanvasProps>(function 
           })}
         </g>
 
-        {cursor && overlays.trace && (
-          <g className="graph-trace-label" transform={`translate(${Math.min(cursor.sx + 12, size.width - 205)},${Math.max(plot.top + 12, Math.min(cursor.sy + 12, size.height - 40 - traceValues.length * 18))})`}>
+        {visibleCursor && overlays.trace && (
+          <g className="graph-trace-label" transform={`translate(${Math.min(visibleCursor.sx + 12, size.width - 205)},${Math.max(plot.top + 12, Math.min(visibleCursor.sy + 12, size.height - 40 - traceValues.length * 18))})`}>
             <rect width="190" height={30 + traceValues.length * 18} />
-            <text x="10" y="19">x = {formatNumeric(cursor.x, 7)}</text>
+            <text x="10" y="19">x = {formatNumeric(visibleCursor.x, 7)}</text>
             {traceValues.map((value, index) => <text key={value.id} className={`graph-series-fill graph-series-${value.colorSlot}`} x="10" y={39 + index * 18}>{value.name}: {formatNumeric(value.y, 7)}</text>)}
           </g>
         )}

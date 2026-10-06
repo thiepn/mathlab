@@ -19,6 +19,7 @@ import './styles/p2.css';
 import './styles/p3.css';
 import './styles/p4.css';
 import './styles/p5.css';
+import './styles/p6.css';
 import './styles/accessibility.css';
 
 if ('serviceWorker' in navigator && import.meta.env.PROD) {

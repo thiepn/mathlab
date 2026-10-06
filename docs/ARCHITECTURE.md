@@ -271,6 +271,42 @@ Guided practice is built by `buildGuidedConceptSession`. It selects only exercis
 
 The Practice UI consumes the concept model through `LearningPathPanel`. Course practice, adaptive review, exams and progress remain available, so P5 extends the learning path without forking persistence or replacing the deterministic verifier.
 
+## Post-v2 P6 dynamic exploration architecture
+
+P6 extends the existing visualization stack with one temporary exploration state rather than creating a second graph or evaluator subsystem.
+
+```text
+SemanticMathObject + workspace scalar/expression bindings
+                         │
+                         ├─ identify non-independent symbols
+                         │
+                         └─ P6 temporary parameter values
+                                      │
+                                      ↓
+                           resolved exploration AST
+                             ├─ existing graph renderer
+                             ├─ existing advanced renderers
+                             ├─ linked value table
+                             └─ linked point evaluation
+```
+
+`src/app/dynamicExploration.ts` owns pure parameter discovery, initialization, bounded updates, AST resolution, table sampling and point evaluation. Visualization independent variables come from the established `visualizationVariables` contract. Every remaining symbol in the selected value AST is eligible as an exploration parameter.
+
+Workspace bindings seed parameter values when a matching scalar/expression resolves numerically. Temporary exploration values then override those names only inside the visualization workspace. Moving a slider never mutates the persistent semantic object or its workspace dependency.
+
+`VisualizationPageE3` supplies the resolved P6 AST to the existing Cartesian and E3/E4 renderers. This means parametric, polar, implicit, field, phase-portrait and 3D modes gain the same temporary parameter substitution without duplicating their sampling algorithms.
+
+Cartesian exploration adds a linked result/table layer. The table is sampled from the already-built `GraphSeriesModel` objects over the current x viewport. Graph trace callbacks publish `GraphTraceSnapshot` values into the same UI state. `GraphCanvas.traceX` allows a selected table row to position the trace on the graph, producing the bidirectional relation:
+
+```text
+parameter → formula + graph + table + result
+graph trace → result
+table row → graph trace → result
+viewport → graph + table
+```
+
+P6 remains intentionally non-persistent. Durable named mathematics belongs to Workspace; dynamic exploration is a temporary lens over those objects.
+
 ## Post-v2 P3 input & interaction layer
 
 P3 keeps linear source text as the canonical editable representation and adds a structured interaction layer around it.

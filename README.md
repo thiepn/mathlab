@@ -31,7 +31,7 @@ The day-to-day mathematical environment.
 - **Proof** — deterministic transformation, derivation-chain and theorem verification with explicit **verified**, **conditionally valid**, **invalid**, and **not proven** outcomes.
 
 ### Visualize
-A dedicated exploration environment for Cartesian, parametric, polar and implicit curves; contours/scalar fields; vector and gradient fields; phase portraits; 3D surfaces; feature overlays; keyboard pan/zoom; and SVG/PNG export.
+A dedicated exploration environment for Cartesian, parametric, polar and implicit curves; contours/scalar fields; vector and gradient fields; phase portraits; 3D surfaces; feature overlays; keyboard pan/zoom; SVG/PNG export; and P6 linked dynamic exploration with temporary parameter sliders, graph tracing, live point results and viewport-synchronized value tables.
 
 ### Learn
 The learning environment.
@@ -107,6 +107,7 @@ GitHub Actions additionally runs dependency security checks, real Chromium/Firef
 - `docs/ACCESSIBILITY_DEVICE_CERTIFICATION.md` — accessibility/device evidence boundary
 - `docs/P1_PRODUCT_SHELL_ACCEPTANCE.md` — Work / Visualize / Learn shell contract
 - `docs/P5_LEARNING_V2.md` — concept model, worked examples, guided-practice architecture and engine-curriculum parity
+- `docs/P6_DYNAMIC_EXPLORATION.md` — parameter sliders, linked formula/graph/table state and trace architecture
 - `docs/P2_MATHEMATICAL_WORKSHEET_ACCEPTANCE.md` — persistent mathematical worksheet contract
 - `docs/P3_INPUT_INTERACTION_ACCEPTANCE.md` — structured input, keypad and piecewise contract
 - `docs/P4_UNIFIED_CAPABILITY_ARCHITECTURE.md` — canonical capability registry and consumer contract
