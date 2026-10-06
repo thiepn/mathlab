@@ -118,7 +118,7 @@ export function SharedSnapshotPage({workspace,worksheet,onOpenWorkspace}:Props){
         {snapshot.workspace.objects.length===0&&<p>No named objects were included.</p>}
         {snapshot.workspace.objects.map((object)=><article key={object.id}>
           <header><strong>{object.name??object.kind}</strong><span>{object.kind}</span></header>
-          <div className="p8-shared-math"><MathValue source={object.source} compact={false}/></div>
+          <div className="p8-shared-math" tabIndex={0}><MathValue source={object.source} compact={false}/></div>
           <footer>
             <span>{object.exactness}</span>
             <span>{object.dependencies.length?'Depends on '+object.dependencies.join(', '):'Independent'}</span>
@@ -139,7 +139,7 @@ export function SharedSnapshotPage({workspace,worksheet,onOpenWorkspace}:Props){
           <div className="p8-entry-index">{String(index+1).padStart(2,'0')}</div>
           <div>
             <header><span>{entry.type==='input'?'Input':operationLabels[entry.operation]??entry.operation.replace(/-/g,' ')}</span><time>{formatDate(entry.createdAt)}</time></header>
-            <div className="p8-shared-math"><MathValue ast={entry.type==='result'?entry.result.resultAst:undefined} source={entry.type==='input'?entry.source:entry.result.display} compact={false}/></div>
+            <div className="p8-shared-math" tabIndex={0}><MathValue ast={entry.type==='result'?entry.result.resultAst:undefined} source={entry.type==='input'?entry.source:entry.result.display} compact={false}/></div>
             {entry.type==='result'&&<footer><span>{entry.result.exactness}</span>{entry.result.warnings.length>0&&<span>{entry.result.warnings.length} warning{entry.result.warnings.length===1?'':'s'}</span>}</footer>}
           </div>
         </article>)}
