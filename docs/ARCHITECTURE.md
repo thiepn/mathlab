@@ -271,6 +271,37 @@ Guided practice is built by `buildGuidedConceptSession`. It selects only exercis
 
 The Practice UI consumes the concept model through `LearningPathPanel`. Course practice, adaptive review, exams and progress remain available, so P5 extends the learning path without forking persistence or replacing the deterministic verifier.
 
+## Post-v2 P9 architecture stabilization
+
+P9 reduces startup coupling and hardens the local-first runtime without changing mathematical semantics.
+
+```text
+always-loaded Workbench shell
+  ├─ parser / semantic workspace
+  ├─ worksheet persistence
+  ├─ Worker dispatch
+  └─ navigation
+        │
+        ├─ lazy Tools / Context inspector
+        ├─ lazy Visualize
+        ├─ lazy Proof
+        ├─ lazy Practice / Reference
+        ├─ lazy Share viewer / creator
+        └─ lazy Command palette
+```
+
+The dynamic module boundary is declared in `src/app/routeModules.tsx`. Vite's production manifest is treated as release evidence: P9 CI verifies that these surfaces remain actual dynamic entries and enforces startup/chunk/CSS budgets after every production build.
+
+Workspace capability resolution is also deferred until a mathematical object exists. This is important because the canonical capability registry aggregates the post-E-series catalog and runtime applicability metadata; loading it before the user has any mathematical context is unnecessary startup work.
+
+Persistence now uses one IndexedDB read/write transaction for revision comparison, Recovery snapshot and replacement. Same-tab queues preserve React mutation order while the atomic transaction prevents another MathLab tab from interleaving the Recovery protocol.
+
+The service worker is registered with a build identifier derived from the deployed Git commit. Cache lookup is restricted to the current build's shell/runtime caches, so a newly deployed lazy chunk can never be satisfied from a previous build's runtime cache.
+
+Storage health remains advisory rather than another source of application truth. The Workspace data menu can inspect IndexedDB readiness, Storage API quota and durable-storage status, but mathematical state continues to be governed by the existing Workspace/Worksheet schemas.
+
+Physical-device and assistive-technology validation remains external evidence. P9 improves reproducibility for those runs but does not allow automated browser emulation to masquerade as physical certification.
+
 ## Post-v2 P8 sharing & collaboration architecture
 
 P8 adds collaboration without introducing hidden server state or weakening MathLab's local-first storage model.
