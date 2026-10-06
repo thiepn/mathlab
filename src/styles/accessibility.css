@@ -27,6 +27,14 @@
   overflow: visible;
 }
 
+/* Inline MathRichText formulas are prose fragments, not independent scroll regions.
+   The shared .math-preview rule is scrollable for large display mathematics; undo that
+   only for compact inline MathML so keyboard users are not presented with inaccessible
+   nested scrollers. Long display mathematics keeps its existing scroll container. */
+.math-rich-text .math-preview.is-compact {
+  overflow: visible;
+}
+
 .m6-proof-preview:focus-visible {
   outline: 3px solid var(--ml-blue);
   outline-offset: 2px;

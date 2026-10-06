@@ -17,7 +17,9 @@ import {
 } from '../../lib/math/practice';
 import { loadPracticeProgress, resetPracticeProgress, savePracticeProgress } from '../../lib/storage/practice';
 import { capabilitiesForCourse } from '../capabilityRegistry';
+import { buildGuidedConceptSession, learningConcept } from '../learningModel';
 import { answeredQuestionCount, courseAccentIndex } from '../learningSurfaces';
+import { LearningPathPanel } from './LearningPathPanel';
 import { MathRichText } from './MathRichText';
 import { MathValue } from './MathValue';
 
@@ -134,6 +136,22 @@ export function PracticePage() {
     setSession({
       kind,
       title: kind === 'review' ? 'Adaptive review' : kind === 'exam' ? `${course?.title ?? PRACTICE_COURSES.find((item) => item.id === examCourse)?.title ?? 'Course'} exam` : `${course?.title ?? 'Course'} practice`,
+      exercises,
+      index: 0,
+      answers: {},
+      examSubmitted: false,
+      examGrades: {},
+    });
+    resetExerciseUi();
+  };
+
+  const startConceptSession = (conceptId: string) => {
+    const concept = learningConcept(conceptId);
+    const exercises = buildGuidedConceptSession(conceptId, progress, 8, Date.now());
+    if (!concept || !exercises.length) return;
+    setSession({
+      kind: 'course',
+      title: concept.title + ' guided practice',
       exercises,
       index: 0,
       answers: {},
@@ -288,7 +306,7 @@ export function PracticePage() {
     <main className="workspace practice-page m6-practice-page">
       {storageIssue && <div className="release-storage-warning" role="alert">{storageIssue}</div>}
       <section className="m6-learning-hero">
-        <div><span className="section-kicker">Practice &amp; Courses</span><h1>Study mathematics with feedback that stays inside the engine.</h1><p>Course practice, scheduled review and closed-help exams all use MathLab’s deterministic mathematics and proof stack.</p></div>
+        <div><span className="section-kicker">Learn &amp; Practice</span><h1>Learn the concept, study the method, then practice it.</h1><p>Concept pathways, worked examples, guided practice, scheduled review and closed-help exams all stay connected to MathLab’s deterministic mathematics and proof stack.</p></div>
         <div className="m6-learning-stats">
           <article><strong>{percentage(overallMastery(progress))}</strong><span>Mastery</span></article>
           <article><strong>{progress.totalAttempts ? percentage(overallAccuracy) : '—'}</strong><span>Accuracy</span></article>
@@ -315,9 +333,12 @@ export function PracticePage() {
             <header><div><span className="section-kicker">Course practice</span><h2>{selectedCourse.title}</h2><p>{selectedCourse.description}</p></div><div className="m6-course-header-actions"><button onClick={() => { window.location.hash = '/tools'; }}>Browse {selectedCapabilities.length} tools</button><button className="primary-action" onClick={() => startSession('course', selectedCourse)}>Start practice</button></div></header>
             <div className="m6-course-metrics"><span><strong>{percentage(selectedSummary.mastery)}</strong> mastery</span><span><strong>{selectedSummary.attempts ? percentage(selectedSummary.accuracy) : '—'}</strong> accuracy</span><span><strong>{selectedSummary.seen}</strong> seen</span><span><strong>{selectedSummary.due}</strong> due</span><span><strong>{selectedCapabilities.length}</strong> engine tools</span></div>
             <div className="mastery-bar m6-mastery-bar"><span style={{ width: percentage(selectedSummary.mastery) }} /></div>
-            <div className="m6-topic-list">
-              {selectedCourse.topics.map((topic, index) => <article key={topic.id}><div className="m6-topic-index">{String(index + 1).padStart(2, '0')}</div><div><strong>{topic.title}</strong><p>{topic.description}</p></div><span>{topic.templateIds.length} generated · {topic.authoredIds.length} authored</span></article>)}
-            </div>
+            <LearningPathPanel
+              courseId={selectedCourse.id}
+              progress={progress}
+              onStartConcept={startConceptSession}
+              onBrowseTools={() => { window.location.hash = '/tools'; }}
+            />
           </div>
         </section>
       )}

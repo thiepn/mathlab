@@ -50,6 +50,9 @@ jobs:
       - name: Unified capability registry audit
         run: npm run audit:capabilities
 
+      - name: Learning v2 audit
+        run: npm run audit:learning
+
       - name: Install dependencies
         run: npm ci
 

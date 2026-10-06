@@ -16,10 +16,11 @@
     "audit:e12": "node scripts/e12-audit.mjs",
     "audit:stable": "node scripts/stable-audit.mjs",
     "audit:accessibility": "node scripts/accessibility-device-audit.mjs",
-    "check:release": "npm run audit:release && npm run audit:e12 && npm run audit:stable && npm run audit:accessibility && npm run audit:worksheet && npm run audit:input && npm run audit:capabilities && npm run check",
+    "check:release": "npm run audit:release && npm run audit:e12 && npm run audit:stable && npm run audit:accessibility && npm run audit:worksheet && npm run audit:input && npm run audit:capabilities && npm run audit:learning && npm run check",
     "audit:worksheet": "node scripts/worksheet-audit.mjs",
     "audit:input": "node scripts/input-interaction-audit.mjs",
-    "audit:capabilities": "node scripts/capability-registry-audit.mjs"
+    "audit:capabilities": "node scripts/capability-registry-audit.mjs",
+    "audit:learning": "node scripts/learning-v2-audit.mjs"
   },
   "dependencies": {
     "react": "19.1.1",
