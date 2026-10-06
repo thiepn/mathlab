@@ -16,13 +16,13 @@ test('P9 heavy product modules load on demand instead of with the initial worksp
   expect(workspaceScripts.size).toBeGreaterThan(0);
 
   await page.goto('/#/visualize');
-  await expect(page.getByText(/Visualization|Visualize/i).first()).toBeVisible();
+  await expect(page.locator('.e3-page').first()).toBeVisible();
   await page.waitForLoadState('networkidle');
   const afterVisualize = new Set(scripts);
   expect(afterVisualize.size).toBeGreaterThan(workspaceScripts.size);
 
   await page.goto('/#/practice');
-  await expect(page.getByRole('heading', { name: /Learn|Practice/i }).first()).toBeVisible();
+  await expect(page.locator('.m6-practice-page').first()).toBeVisible();
   await page.waitForLoadState('networkidle');
   const afterPractice = new Set(scripts);
   expect(afterPractice.size).toBeGreaterThan(afterVisualize.size);
