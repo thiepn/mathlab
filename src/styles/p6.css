@@ -104,7 +104,13 @@
 }
 
 .p6-live-formula .math-preview {
+  overflow: visible;
   font-size: clamp(1.2rem, 2vw, 1.65rem);
+}
+
+.p6-live-formula:focus-visible {
+  outline: 3px solid var(--ml-focus);
+  outline-offset: -3px;
 }
 
 .p6-parameter-list {
