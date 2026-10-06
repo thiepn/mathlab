@@ -55,7 +55,7 @@ describe('Post-v2 P7 Wirtschaftsmathematik', () => {
 
   it('solves and balance-checks a transportation model', () => {
     const result = transportationProblem(ast('[[2,3,1],[5,4,8]]'), '[20,30]', '[10,15,25]');
-    expect(result.display).toContain('150');
+    expect(result.display).toContain('170');
     const allocation = matrixValues(result.ast);
     expect(allocation[0].reduce((a, b) => a + b, 0)).toBeCloseTo(20, 8);
     expect(allocation[1].reduce((a, b) => a + b, 0)).toBeCloseTo(30, 8);
@@ -82,7 +82,7 @@ describe('Post-v2 P7 Wirtschaftsmathematik', () => {
     const result = polynomialLeastSquares(ast('[[0,1],[1,2],[2,5],[3,10],[4,17]]'), 2, 5);
     expect(result.display).toContain('R²=1');
     const modelText = result.sections[0].facts.find((fact) => fact.label === 'Model')?.display ?? '';
-    expect(modelText).toContain('x^2');
+    expect(modelText.replace(/\\s+/g, '')).toContain('x^2');
     const prediction = result.sections[0].facts.find((fact) => fact.label.includes('Prediction'))?.display;
     expect(Number(prediction)).toBeCloseTo(26, 8);
   });
