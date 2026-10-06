@@ -90,7 +90,7 @@ export function VisualizationPageE3({objects,activeObject,onActivateObject,onOpe
 
   useEffect(()=>{
     if(!selected){setDynamicParameters([]);return;}
-    setDynamicParameters((current)=>initializeDynamicParameters(selected,objects,current));
+    setDynamicParameters(initializeDynamicParameters(selected,objects,[]));
     setTrace(null);setSelectedX(null);
   },[selected?.id]);
   useEffect(()=>{setDraft(rangeDraft(viewport));},[viewport]);
