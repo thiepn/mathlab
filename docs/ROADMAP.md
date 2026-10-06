@@ -122,7 +122,7 @@ The next roadmap is product-led rather than mathematics-phase-led:
 | **P3 — Input & interaction** | Mobile math keypad/templates, improved keyboard editing, selection-aware structure insertion and first-class piecewise/condition foundations. | **Complete** |
 | **P4 — Unified capability architecture** | One canonical registry powering Workspace, Tools, Search, Reference and Practice. | **Complete** |
 | **P5 — Learning v2** | Concept/course model, worked examples, guided practice and current-engine curriculum parity. | **Complete** |
-| P6 — Dynamic exploration | Parameters/sliders, tables and linked formula/graph/result workflows. | Planned |
+| **P6 — Dynamic exploration** | Parameters/sliders, tables and linked formula/graph/result workflows. | **Complete** |
 | P7 — Wirtschaftsmathematik expansion | Optimization/OR, probability/statistics and applied numerical priorities. | Planned |
 | P8 — Architecture stabilization | Domain migration, code splitting, performance/storage hardening and physical accessibility certification. | Planned |
 
