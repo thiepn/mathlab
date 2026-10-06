@@ -19,8 +19,19 @@ for (const groupName of ['dependencies', 'devDependencies']) {
   }
 }
 pass(pkg.engines?.node === '^20.19.0 || >=22.12.0', 'Node engine must match the supported Vite 7 runtime floor');
-pass(pkg.devDependencies?.vite === '7.3.5', 'Vite must stay pinned to the security-patched 7.3.5 release');
-pass(pkg.devDependencies?.vitest === '3.2.7', 'Vitest must stay pinned to the security-patched 3.2.7 release');
+pass(pkg.devDependencies?.vite === '7.3.6', 'Vite must stay pinned to the approved 7.3.6 security release');
+pass(pkg.devDependencies?.vitest === '4.1.11', 'Vitest must stay pinned to the maintained 4.1.11 security release');
+pass(lock.packages?.['node_modules/vite']?.version === '7.3.6', 'lockfile must resolve Vite 7.3.6');
+pass(lock.packages?.['node_modules/vitest']?.version === '4.1.11', 'lockfile must resolve Vitest 4.1.11');
+pass(lock.packages?.['node_modules/@vitest/mocker']?.version === '4.1.11', 'lockfile must resolve the patched @vitest/mocker 4.1.11');
+pass(!lock.packages?.['node_modules/tinypool'], 'the vulnerable tinypool dependency must not return to the certified dependency graph');
+const esbuildVersion = lock.packages?.['node_modules/esbuild']?.version ?? '';
+const esbuildParts = esbuildVersion.split('.').map(Number);
+pass(
+  esbuildParts.length === 3
+    && (esbuildParts[0] > 0 || esbuildParts[1] > 28 || (esbuildParts[1] === 28 && esbuildParts[2] >= 1)),
+  'lockfile must resolve esbuild >= 0.28.1',
+);
 for (const [groupName, group] of Object.entries({ dependencies: pkg.dependencies ?? {}, devDependencies: pkg.devDependencies ?? {} })) {
   for (const [name, version] of Object.entries(group)) pass(/^\d+\.\d+\.\d+(?:-[0-9A-Za-z.-]+)?$/.test(String(version)), `${groupName}.${name} must be pinned to an exact release version`);
 }
