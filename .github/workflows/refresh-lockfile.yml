@@ -20,10 +20,11 @@ jobs:
           cache: npm
       - name: Regenerate lockfile from package manifest
         run: |
+          npm --version
           rm package-lock.json
-          npm install --package-lock-only --ignore-scripts
+          npx --yes npm@10.9.4 install --package-lock-only --ignore-scripts
       - name: Verify high-severity security gate
-        run: npm audit --audit-level=high
+        run: npx --yes npm@10.9.4 audit --audit-level=high
       - name: Commit generated lockfile
         run: |
           git config user.name "github-actions[bot]"
