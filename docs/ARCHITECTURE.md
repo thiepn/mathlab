@@ -238,7 +238,7 @@ Registry ids and engine operation ids are separate fields. Product navigation ma
 
 All public capability consumers import the registry directly. `allToolCatalog.ts` and `learningSurfaces.toolsForCourse` remain compatibility shims for older code, and release auditing prevents core product surfaces from falling back to them.
 
-Course ownership is resolved from the registry through `capabilitiesForCourse`. Practice uses the same query to report deterministic engine coverage for each course; P5 can add concept/exercise mappings on top of this stable capability layer.
+Course ownership is resolved from the registry through `capabilitiesForCourse`. Practice uses the same query to report deterministic engine coverage for each course; P5 adds concept/exercise mappings on top of this stable capability layer without becoming a second capability authority.
 
 The registry has two integrity levels:
 
@@ -246,6 +246,30 @@ The registry has two integrity levels:
 2. runtime parity: every operation emitted by representative semantic objects must have canonical registry metadata, and ordinary executable registry entries must be backed by a runtime capability for their own example.
 
 A defensive runtime fallback prevents a newly added engine operation from disappearing entirely if metadata is accidentally omitted, but the P4 certification suite fails that release until the registry gap is repaired.
+
+## Post-v2 P5 Learning v2 architecture
+
+P5 adds a concept layer between course ownership and exercise delivery:
+
+```text
+P4 course capabilities ───────────────┐
+                                      ├─> LearningConcept
+P14 PracticeTopic / exercises ────────┘       │
+                                              ├─ Learn objective
+                                              ├─ Worked example
+                                              ├─ Guided session
+                                              └─ Independent review / exam
+```
+
+The concept graph lives in `src/app/learningModel.ts`. It does not replace `PracticeCourse → PracticeTopic → PracticeExercise`; instead, each concept points to one or more existing Practice topics and projects the existing exercise-level mastery records into concept mastery.
+
+Every concept owns a stable id, course, objective, readiness checkpoint, prerequisites, Practice-topic links, capability matching terms and a worked example. Prerequisites are advisory rather than hard locks.
+
+Engine curriculum parity is derived from the P4 registry. For each course, every capability from `capabilitiesForCourse(courseId)` is assigned to exactly one P5 concept. Focused term matching chooses the best concept, while one declared catch-all concept per course guarantees that a newly exposed course capability cannot disappear from Learn. Tests certify the union of concept capability assignments exactly matches the P4 course capability set.
+
+Guided practice is built by `buildGuidedConceptSession`. It selects only exercises from the concept's mapped Practice topics, retains authored material, generates bounded deterministic template variants, and prioritizes unseen/lower-mastery work. Grading, hints, solution reveal, spaced scheduling and exams continue to use the existing P14/P15 machinery.
+
+The Practice UI consumes the concept model through `LearningPathPanel`. Course practice, adaptive review, exams and progress remain available, so P5 extends the learning path without forking persistence or replacing the deterministic verifier.
 
 ## Post-v2 P3 input & interaction layer
 
