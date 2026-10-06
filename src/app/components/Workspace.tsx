@@ -13,6 +13,7 @@ import { MathPreview } from './MathPreview';
 import { AlgebraResult } from './AlgebraResult';
 import { WorkspaceActions } from './WorkspaceActions';
 import { WorksheetTimeline } from './WorksheetTimeline';
+import { ShareSnapshotDialog } from './ShareSnapshotDialog';
 
 interface WorkspaceProps {
   controller: MathWorkspaceController;
@@ -29,6 +30,7 @@ interface WorkspaceProps {
   editorSourceOverride?: string | null;
   onReuseSource: (source: string) => void;
   onCommitComplete?: () => void;
+  onOpenSharedSnapshot: () => void;
 }
 
 function downloadWorkspace(raw: string) {
@@ -59,10 +61,12 @@ export function Workspace({
   editorSourceOverride = null,
   onReuseSource,
   onCommitComplete,
+  onOpenSharedSnapshot,
 }: WorkspaceProps) {
   const [submitted, setSubmitted] = useState<ParsedMath | null>(null);
   const [resolutionMessage, setResolutionMessage] = useState('');
   const [transferMessage, setTransferMessage] = useState('');
+  const [shareOpen,setShareOpen]=useState(false);
   const importRef = useRef<HTMLInputElement>(null);
   const editorSource = editorSourceOverride ?? controller.activeObject?.source ?? '';
 
@@ -135,12 +139,14 @@ export function Workspace({
         </div>
         <div className="workspace-heading-actions m3-heading-actions">
           <span className={`save-state save-${controller.saveState}`}><i />{controller.saveState === 'saving' ? 'Saving' : controller.saveState === 'error' ? 'Storage issue' : controller.saveState === 'loading' ? 'Loading' : 'Saved locally'}</span>
+          <button className="p8-share-button" disabled={!controller.hydrated||!worksheet.hydrated} onClick={()=>setShareOpen(true)}>Share</button>
           <details className="workspace-data-menu">
             <summary>Workspace data</summary>
             <div>
               <button disabled={!controller.hydrated} onClick={() => downloadWorkspace(controller.exportWorkspace())}>Export workspace</button>
               <button disabled={!controller.hydrated} onClick={() => importRef.current?.click()}>Import workspace</button>
               <button disabled={!controller.hydrated} onClick={() => void restore()}>Restore recovery</button>
+              <button onClick={onOpenSharedSnapshot}>Open shared snapshot</button>
             </div>
           </details>
           <input ref={importRef} className="visually-hidden" type="file" accept="application/json,.json" aria-label="Import workspace JSON" disabled={!controller.hydrated} onChange={(event) => void importFile(event.target.files?.[0])} />
@@ -229,8 +235,9 @@ export function Workspace({
       )}
 
       <div className="phase-notice p3-notice m3-notice">
-        <strong>Local-first workspace.</strong> Your saved mathematical objects and practice progress stay on this device unless you explicitly export them.
+        <strong>Local-first workspace.</strong> Your saved mathematical objects and practice progress stay on this device unless you explicitly export or share them.
       </div>
+      {shareOpen&&<ShareSnapshotDialog workspace={controller.state} worksheet={worksheet.activeSession} onClose={()=>setShareOpen(false)}/>}
     </main>
   );
 }
