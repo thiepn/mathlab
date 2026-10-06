@@ -1,0 +1,54 @@
+/* P9 — Architecture Stabilization */
+
+.p9-route-loading {
+  grid-column: 1 / -1;
+  min-height: 180px;
+  display: grid;
+  place-content: center;
+  gap: 7px;
+  padding: 28px;
+  color: var(--ml-muted);
+  text-align: center;
+}
+.p9-route-loading strong {
+  color: var(--ml-ink);
+  font-size: var(--ml-text-sm);
+  font-weight: 700;
+}
+
+.workspace-data-menu > div .p9-storage-health {
+  display: grid;
+  gap: 4px;
+  margin-top: 6px;
+  padding: 10px 11px;
+  border-top: 1px solid var(--ml-line);
+  color: var(--ml-muted);
+  font-size: var(--ml-text-xs);
+  line-height: 1.45;
+}
+.workspace-data-menu > div .p9-storage-health strong {
+  color: var(--ml-ink);
+  font-size: var(--ml-text-xs);
+}
+.workspace-data-menu > div .p9-storage-health.is-elevated strong,
+.workspace-data-menu > div .p9-storage-health.is-critical strong {
+  color: var(--ml-warning, #8a5700);
+}
+.workspace-data-menu > div .p9-storage-health > button {
+  margin-top: 4px;
+  justify-self: start;
+}
+
+.workspace-actions.is-loading {
+  display: grid;
+  min-height: 92px;
+  place-items: center;
+  color: var(--ml-muted);
+  font-size: var(--ml-text-sm);
+}
+
+@media (forced-colors: active) {
+  .workspace-data-menu > div .p9-storage-health {
+    border-color: CanvasText;
+  }
+}
