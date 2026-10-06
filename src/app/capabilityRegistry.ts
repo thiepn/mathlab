@@ -9,6 +9,7 @@ import { E8_TOOL_CATALOG } from './e8ToolCatalog';
 import { E9_TOOL_CATALOG } from './e9ToolCatalog';
 import { E10_TOOL_CATALOG } from './e10ToolCatalog';
 import { E11_TOOL_CATALOG } from './e11ToolCatalog';
+import { P7_TOOL_CATALOG } from './p7ToolCatalog';
 import { TOOL_CATALOG, TOOL_CATEGORIES, type ToolCatalogItem, type ToolCategory } from './toolCatalog';
 import { operationNeedsControls, operationPriority } from './workspaceOperations';
 
@@ -55,7 +56,7 @@ export const COURSE_CAPABILITY_CATEGORIES: Record<CapabilityCourseId, readonly T
   analysis: ['Analysis'],
   probability: ['Probability & Statistics'],
   discrete: ['Discrete Math & Algorithms'],
-  numerical: ['Numerical Math & ODEs'],
+  numerical: ['Numerical Math & ODEs', 'Optimization & OR'],
   proof: ['Proof & Verification'],
 };
 
@@ -134,6 +135,7 @@ const SOURCE_TOOLS = mergeToolsByOperation([
   ...E9_TOOL_CATALOG,
   ...E10_TOOL_CATALOG,
   ...E11_TOOL_CATALOG,
+  ...P7_TOOL_CATALOG,
 ]);
 
 export const CAPABILITY_REGISTRY: readonly CapabilityDescriptor[] = SOURCE_TOOLS.map(descriptor);
