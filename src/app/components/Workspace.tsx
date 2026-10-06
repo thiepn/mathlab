@@ -1,4 +1,4 @@
-import { useMemo, useRef, useState } from 'react';
+import { lazy, Suspense, useMemo, useRef, useState } from 'react';
 import type { ParsedMath } from '../../lib/math/ast';
 import { domainSymbol } from '../../lib/math/assumptions';
 import { astToLatex, astToPlainText } from '../../lib/math/format';
@@ -11,9 +11,10 @@ import { AssumptionBar } from './AssumptionBar';
 import { MathInput } from './MathInput';
 import { MathPreview } from './MathPreview';
 import { AlgebraResult } from './AlgebraResult';
-import { WorkspaceActions } from './WorkspaceActions';
 import { WorksheetTimeline } from './WorksheetTimeline';
-import { ShareSnapshotDialog } from './ShareSnapshotDialog';
+
+const LazyWorkspaceActions = lazy(() => import('./WorkspaceActions').then((module) => ({ default: module.WorkspaceActions })));
+const LazyShareSnapshotDialog = lazy(() => import('./ShareSnapshotDialog').then((module) => ({ default: module.ShareSnapshotDialog })));
 
 interface WorkspaceProps {
   controller: MathWorkspaceController;
@@ -237,7 +238,7 @@ export function Workspace({
       <div className="phase-notice p3-notice m3-notice">
         <strong>Local-first workspace.</strong> Your saved mathematical objects and practice progress stay on this device unless you explicitly export or share them.
       </div>
-      {shareOpen&&<ShareSnapshotDialog workspace={controller.state} worksheet={worksheet.activeSession} onClose={()=>setShareOpen(false)}/>}
+      {shareOpen&&<Suspense fallback={null}><LazyShareSnapshotDialog workspace={controller.state} worksheet={worksheet.activeSession} onClose={()=>setShareOpen(false)}/></Suspense>}
     </main>
   );
 }
