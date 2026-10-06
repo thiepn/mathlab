@@ -87,7 +87,7 @@ pass(waitForProduction.includes("CACHE_PREFIX = 'mathlab-build-'") && waitForPro
 const sw = text('public/sw.js');
 pass(sw.includes("CACHE_PREFIX = 'mathlab-build-'"), 'build-scoped cache prefix is missing');
 pass(sw.includes("BUILD_ID") && sw.includes("-shell") && sw.includes("-runtime"), 'build-scoped shell/runtime cache generation is missing');
-pass(sw.includes("key.startsWith('mathlab-v2-')"), 'P9 service worker must clean up legacy v2 cache generations');
+pass(sw.includes("key.startsWith('mathlab-')"), 'P9 service worker must clean up every obsolete MathLab cache generation');
 pass(!sw.includes("mathlab-e3-shell") && !sw.includes("mathlab-e3-runtime"), 'E3 cache generation must not remain active');
 
 const header = text('src/app/components/Header.tsx');
