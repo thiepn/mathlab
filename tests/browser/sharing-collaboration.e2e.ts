@@ -1,3 +1,4 @@
+import AxeBuilder from '@axe-core/playwright';
 import { expect, test } from '@playwright/test';
 
 async function commit(page: import('@playwright/test').Page, source: string) {
@@ -22,7 +23,7 @@ async function createShareLink(page: import('@playwright/test').Page) {
   return value;
 }
 
-test('P8 share links open as verified read-only mathematical snapshots', async ({ page }) => {
+test('P8 share links open as verified read-only mathematical snapshots', async ({ page }, testInfo) => {
   const link = await createShareLink(page);
   const hash = new URL(link).hash;
   await page.goto('/' + hash);
@@ -33,6 +34,12 @@ test('P8 share links open as verified read-only mathematical snapshots', async (
   await expect(page.getByRole('heading', { name: 'Shared mathematical objects' })).toBeVisible();
   await expect(page.getByRole('textbox', { name: 'Mathematical input' })).toHaveCount(0);
   await expect(page.getByRole('button', { name: 'Copy into my MathLab' })).toBeVisible();
+  const overflow = await page.evaluate(() => document.documentElement.scrollWidth - window.innerWidth);
+  expect(overflow).toBeLessThanOrEqual(1);
+  if (testInfo.project.name === 'chromium-desktop') {
+    const result = await new AxeBuilder({ page }).withTags(['wcag2a','wcag2aa','wcag21aa','wcag22aa']).analyze();
+    expect(result.violations, JSON.stringify(result.violations, null, 2)).toEqual([]);
+  }
 });
 
 test('P8 shared copy is explicit and the previous local workspace remains recoverable', async ({ page }, testInfo) => {
