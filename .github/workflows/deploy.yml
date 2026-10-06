@@ -56,6 +56,9 @@ jobs:
       - name: Dynamic exploration audit
         run: npm run audit:dynamic
 
+      - name: Wirtschaftsmathematik audit
+        run: npm run audit:wirtschaft
+
       - name: Install dependencies
         run: npm ci
 
