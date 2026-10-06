@@ -166,14 +166,14 @@ export const GraphCanvas = forwardRef<SVGSVGElement, GraphCanvasProps>(function 
     if (event.key === '0') { event.preventDefault(); onReset?.(); }
   };
 
-  const controlledCursor = traceX !== null
-    && Number.isFinite(traceX)
-    && traceX >= viewport.xMin
-    && traceX <= viewport.xMax
+  const controlledX = traceX !== null && Number.isFinite(traceX) ? traceX : null;
+  const controlledCursor = controlledX !== null
+    && controlledX >= viewport.xMin
+    && controlledX <= viewport.xMax
     ? (() => {
-        const first = series.find((item) => Number.isFinite(evaluateNumeric(item.ast, item.variable, traceX)));
-        const y = first ? evaluateNumeric(first.ast, first.variable, traceX) : 0;
-        return { x: traceX, y, sx: xToScreen(traceX), sy: yToScreen(y) };
+        const first = series.find((item) => Number.isFinite(evaluateNumeric(item.ast, item.variable, controlledX)));
+        const y = first ? evaluateNumeric(first.ast, first.variable, controlledX) : 0;
+        return { x: controlledX, y, sx: xToScreen(controlledX), sy: yToScreen(y) };
       })()
     : null;
   const visibleCursor = controlledCursor ?? cursor;
