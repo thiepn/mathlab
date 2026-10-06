@@ -1,7 +1,7 @@
 import AxeBuilder from '@axe-core/playwright';
 import { expect, test, type Page } from '@playwright/test';
 
-const routes = ['workspace', 'tools', 'visualize', 'proof', 'practice', 'reference'] as const;
+const routes = ['workspace', 'tools', 'visualize', 'proof', 'practice', 'reference', 'share'] as const;
 const touchProjects = new Set(['android-chromium', 'ios-webkit', 'android-tablet-chromium', 'ipad-webkit']);
 
 async function openWorkspace(page: Page) {
