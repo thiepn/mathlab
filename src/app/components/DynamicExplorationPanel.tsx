@@ -141,7 +141,9 @@ export function DynamicExplorationPanel({
           )}
         </section>
 
-        <section className="p6-evaluation-card" aria-live="polite">
+        {series.length > 0 ? (
+          <>
+          <section className="p6-evaluation-card" aria-live="polite">
           <header>
             <div><span className="section-kicker">Linked result</span><strong>Evaluate at x = {evaluation?.displayX ?? '—'}</strong></div>
             {trace && <span>graph trace</span>}
@@ -198,6 +200,14 @@ export function DynamicExplorationPanel({
             <span>Select x to link the table back to the graph.</span>
           </footer>
         </section>
+          </>
+        ) : (
+          <section className="p6-renderer-note">
+            <span className="section-kicker">Renderer link</span>
+            <strong>Parameters are live in this visualization mode.</strong>
+            <p>The current renderer recomputes from the same resolved formula whenever a parameter changes. A one-dimensional value table is shown only for Cartesian series.</p>
+          </section>
+        )}
       </div>
     </section>
   );
