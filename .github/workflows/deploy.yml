@@ -53,6 +53,9 @@ jobs:
       - name: Learning v2 audit
         run: npm run audit:learning
 
+      - name: Dynamic exploration audit
+        run: npm run audit:dynamic
+
       - name: Install dependencies
         run: npm ci
 
