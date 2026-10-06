@@ -1,6 +1,6 @@
 import type { MathWorkspaceState } from '../math/types';
 import type { WorksheetSession, WorksheetState } from '../math/worksheetTypes';
-import { createWorkspaceExport, normalizeWorkspace, parseWorkspaceImport } from '../storage/workspace';
+import { normalizeWorkspace, parseWorkspaceImport } from '../storage/workspace';
 import { parseWorksheetImport } from '../storage/worksheet';
 
 const BIGINT_TAG = '__mathlab_bigint__';
@@ -132,7 +132,7 @@ export async function parseShareSnapshot(raw: string): Promise<MathLabShareSnaps
   if (decoded.note !== undefined && (typeof decoded.note !== 'string' || decoded.note.length > 1000)) throw new Error('Shared snapshot note is malformed.');
   if (typeof decoded.digest !== 'string' || !/^[a-f0-9]{64}$/.test(decoded.digest)) throw new Error('Shared snapshot integrity metadata is missing.');
 
-  const workspaceRaw = JSON.stringify(createWorkspaceExport(decoded.workspace as MathWorkspaceState));
+  const workspaceRaw = JSON.stringify({ format:'mathlab-workspace', version:1, exportedAt:decoded.createdAt, workspace:decoded.workspace });
   const workspace = parseWorkspaceImport(workspaceRaw);
   const worksheet = validateWorksheet(decoded.worksheet);
   const base: Omit<MathLabShareSnapshot, 'digest'> = {
