@@ -2,7 +2,6 @@ import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
 import { App } from './app/App';
 import { AppErrorBoundary } from './app/components/AppErrorBoundary';
-import './app/e3VisualTools';
 import './styles/tokens.css';
 import './styles/global.css';
 import './styles/app.css';
@@ -18,6 +17,7 @@ import './styles/e3.css';
 import './styles/p1.css';
 import './styles/p2.css';
 import './styles/p3.css';
+import './styles/p4.css';
 import './styles/accessibility.css';
 
 if ('serviceWorker' in navigator && import.meta.env.PROD) {

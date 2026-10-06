@@ -215,6 +215,38 @@ The active result panel and worksheet history share the same structured `MathRes
 
 Undo/redo is intentionally worksheet-scoped. It does not rewrite semantic-object history or override native text-input undo. Manual checkpoints store immutable active-session snapshots. Worksheet import/export uses a separate `mathlab-worksheet` packet so the established `mathlab-workspace` format is not silently broadened.
 
+## Post-v2 P4 unified capability architecture
+
+P4 introduces one public operation registry for all product surfaces.
+
+```text
+phase catalog fragments ─┐
+runtime applicability ───┼─> capabilityRegistry.ts
+control/ranking policy ──┤        │
+course ownership ────────┘        ├─ Workspace
+                                  ├─ Tools
+                                  ├─ Command search
+                                  ├─ Reference
+                                  └─ Practice
+```
+
+`capabilityRegistry.ts` is the canonical product contract for operation identity, labels, categories, descriptions, examples, aliases, search text, configuration requirements, preferred-action ranking and learning-course ownership.
+
+The deterministic capability modules remain authoritative only for object-specific applicability and availability. Their legacy labels/groups are treated as internal runtime information; the registry overlays canonical product metadata before a capability reaches UI code.
+
+Registry ids and engine operation ids are separate fields. Product navigation may refer to a registry entry while engine dispatch always uses `operation`. This keeps future aliases and dedicated-route entries from coupling catalog identity to worker commands.
+
+All public capability consumers import the registry directly. `allToolCatalog.ts` and `learningSurfaces.toolsForCourse` remain compatibility shims for older code, and release auditing prevents core product surfaces from falling back to them.
+
+Course ownership is resolved from the registry through `capabilitiesForCourse`. Practice uses the same query to report deterministic engine coverage for each course; P5 can add concept/exercise mappings on top of this stable capability layer.
+
+The registry has two integrity levels:
+
+1. structural integrity: unique ids/operations and complete user-facing metadata;
+2. runtime parity: every operation emitted by representative semantic objects must have canonical registry metadata, and ordinary executable registry entries must be backed by a runtime capability for their own example.
+
+A defensive runtime fallback prevents a newly added engine operation from disappearing entirely if metadata is accidentally omitted, but the P4 certification suite fails that release until the registry gap is repaired.
+
 ## Post-v2 P3 input & interaction layer
 
 P3 keeps linear source text as the canonical editable representation and adds a structured interaction layer around it.

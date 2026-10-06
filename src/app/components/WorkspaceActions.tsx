@@ -1,6 +1,5 @@
-import { capabilitiesFor } from '../../lib/math/capabilitiesE5';
 import type { SemanticMathObject } from '../../lib/math/types';
-import { preferredWorkspaceActions } from '../workspaceOperations';
+import { preferredCapabilitiesForObject, resolveCapabilitiesForObject } from '../capabilityRegistry';
 
 interface WorkspaceActionsProps {
   object: SemanticMathObject | null;
@@ -20,10 +19,10 @@ export function WorkspaceActions({ object, runningOperation = '', onRun, onOpenT
     );
   }
 
-  const capabilities = capabilitiesFor(object);
+  const capabilities = resolveCapabilitiesForObject(object);
   const available = capabilities.filter((item) => item.available);
-  const preferred = preferredWorkspaceActions(capabilities);
-  const groups = [...new Set(available.map((item) => item.group))];
+  const preferred = preferredCapabilitiesForObject(object);
+  const groups = [...new Set(available.map((item) => item.runtimeGroup))];
 
   return (
     <section className="workspace-actions" aria-label="Suggested mathematical actions">
@@ -45,10 +44,10 @@ export function WorkspaceActions({ object, runningOperation = '', onRun, onOpenT
               key={item.id}
               className={index === 0 ? 'is-primary' : ''}
               disabled={Boolean(runningOperation)}
-              onClick={() => onRun(item.id)}
+              onClick={() => onRun(item.operation)}
             >
-              <span>{runningOperation === item.id ? 'Computing…' : item.label}</span>
-              <small>{item.group}</small>
+              <span>{runningOperation === item.operation ? 'Computing…' : item.label}</span>
+              <small>{item.runtimeGroup}</small>
             </button>
           ))}
         </div>

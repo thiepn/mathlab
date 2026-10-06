@@ -79,6 +79,18 @@ test('live structured input and piecewise preview work', async ({ page }) => {
   await expect(page.getByText(/Piecewise mathematics is first-class input/)).toBeVisible();
 });
 
+test('live unified capability registry keeps Tools and Reference search aligned', async ({ page }) => {
+  await page.goto('/#/tools');
+  const toolsSearch = page.getByRole('textbox', { name: 'Search tools' });
+  await toolsSearch.fill('spectrum');
+  await expect(page.getByRole('button', { name: /Eigenvalues/ }).first()).toBeVisible();
+
+  await page.goto('/#/reference');
+  const referenceSearch = page.getByRole('textbox', { name: 'Search mathematical reference' });
+  await referenceSearch.fill('spectrum');
+  await expect(page.getByText('Eigenvalues', { exact: true }).first()).toBeVisible();
+});
+
 test('live Worker-backed mathematics executes with exact provenance', async ({ page }) => {
   await openWorkspace(page);
   const input = page.getByRole('textbox', { name: 'Mathematical input' });

@@ -119,8 +119,8 @@ The next roadmap is product-led rather than mathematics-phase-led:
 | **P0 — Integrity repair** | Accessibility/device closure, release-truth cleanup, Reference/catalog parity, removal of internal phase labels from user-facing UI, dependency/release reproducibility follow-up. | **Complete** |
 | **P1 — Product-shell consolidation** | Work / Visualize / Learn information architecture, contextual section navigation and three-destination mobile shell. | **Complete** |
 | **P2 — Mathematical worksheet** | Persistent calculation history, reusable results, session history, undo/redo and user-visible checkpoint/recovery workflow. | **Complete** |
-| **P3 — Input & interaction** | Mobile math keypad/templates, improved keyboard editing, selection-aware structure insertion and first-class piecewise/condition foundations. | **In validation** |
-| P4 — Unified capability architecture | One canonical registry powering Workspace, Tools, Search, Reference and Practice. | Planned |
+| **P3 — Input & interaction** | Mobile math keypad/templates, improved keyboard editing, selection-aware structure insertion and first-class piecewise/condition foundations. | **Complete** |
+| **P4 — Unified capability architecture** | One canonical registry powering Workspace, Tools, Search, Reference and Practice. | **Complete** |
 | P5 — Learning v2 | Concept/course model, worked examples, guided practice and current-engine curriculum parity. | Planned |
 | P6 — Dynamic exploration | Parameters/sliders, tables and linked formula/graph/result workflows. | Planned |
 | P7 — Wirtschaftsmathematik expansion | Optimization/OR, probability/statistics and applied numerical priorities. | Planned |

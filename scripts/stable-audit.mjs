@@ -13,6 +13,7 @@ pass(pkg.scripts?.['test:e2e'] === 'playwright test --config=playwright.config.m
 pass(typeof pkg.scripts?.['audit:stable'] === 'string', 'audit:stable script missing');
 pass(pkg.scripts?.['audit:worksheet'] === 'node scripts/worksheet-audit.mjs', 'P2 audit:worksheet script is missing or changed');
 pass(pkg.scripts?.['audit:input'] === 'node scripts/input-interaction-audit.mjs', 'P3 audit:input script is missing or changed');
+pass(pkg.scripts?.['audit:capabilities'] === 'node scripts/capability-registry-audit.mjs', 'P4 audit:capabilities script is missing or changed');
 
 for (const file of [
   'playwright.config.mjs',
@@ -26,7 +27,11 @@ for (const file of [
   'public/sw.js',
   'docs/RELEASE_CERTIFICATION.md',
   'docs/P2_MATHEMATICAL_WORKSHEET_ACCEPTANCE.md',
+  'docs/P3_INPUT_INTERACTION_ACCEPTANCE.md',
+  'docs/P4_UNIFIED_CAPABILITY_ARCHITECTURE.md',
   'scripts/worksheet-audit.mjs',
+  'scripts/input-interaction-audit.mjs',
+  'scripts/capability-registry-audit.mjs',
 ]) pass(existsSync(join(root, file)), `missing stable-release artifact: ${file}`);
 
 const config = text('playwright.config.mjs');
@@ -101,6 +106,7 @@ const ci = text('.github/workflows/ci.yml');
 pass(ci.includes('npm run audit:stable'), 'CI must run stable release audit');
 pass(ci.includes('npm run audit:worksheet'), 'CI must run P2 mathematical worksheet audit');
 pass(ci.includes('npm run audit:input'), 'CI must run P3 input/interaction audit');
+pass(ci.includes('npm run audit:capabilities'), 'CI must run P4 unified capability registry audit');
 pass(ci.includes('npm audit --audit-level=high'), 'CI must reject high/critical dependency advisories');
 pass(ci.includes('playwright install --with-deps chromium firefox webkit'), 'CI must install all certified browser engines');
 pass(ci.includes('npm run test:e2e'), 'CI must execute stable browser certification');
@@ -110,6 +116,7 @@ const deploy = text('.github/workflows/deploy.yml');
 pass(deploy.includes('npm run audit:stable'), 'Pages deployment must run stable release audit');
 pass(deploy.includes('npm run audit:worksheet'), 'Pages deployment must run P2 mathematical worksheet audit');
 pass(deploy.includes('npm run audit:input'), 'Pages deployment must run P3 input/interaction audit');
+pass(deploy.includes('npm run audit:capabilities'), 'Pages deployment must run P4 unified capability registry audit');
 pass(deploy.includes('npm audit --audit-level=high'), 'Pages deployment must reject high/critical dependency advisories');
 pass(deploy.includes('verify-production:'), 'Pages workflow must contain a post-deploy live verification job');
 pass(deploy.includes('needs: deploy'), 'live production verification must run only after Pages deployment completes');

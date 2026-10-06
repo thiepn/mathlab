@@ -1,8 +1,13 @@
 import { useMemo, useState } from 'react';
 import { PRACTICE_COURSES } from '../../lib/math/practice';
-import { ALL_TOOL_CATALOG } from '../allToolCatalog';
-import { TOOL_CATEGORIES, type ToolCatalogItem, type ToolCategory } from '../toolCatalog';
-import { courseAccentIndex, toolsForCourse } from '../learningSurfaces';
+import {
+  CAPABILITY_CATEGORIES,
+  CAPABILITY_REGISTRY,
+  capabilitiesForCourse,
+  type CapabilityCategory,
+  type CapabilityDescriptor,
+} from '../capabilityRegistry';
+import { courseAccentIndex } from '../learningSurfaces';
 import {
   COMPLETENESS_DOMAINS,
   completenessBreadthPercent,
@@ -13,13 +18,12 @@ import { MathValue } from './MathValue';
 
 type ReferenceScope = 'all' | string;
 
-function toolMatches(tool: ToolCatalogItem, query: string): boolean {
+function toolMatches(tool: CapabilityDescriptor, query: string): boolean {
   if (!query) return true;
-  const haystack = [tool.label, tool.category, tool.description, tool.example, ...tool.aliases, ...tool.objectKinds].join(' ').toLowerCase();
-  return haystack.includes(query);
+  return tool.searchText.includes(query);
 }
 
-function ToolReferenceCard({ tool }: { tool: ToolCatalogItem }) {
+function ToolReferenceCard({ tool }: { tool: CapabilityDescriptor }) {
   return (
     <article className="m6-reference-tool">
       <header><div><span>{tool.category}</span><strong>{tool.label}</strong></div><em>{tool.objectKinds.length ? tool.objectKinds.join(' · ') : 'Proof workflow'}</em></header>
@@ -36,7 +40,7 @@ export function CourseReferencePage() {
   const normalizedQuery = query.trim().toLowerCase();
   const selectedCourse = PRACTICE_COURSES.find((course) => course.id === scope);
   const scopedTools = useMemo(
-    () => scope === 'all' ? ALL_TOOL_CATALOG : toolsForCourse(scope, ALL_TOOL_CATALOG),
+    () => scope === 'all' ? CAPABILITY_REGISTRY : capabilitiesForCourse(scope),
     [scope],
   );
   const filteredTools = useMemo(() => scopedTools.filter((tool) => toolMatches(tool, normalizedQuery)), [scopedTools, normalizedQuery]);
@@ -48,7 +52,7 @@ export function CourseReferencePage() {
   }, [selectedCourse, normalizedQuery]);
 
   const groupedTools = useMemo(
-    () => TOOL_CATEGORIES
+    () => CAPABILITY_CATEGORIES
       .map((category) => ({ category, tools: filteredTools.filter((tool) => tool.category === category) }))
       .filter((group) => group.tools.length),
     [filteredTools],
@@ -95,8 +99,8 @@ export function CourseReferencePage() {
       <div className="m6-reference-layout">
         <aside className="m6-reference-nav">
           <span className="section-kicker">Browse</span>
-          <button className={scope === 'all' ? 'is-active' : ''} onClick={() => setScope('all')}><span>All capabilities</span><strong>{ALL_TOOL_CATALOG.length}</strong></button>
-          {PRACTICE_COURSES.map((course) => <button key={course.id} className={`${scope === course.id ? 'is-active' : ''} course-accent-${courseAccentIndex(course.id)}`} onClick={() => setScope(course.id)}><span>{course.title}</span><strong>{toolsForCourse(course.id, ALL_TOOL_CATALOG).length}</strong></button>)}
+          <button className={scope === 'all' ? 'is-active' : ''} onClick={() => setScope('all')}><span>All capabilities</span><strong>{CAPABILITY_REGISTRY.length}</strong></button>
+          {PRACTICE_COURSES.map((course) => <button key={course.id} className={`${scope === course.id ? 'is-active' : ''} course-accent-${courseAccentIndex(course.id)}`} onClick={() => setScope(course.id)}><span>{course.title}</span><strong>{capabilitiesForCourse(course.id).length}</strong></button>)}
           <div className="m6-reference-nav-actions"><button onClick={() => { window.location.hash = '/tools'; }}>Open Tools catalog</button><button onClick={() => { window.location.hash = '/practice'; }}>Go to Practice</button></div>
         </aside>
 
@@ -115,7 +119,7 @@ export function CourseReferencePage() {
 
           {groupedTools.length > 0 ? (
             <section className="m6-reference-tools">
-              {groupedTools.map((group: { category: ToolCategory; tools: ToolCatalogItem[] }) => (
+              {groupedTools.map((group: { category: CapabilityCategory; tools: CapabilityDescriptor[] }) => (
                 <section key={group.category} className="m6-reference-group">
                   <header><div><span className="section-kicker">Capability group</span><h3>{group.category}</h3></div><strong>{group.tools.length} tool{group.tools.length === 1 ? '' : 's'}</strong></header>
                   <div className="m6-reference-tool-grid">{group.tools.map((tool) => <ToolReferenceCard key={tool.id} tool={tool} />)}</div>

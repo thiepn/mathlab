@@ -1,0 +1,20 @@
+/* P4 — Unified Capability Architecture
+   Only small presentation adjustments are needed: the phase is architectural. */
+
+.m6-course-header-actions {
+  display: flex;
+  flex: 0 0 auto;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+.m6-course-header-actions > button {
+  min-height: 40px;
+}
+
+@media (max-width: 820px) {
+  .m6-course-header-actions {
+    justify-content: flex-start;
+  }
+}

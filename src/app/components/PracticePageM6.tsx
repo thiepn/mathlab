@@ -16,6 +16,7 @@ import {
   type PracticeProgressState,
 } from '../../lib/math/practice';
 import { loadPracticeProgress, resetPracticeProgress, savePracticeProgress } from '../../lib/storage/practice';
+import { capabilitiesForCourse } from '../capabilityRegistry';
 import { answeredQuestionCount, courseAccentIndex } from '../learningSurfaces';
 import { MathRichText } from './MathRichText';
 import { MathValue } from './MathValue';
@@ -117,6 +118,7 @@ export function PracticePage() {
   const active = session?.exercises[session.index];
   const selectedCourse = PRACTICE_COURSES.find((course) => course.id === selectedCourseId) ?? PRACTICE_COURSES[0];
   const selectedSummary = selectedCourse ? courseProgress(progress, selectedCourse.id) : null;
+  const selectedCapabilities = useMemo(() => capabilitiesForCourse(selectedCourseId), [selectedCourseId]);
   const overallAccuracy = progress.totalAttempts ? progress.totalCorrect / progress.totalAttempts : 0;
 
   const resetExerciseUi = () => { setAnswer(''); setGrade(null); setHintsShown(0); setSolutionShown(false); };
@@ -310,8 +312,8 @@ export function PracticePage() {
           </aside>
 
           <div className="m6-course-detail">
-            <header><div><span className="section-kicker">Course practice</span><h2>{selectedCourse.title}</h2><p>{selectedCourse.description}</p></div><button className="primary-action" onClick={() => startSession('course', selectedCourse)}>Start practice</button></header>
-            <div className="m6-course-metrics"><span><strong>{percentage(selectedSummary.mastery)}</strong> mastery</span><span><strong>{selectedSummary.attempts ? percentage(selectedSummary.accuracy) : '—'}</strong> accuracy</span><span><strong>{selectedSummary.seen}</strong> seen</span><span><strong>{selectedSummary.due}</strong> due</span></div>
+            <header><div><span className="section-kicker">Course practice</span><h2>{selectedCourse.title}</h2><p>{selectedCourse.description}</p></div><div className="m6-course-header-actions"><button onClick={() => { window.location.hash = '/tools'; }}>Browse {selectedCapabilities.length} tools</button><button className="primary-action" onClick={() => startSession('course', selectedCourse)}>Start practice</button></div></header>
+            <div className="m6-course-metrics"><span><strong>{percentage(selectedSummary.mastery)}</strong> mastery</span><span><strong>{selectedSummary.attempts ? percentage(selectedSummary.accuracy) : '—'}</strong> accuracy</span><span><strong>{selectedSummary.seen}</strong> seen</span><span><strong>{selectedSummary.due}</strong> due</span><span><strong>{selectedCapabilities.length}</strong> engine tools</span></div>
             <div className="mastery-bar m6-mastery-bar"><span style={{ width: percentage(selectedSummary.mastery) }} /></div>
             <div className="m6-topic-list">
               {selectedCourse.topics.map((topic, index) => <article key={topic.id}><div className="m6-topic-index">{String(index + 1).padStart(2, '0')}</div><div><strong>{topic.title}</strong><p>{topic.description}</p></div><span>{topic.templateIds.length} generated · {topic.authoredIds.length} authored</span></article>)}

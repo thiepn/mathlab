@@ -26,6 +26,7 @@ MathLab exposes three primary destinations rather than six competing top-level p
 The day-to-day mathematical environment.
 
 - **Workbench** — keyboard-first mathematical input with selection-aware templates, paired-delimiter editing, an accessible touch keypad, native MathML preview and first-class piecewise syntax; persistent objects, assumptions and dependencies; plus a durable multi-session mathematical worksheet with chronological inputs/results, result reuse, undo/redo, checkpoints and recovery;
+- **Unified capability registry** — one canonical operation contract now powers Workspace actions, Tools, command search, Reference and Practice course coverage;
 - **Tools** — searchable complete capability catalog with contextual availability, examples and direct handoff back into the workbench;
 - **Proof** — deterministic transformation, derivation-chain and theorem verification with explicit **verified**, **conditionally valid**, **invalid**, and **not proven** outcomes.
 
@@ -107,4 +108,5 @@ GitHub Actions additionally runs dependency security checks, real Chromium/Firef
 - `docs/P1_PRODUCT_SHELL_ACCEPTANCE.md` — Work / Visualize / Learn shell contract
 - `docs/P2_MATHEMATICAL_WORKSHEET_ACCEPTANCE.md` — persistent mathematical worksheet contract
 - `docs/P3_INPUT_INTERACTION_ACCEPTANCE.md` — structured input, keypad and piecewise contract
+- `docs/P4_UNIFIED_CAPABILITY_ARCHITECTURE.md` — canonical capability registry and consumer contract
 - `docs/SECURITY_REVIEW.md` — current security model
