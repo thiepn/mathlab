@@ -16,14 +16,16 @@
     "audit:e12": "node scripts/e12-audit.mjs",
     "audit:stable": "node scripts/stable-audit.mjs",
     "audit:accessibility": "node scripts/accessibility-device-audit.mjs",
-    "check:release": "npm run audit:release && npm run audit:e12 && npm run audit:stable && npm run audit:accessibility && npm run audit:worksheet && npm run audit:input && npm run audit:capabilities && npm run audit:learning && npm run audit:dynamic && npm run audit:wirtschaft && npm run audit:sharing && npm run check",
+    "check:release": "npm run audit:release && npm run audit:e12 && npm run audit:stable && npm run audit:accessibility && npm run audit:worksheet && npm run audit:input && npm run audit:capabilities && npm run audit:learning && npm run audit:dynamic && npm run audit:wirtschaft && npm run audit:sharing && npm run audit:architecture && npm run check && npm run audit:bundle",
     "audit:worksheet": "node scripts/worksheet-audit.mjs",
     "audit:input": "node scripts/input-interaction-audit.mjs",
     "audit:capabilities": "node scripts/capability-registry-audit.mjs",
     "audit:learning": "node scripts/learning-v2-audit.mjs",
     "audit:dynamic": "node scripts/dynamic-exploration-audit.mjs",
     "audit:wirtschaft": "node scripts/wirtschaftsmathematik-audit.mjs",
-    "audit:sharing": "node scripts/sharing-collaboration-audit.mjs"
+    "audit:sharing": "node scripts/sharing-collaboration-audit.mjs",
+    "audit:architecture": "node scripts/architecture-stabilization-audit.mjs",
+    "audit:bundle": "node scripts/bundle-budget.mjs"
   },
   "dependencies": {
     "react": "19.1.1",
