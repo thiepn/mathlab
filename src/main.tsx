@@ -25,7 +25,7 @@ import './styles/accessibility.css';
 
 if ('serviceWorker' in navigator && import.meta.env.PROD) {
   window.addEventListener('load', () => {
-    void navigator.serviceWorker.register('./sw.js').catch((error) => console.warn('MathLab service worker registration failed.', error));
+    void navigator.serviceWorker.register(`./sw.js?v=${encodeURIComponent(__MATHLAB_BUILD_ID__)}`).catch((error) => console.warn('MathLab service worker registration failed.', error));
   });
 }
 
