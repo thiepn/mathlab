@@ -39,6 +39,7 @@ export const ROUTE_TITLES: Readonly<Record<Route, string>> = {
   proof: 'Proof & Verification',
   practice: 'Learn',
   reference: 'Reference',
+  share: 'Shared snapshot',
 };
 
 export function primarySectionForRoute(route: Route): PrimarySection {
