@@ -6,6 +6,7 @@ const requiredFiles = [
   'src/app/components/GraphCanvas.tsx',
   'src/app/components/VisualizationPageE3.tsx',
   'src/styles/p6.css',
+  'src/main.tsx',
   'tests/dynamicExploration.test.ts',
   'tests/browser/dynamic-exploration.e2e.ts',
   'docs/P6_DYNAMIC_EXPLORATION.md',
@@ -32,6 +33,7 @@ requireText('src/app/components/GraphCanvas.tsx', 'traceX?: number | null', 'Con
 requireText('src/app/components/VisualizationPageE3.tsx', "setInteractionMode('trace')", 'Table/trace interaction is not integrated');
 requireText('src/app/components/VisualizationPageE3.tsx', 'resolveDynamicAst', 'Visualization does not consume P6 AST resolution');
 requireText('src/styles/p6.css', '.p6-dynamic-panel', 'P6 styles are missing');
+requireText('src/main.tsx', "./styles/p6.css", 'P6 stylesheet is not loaded by the application');
 requireText('tests/dynamicExploration.test.ts', "describe('P6 dynamic exploration'", 'P6 unit coverage is missing');
 requireText('tests/browser/dynamic-exploration.e2e.ts', 'P6 links parameters, graph, result and value table', 'P6 browser acceptance is missing');
 requireText('docs/ROADMAP.md', '| **P6 — Dynamic exploration** | Parameters/sliders, tables and linked formula/graph/result workflows. | **Complete** |', 'Roadmap does not mark P6 complete');
