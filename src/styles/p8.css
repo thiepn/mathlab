@@ -136,7 +136,8 @@
   display: flex; justify-content: space-between; gap: 12px; padding: 10px 13px; background: var(--ml-paper);
 }
 .p8-object-grid article > header { border-bottom: 1px solid var(--ml-line); }
-.p8-object-grid article > footer { border-top: 1px solid var(--ml-line); color: var(--ml-muted); font-size: var(--ml-text-xs); }
+.p8-object-grid article > footer { border-top: 1px solid var(--ml-line); color: var(--ml-muted); font-size: var(--ml-text-xs); flex-wrap: wrap; }
+.p8-object-grid article > footer span { min-width: 0; overflow-wrap: anywhere; }
 .p8-object-grid article > header span { color: var(--ml-muted); font-size: var(--ml-text-xs); }
 
 .p8-shared-math { min-width: 0; overflow-x: auto; padding: 15px; }
@@ -151,7 +152,7 @@
 .p8-shared-worksheet > article:last-child { border-bottom: 0; }
 .p8-entry-index { padding: 13px 8px; border-right: 1px solid var(--ml-line); color: var(--ml-muted); font-family: var(--ml-font-mono); font-size: var(--ml-text-xs); text-align: center; }
 .p8-shared-worksheet article > div:last-child > header, .p8-shared-worksheet article > div:last-child > footer {
-  display: flex; justify-content: space-between; gap: 12px; padding: 10px 13px; color: var(--ml-muted); font-size: var(--ml-text-xs);
+  display: flex; justify-content: space-between; gap: 12px; padding: 10px 13px; color: var(--ml-muted); font-size: var(--ml-text-xs); flex-wrap: wrap;
 }
 .p8-shared-worksheet article > div:last-child > header { border-bottom: 1px solid var(--ml-line); }
 .p8-shared-worksheet article > div:last-child > footer { border-top: 1px solid var(--ml-line); }
