@@ -12,7 +12,7 @@ self.addEventListener('install', (event) => {
 self.addEventListener('activate', (event) => {
   event.waitUntil(caches.keys().then((keys) => Promise.all(
     keys
-      .filter((key) => (key.startsWith(CACHE_PREFIX) || key.startsWith('mathlab-v2-')) && ![SHELL_CACHE, RUNTIME_CACHE].includes(key))
+      .filter((key) => key.startsWith('mathlab-') && ![SHELL_CACHE, RUNTIME_CACHE].includes(key))
       .map((key) => caches.delete(key)),
   )));
   self.clients.claim();
@@ -34,7 +34,11 @@ self.addEventListener('fetch', (event) => {
     event.respondWith(
       fetch(event.request)
         .then((response) => cacheResponse(event.request, response))
-        .catch(async () => (await caches.match(event.request)) || (await caches.match('./index.html'))),
+        .catch(async () => {
+          const runtime = await caches.open(RUNTIME_CACHE);
+          const shell = await caches.open(SHELL_CACHE);
+          return (await runtime.match(event.request)) || (await shell.match(event.request)) || (await shell.match('./index.html'));
+        }),
     );
     return;
   }
