@@ -230,6 +230,34 @@ export function useWorksheet() {
     setState(parseWorksheetImport(raw));
   }, []);
 
+  const appendSharedSession = useCallback((shared: WorksheetSession, snapshotTitle: string) => {
+    const stamp = Date.now();
+    const idMap = new Map(shared.entries.map((entry, index) => [entry.id, `shared-entry:${stamp}:${index}`] as const));
+    const session: WorksheetSession = {
+      ...structuredClone(shared),
+      id: `shared-session:${stamp}:${Math.random().toString(36).slice(2, 8)}`,
+      title: `${shared.title || snapshotTitle} · shared copy`.slice(0, 180),
+      entries: shared.entries.map((entry, index) => entry.type === 'input'
+        ? { ...structuredClone(entry), id: idMap.get(entry.id)! }
+        : {
+            ...structuredClone(entry),
+            id: idMap.get(entry.id)!,
+            sourceEntryId: entry.sourceEntryId ? idMap.get(entry.sourceEntryId) : undefined,
+            result: { ...structuredClone(entry.result), id: `shared-result:${stamp}:${index}` },
+          }),
+      createdAt: stamp,
+      updatedAt: stamp,
+    };
+    setPast([]);
+    setFuture([]);
+    setState((current) => normalizeWorksheet({
+      ...current,
+      sessions: [...current.sessions, session],
+      activeSessionId: session.id,
+      updatedAt: stamp,
+    }));
+  }, []);
+
   return {
     state,
     activeSession,
@@ -252,6 +280,7 @@ export function useWorksheet() {
     restoreRecovery,
     exportWorksheet,
     importWorksheet,
+    appendSharedSession,
   };
 }
 

@@ -271,6 +271,40 @@ Guided practice is built by `buildGuidedConceptSession`. It selects only exercis
 
 The Practice UI consumes the concept model through `LearningPathPanel`. Course practice, adaptive review, exams and progress remain available, so P5 extends the learning path without forking persistence or replacing the deterministic verifier.
 
+## Post-v2 P8 sharing & collaboration architecture
+
+P8 adds collaboration without introducing hidden server state or weakening MathLab's local-first storage model.
+
+```text
+local workspace + optional active worksheet
+                    │
+                    ↓
+           mathlab-share v1
+          + SHA-256 integrity
+             ┌──────┴──────┐
+             ↓             ↓
+       URL fragment      JSON file
+             └──────┬──────┘
+                    ↓
+          read-only share route
+                    │
+            explicit copy action
+             ┌──────┴──────┐
+             ↓             ↓
+      workspace replace   worksheet append
+      + Recovery safety   + fresh local IDs
+```
+
+`src/lib/share/snapshot.ts` owns the canonical snapshot format, 5 MB validation bound, conservative URL-token bound, tagged-BigInt serialization, SHA-256 verification and URL fragment encoding.
+
+The share link uses the fragment rather than a query/body, so the encoded snapshot is not sent as part of the HTTP request to the static GitHub Pages host. Large snapshots intentionally fall back to a file instead of relying on extreme URL lengths.
+
+The share route never hydrates the snapshot into the editable workspace automatically. It validates both workspace and worksheet content through their existing import validators, verifies the digest, and renders a read-only projection.
+
+MathLab still has one local workspace. P8 therefore avoids unsafe automatic merges between arbitrary definition/assumption systems. Copying a snapshot replaces the editable workspace only after explicit confirmation; the normal ordered workspace persistence protocol preserves the prior autosave in Recovery. A shared worksheet is appended separately with fresh local session, entry and result identifiers.
+
+This is snapshot collaboration, not realtime document synchronization. Accounts, ACLs, mutable remote documents, comments and concurrent conflict resolution remain intentionally outside P8.
+
 ## Post-v2 P7 Wirtschaftsmathematik architecture
 
 P7 is the first post-v2 phase to add selective mathematical breadth after the locked E12 certification baseline. It does not alter the historical E-series scorecard.
