@@ -1,12 +1,14 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { substituteAst } from '../../lib/math/algebra';
 import type { SemanticMathObject } from '../../lib/math/types';
 import { buildGraphSeries, fitGraphViewport, zoomViewport, type GraphSeriesInput, type GraphViewport } from '../../lib/math/visualization';
 import { criticalMarkers, sampleContours, sampleGradientField, sampleImplicitCurve, sampleParametricCurve, sampleParametricSurface, samplePhasePortrait, samplePolarCurve, sampleScalarField, sampleSurface, sampleVectorField, type Camera3D } from '../../lib/math/visualization2';
 import { VISUALIZATION_MODES, VISUAL_TOOL_TO_MODE, isVisualizable, visualizationModesFor, visualizationVariables, type VisualizationMode } from '../visualizationModes';
+import { initializeDynamicParameters, parameterValues, resolveDynamicAst, updateDynamicParameter, type DynamicParameter } from '../dynamicExploration';
+import type { GraphTraceSnapshot } from '../visualizationPresentation';
 import { GraphCanvas } from './GraphCanvas';
 import { E3Canvas, type E3CanvasModel } from './E3Canvas';
 import { MathValue } from './MathValue';
+import { DynamicExplorationPanel } from './DynamicExplorationPanel';
 
 interface VisualizationPageProps{
   objects:SemanticMathObject[];
@@ -20,16 +22,11 @@ const HOME:GraphViewport={xMin:-6,xMax:6,yMin:-5,yMax:5};
 const DEFAULT_CAMERA:Camera3D={azimuth:38,elevation:28,zoom:1};
 
 function variablesOf(object:SemanticMathObject):string[]{return visualizationVariables(object);}
-function resolvedAst(object:SemanticMathObject,objects:SemanticMathObject[]){
-  let ast=object.valueAst;const protectedNames=new Set(variablesOf(object));
-  for(const binding of objects){
-    if(!binding.name||binding.id===object.id||protectedNames.has(binding.name)||!['scalar','expression'].includes(binding.kind))continue;
-    ast=substituteAst(ast,binding.name,binding.valueAst);
-  }
-  return ast;
+function resolvedAst(object:SemanticMathObject,objects:SemanticMathObject[],dynamicValues:Record<string,number>={}){
+  return resolveDynamicAst(object,objects,dynamicValues);
 }
-function graphInput(object:SemanticMathObject,objects:SemanticMathObject[]):GraphSeriesInput{
-  const variables=variablesOf(object);return{id:object.id,name:object.name??'expression',source:object.source,variable:variables[0],ast:resolvedAst(object,objects)};
+function graphInput(object:SemanticMathObject,objects:SemanticMathObject[],dynamicValues:Record<string,number>={}):GraphSeriesInput{
+  const variables=variablesOf(object);return{id:object.id,name:object.name??'expression',source:object.source,variable:variables[0],ast:resolvedAst(object,objects,dynamicValues)};
 }
 function rangeDraft(view:GraphViewport):RangeDraft{return{xMin:String(view.xMin),xMax:String(view.xMax),yMin:String(view.yMin),yMax:String(view.yMax)};}
 function parseRange(draft:RangeDraft):GraphViewport|null{
@@ -66,6 +63,11 @@ export function VisualizationPageE3({objects,activeObject,onActivateObject,onOpe
   const [camera,setCamera]=useState<Camera3D>(DEFAULT_CAMERA);
   const [cartesianIds,setCartesianIds]=useState<string[]>([]);
   const [message,setMessage]=useState('');
+  const [dynamicParameters,setDynamicParameters]=useState<DynamicParameter[]>([]);
+  const [tableCount,setTableCount]=useState(9);
+  const [interactionMode,setInteractionMode]=useState<'pan'|'trace'>('pan');
+  const [trace,setTrace]=useState<GraphTraceSnapshot|null>(null);
+  const [selectedX,setSelectedX]=useState<number|null>(null);
   const svgRef=useRef<SVGSVGElement>(null);
   const requestedMode=useMemo(()=>{
     const operation=typeof sessionStorage==='undefined'?null:sessionStorage.getItem('mathlab:e3-mode');if(operation)sessionStorage.removeItem('mathlab:e3-mode');
@@ -79,24 +81,31 @@ export function VisualizationPageE3({objects,activeObject,onActivateObject,onOpe
 
   const selected=available.find((item)=>item.id===selectedId)??available[0]??null;
   const modes=selected?visualizationModesFor(selected):[];
+  const dynamicValues=useMemo(()=>parameterValues(dynamicParameters),[dynamicParameters]);
+  const selectedDynamicAst=useMemo(()=>selected?resolvedAst(selected,objects,dynamicValues):null,[selected?.id,objects,dynamicValues]);
 
   useEffect(()=>{
     if(!selected)return;const next=requestedMode&&modes.includes(requestedMode)?requestedMode:modes.includes(mode)?mode:modes[0];if(next&&next!==mode)setMode(next);
   },[selected?.id,modes.join('|')]);
 
+  useEffect(()=>{
+    if(!selected){setDynamicParameters([]);return;}
+    setDynamicParameters((current)=>initializeDynamicParameters(selected,objects,current));
+    setTrace(null);setSelectedX(null);
+  },[selected?.id]);
   useEffect(()=>{setDraft(rangeDraft(viewport));},[viewport]);
   useEffect(()=>{
     if(mode!=='cartesian'||!selected)return;setCartesianIds((current)=>current.includes(selected.id)?current:[selected.id,...current].slice(0,6));
   },[mode,selected?.id]);
 
   const unaryScalars=available.filter((object)=>visualizationModesFor(object).includes('cartesian'));
-  const cartesianInputs=cartesianIds.map((id)=>unaryScalars.find((item)=>item.id===id)).filter((item):item is SemanticMathObject=>Boolean(item)).map((item)=>graphInput(item,objects));
+  const cartesianInputs=cartesianIds.map((id)=>unaryScalars.find((item)=>item.id===id)).filter((item):item is SemanticMathObject=>Boolean(item)).map((item)=>graphInput(item,objects,item.id===selected?.id?dynamicValues:{}));
   const cartesianModels=useMemo(()=>cartesianInputs.map((input)=>buildGraphSeries(input,viewport)),[cartesianIds.join('|'),viewport.xMin,viewport.xMax,viewport.yMin,viewport.yMax,objects]);
 
   const advanced=useMemo<{model:E3CanvasModel|null;error:string;summary:string}>(()=>{
     if(!selected||mode==='cartesian')return{model:null,error:'',summary:''};
     try{
-      const ast=resolvedAst(selected,objects);const vars=variablesOf(selected);const pMin=Number(parameterMin),pMax=Number(parameterMax);const safeMin=Number.isFinite(pMin)?pMin:-Math.PI,safeMax=Number.isFinite(pMax)&&pMax>safeMin?pMax:Math.PI;
+      const ast=resolvedAst(selected,objects,dynamicValues);const vars=variablesOf(selected);const pMin=Number(parameterMin),pMax=Number(parameterMax);const safeMin=Number.isFinite(pMin)?pMin:-Math.PI,safeMax=Number.isFinite(pMax)&&pMax>safeMin?pMax:Math.PI;
       if(mode==='parametric'){const polylines=sampleParametricCurve(ast,vars[0],safeMin,safeMax);return{model:{kind:'curves',polylines},error:'',summary:`${polylines.reduce((sum,line)=>sum+line.points.length,0)} sampled curve points`};}
       if(mode==='polar'){const polylines=samplePolarCurve(ast,vars[0],safeMin,safeMax);return{model:{kind:'curves',polylines},error:'',summary:`${polylines.reduce((sum,line)=>sum+line.points.length,0)} polar samples`};}
       if(mode==='implicit'){const segments=sampleImplicitCurve(ast,[vars[0],vars[1]],viewport,72);return{model:{kind:'implicit',segments},error:'',summary:`${segments.length} marching-squares segments`};}
@@ -111,7 +120,7 @@ export function VisualizationPageE3({objects,activeObject,onActivateObject,onOpe
       if(mode==='surface-3d'){const mesh=sampleSurface(ast,[vars[0],vars[1]],viewport,29);return{model:{kind:'surface',mesh},error:'',summary:`${mesh.rows.length}×${mesh.rows[0]?.length??0} surface mesh · ${mesh.criticalPoints.length} exact critical overlays`};}
       const mesh=sampleParametricSurface(ast,[vars[0],vars[1]],[safeMin,safeMax],[safeMin,safeMax],27);return{model:{kind:'surface',mesh},error:'',summary:`${mesh.rows.length}×${mesh.rows[0]?.length??0} parametric mesh`};
     }catch(error){return{model:null,error:error instanceof Error?error.message:'Could not construct this visualization.',summary:''};}
-  },[selected?.id,mode,viewport.xMin,viewport.xMax,viewport.yMin,viewport.yMax,parameterMin,parameterMax,fieldDensity,contourCount,showContours,objects]);
+  },[selected?.id,mode,viewport.xMin,viewport.xMax,viewport.yMin,viewport.yMax,parameterMin,parameterMax,fieldDensity,contourCount,showContours,objects,dynamicValues]);
 
   const applyRange=()=>{const parsed=parseRange(draft);if(parsed)setViewport(parsed);};
   const reset=()=>{setViewport(HOME);setCamera(DEFAULT_CAMERA);};
@@ -139,16 +148,17 @@ export function VisualizationPageE3({objects,activeObject,onActivateObject,onOpe
       <div className="e3-stage">
         <div className="e3-mode-strip" role="tablist" aria-label="Visualization mode">{modes.map((item)=><button key={item} role="tab" aria-selected={mode===item} className={mode===item?'is-active':''} onClick={()=>setMode(item)}><span>{VISUALIZATION_MODES[item].label}</span><small>{VISUALIZATION_MODES[item].dimension}</small></button>)}</div>
         <div className="e3-toolbar">
-          <div className="e3-toolbar-group"><button onClick={reset}>Home</button>{mode==='cartesian'&&<button onClick={fitY}>Fit Y</button>}<button onClick={()=>setViewport((v)=>zoomViewport(v,.76,(v.xMin+v.xMax)/2,(v.yMin+v.yMax)/2))}>Zoom +</button><button onClick={()=>setViewport((v)=>zoomViewport(v,1.3,(v.xMin+v.xMax)/2,(v.yMin+v.yMax)/2))}>Zoom −</button></div>
+          <div className="e3-toolbar-group"><button onClick={reset}>Home</button>{mode==='cartesian'&&<button onClick={fitY}>Fit Y</button>}<button onClick={()=>setViewport((v)=>zoomViewport(v,.76,(v.xMin+v.xMax)/2,(v.yMin+v.yMax)/2))}>Zoom +</button><button onClick={()=>setViewport((v)=>zoomViewport(v,1.3,(v.xMin+v.xMax)/2,(v.yMin+v.yMax)/2))}>Zoom −</button>{mode==='cartesian'&&<><button className={interactionMode==='pan'?'is-on':''} onClick={()=>setInteractionMode('pan')}>Pan</button><button className={interactionMode==='trace'?'is-on':''} onClick={()=>setInteractionMode('trace')}>Trace</button></>}</div>
           <div className="e3-toolbar-group"><button className={showGrid?'is-on':''} onClick={()=>setShowGrid((v)=>!v)}>Grid</button><button className={showCritical?'is-on':''} onClick={()=>setShowCritical((v)=>!v)}>Critical</button><button className={showRegion?'is-on':''} onClick={()=>setShowRegion((v)=>!v)}>Region</button>{mode==='scalar-field'&&<button className={showContours?'is-on':''} onClick={()=>setShowContours((v)=>!v)}>Contours</button>}</div>
           <div className="e3-toolbar-group"><button onClick={exportSvg}>SVG</button><button onClick={exportPng}>PNG</button></div>
         </div>
 
         <div className="e3-canvas-frame">
-          {mode==='cartesian'?<GraphCanvas ref={svgRef} series={cartesianModels} viewport={viewport} onViewportChange={setViewport} overlays={{grid:showGrid,zeros:true,extrema:showCritical,inflections:showCritical,asymptotes:true,trace:true}} onReset={reset}/>:advanced.model?<E3Canvas ref={svgRef} model={advanced.model} viewport={viewport} camera={camera} onViewportChange={setViewport} showGrid={showGrid} showCritical={showCritical} showRegion={showRegion} region={region}/>:<div className="e3-render-error"><strong>Could not render this object in {VISUALIZATION_MODES[mode].label} mode.</strong><p>{advanced.error}</p></div>}
+          {mode==='cartesian'?<GraphCanvas ref={svgRef} series={cartesianModels} viewport={viewport} onViewportChange={setViewport} overlays={{grid:showGrid,zeros:true,extrema:showCritical,inflections:showCritical,asymptotes:true,trace:true}} interactionMode={interactionMode} traceX={selectedX} onTraceChange={(next)=>{setTrace(next);if(next)setSelectedX(next.x);}} onReset={reset}/>:advanced.model?<E3Canvas ref={svgRef} model={advanced.model} viewport={viewport} camera={camera} onViewportChange={setViewport} showGrid={showGrid} showCritical={showCritical} showRegion={showRegion} region={region}/>:<div className="e3-render-error"><strong>Could not render this object in {VISUALIZATION_MODES[mode].label} mode.</strong><p>{advanced.error}</p></div>}
         </div>
 
         <div className="e3-stage-footer"><span>{mode==='cartesian'?`${cartesianModels.length} explicit series · ${cartesianModels.reduce((sum,item)=>sum+item.segments.length,0)} branches`:advanced.summary}</span>{message&&<span>{message}</span>}</div>
+        {selectedDynamicAst&&<DynamicExplorationPanel object={selected} resolvedAst={selectedDynamicAst} parameters={dynamicParameters} onParameterChange={(name,patch)=>setDynamicParameters((current)=>updateDynamicParameter(current,name,patch))} onResetParameters={()=>setDynamicParameters(initializeDynamicParameters(selected,objects,[]))} series={mode==='cartesian'?cartesianModels:[]} viewport={viewport} trace={trace} selectedX={selectedX} onSelectX={(x)=>{setSelectedX(x);setInteractionMode('trace');}} tableCount={tableCount} onTableCount={setTableCount}/>}
       </div>
 
       <aside className="e3-inspector">
