@@ -36,7 +36,7 @@ A dedicated exploration environment for Cartesian, parametric, polar and implici
 ### Learn
 The learning environment.
 
-- **Practice** — course-oriented authored/generated exercises, adaptive review, spaced scheduling, exams and mastery tracking;
+- **Practice** — concept-led course pathways with explicit objectives and prerequisites, worked examples, guided authored/generated exercises, adaptive review, spaced scheduling, exams and mastery tracking;
 - **Reference** — mathematical capability/course reference generated from the stable engine plus the fixed 22-domain completeness audit.
 
 The six underlying hash routes remain stable deep links, but the interface groups them by user intent: **do mathematics, explore it visually, or learn it**.
@@ -106,6 +106,7 @@ GitHub Actions additionally runs dependency security checks, real Chromium/Firef
 - `docs/RELEASE_CERTIFICATION.md` — stable-release evidence
 - `docs/ACCESSIBILITY_DEVICE_CERTIFICATION.md` — accessibility/device evidence boundary
 - `docs/P1_PRODUCT_SHELL_ACCEPTANCE.md` — Work / Visualize / Learn shell contract
+- `docs/P5_LEARNING_V2.md` — concept model, worked examples, guided-practice architecture and engine-curriculum parity
 - `docs/P2_MATHEMATICAL_WORKSHEET_ACCEPTANCE.md` — persistent mathematical worksheet contract
 - `docs/P3_INPUT_INTERACTION_ACCEPTANCE.md` — structured input, keypad and piecewise contract
 - `docs/P4_UNIFIED_CAPABILITY_ARCHITECTURE.md` — canonical capability registry and consumer contract
