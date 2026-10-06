@@ -6,7 +6,7 @@ This layer strengthens the stable v2 release gate with deterministic accessibili
 
 The automated gate certifies the following on the exact tested Git head:
 
-- axe-core automated WCAG A/AA analysis on Workspace, Tools, Visualize, Proof Lab, Practice and Reference;
+- axe-core automated WCAG A/AA analysis on Workspace, Tools, Visualize, Proof Lab, Practice, Reference and the Share route;
 - keyboard-first skip-link order and visible focus indication;
 - 320 CSS-pixel viewport reflow with 200% root text sizing and no page-level horizontal scrolling;
 - `prefers-reduced-motion: reduce` behavior, including disabling smooth scrolling and long motion timings;
