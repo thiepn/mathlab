@@ -73,7 +73,7 @@ pass(!productionConfig.includes('webServer:'), 'production Playwright gate must 
 const production = text('tests/production/production.live.ts');
 for (const marker of [
   'custom-domain stable build boots',
-  'production manifest, icons and v2 service worker are published',
+  'production manifest, icons and build-scoped service worker are published',
   'live Worker-backed mathematics executes',
   'live IndexedDB workspace persists across a production reload',
   'production layout has no page-level horizontal overflow',
@@ -82,12 +82,13 @@ for (const marker of [
 
 const waitForProduction = text('scripts/wait-for-production.mjs');
 pass(waitForProduction.includes('MATHLAB_PRODUCTION_URL'), 'production readiness probe must accept the canonical production URL');
-pass(waitForProduction.includes('mathlab-v2-shell') && waitForProduction.includes('mathlab-v2-runtime'), 'production readiness probe must identify the v2 service-worker generation');
+pass(waitForProduction.includes("CACHE_PREFIX = 'mathlab-build-'") && waitForProduction.includes('BUILD_ID'), 'production readiness probe must identify the build-scoped service-worker generation');
 
 const sw = text('public/sw.js');
-pass(sw.includes("mathlab-v2-shell"), 'v2 shell cache generation is missing');
-pass(sw.includes("mathlab-v2-runtime"), 'v2 runtime cache generation is missing');
-pass(!sw.includes("mathlab-e3-shell") && !sw.includes("mathlab-e3-runtime"), 'E3 cache generation must not remain active in v2');
+pass(sw.includes("CACHE_PREFIX = 'mathlab-build-'"), 'build-scoped cache prefix is missing');
+pass(sw.includes("BUILD_ID") && sw.includes("-shell") && sw.includes("-runtime"), 'build-scoped shell/runtime cache generation is missing');
+pass(sw.includes("key.startsWith('mathlab-v2-')"), 'P9 service worker must clean up legacy v2 cache generations');
+pass(!sw.includes("mathlab-e3-shell") && !sw.includes("mathlab-e3-runtime"), 'E3 cache generation must not remain active');
 
 const header = text('src/app/components/Header.tsx');
 pass(header.includes('v2.0.0 stable release'), 'stable UI title is missing');
