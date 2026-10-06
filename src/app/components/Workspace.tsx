@@ -221,13 +221,22 @@ export function Workspace({
         )}
       </section>
 
-      <WorkspaceActions
-        object={object ?? null}
-        runningOperation={runningOperation}
-        onRun={onAction}
-        onOpenTools={onOpenTools}
-        onOpenProof={onOpenProof}
-      />
+      {object ? (
+        <Suspense fallback={<section className="workspace-actions is-loading" aria-live="polite">Loading available actions…</section>}>
+          <LazyWorkspaceActions
+            object={object}
+            runningOperation={runningOperation}
+            onRun={onAction}
+            onOpenTools={onOpenTools}
+            onOpenProof={onOpenProof}
+          />
+        </Suspense>
+      ) : (
+        <section className="workspace-actions is-empty" aria-label="Available mathematical actions">
+          <div><span className="section-kicker">Next step</span><strong>Enter or open mathematics first.</strong></div>
+          <p>MathLab will surface the most relevant operations here once it knows what kind of object you are working with.</p>
+        </section>
+      )}
 
       <AlgebraResult result={mathResult} status={engineStatus} error={engineError} onClear={onClearResult} onUseResult={onReuseSource} />
 
