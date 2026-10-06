@@ -100,7 +100,7 @@ export function VisualizationPageE3({objects,activeObject,onActivateObject,onOpe
 
   const unaryScalars=available.filter((object)=>visualizationModesFor(object).includes('cartesian'));
   const cartesianInputs=cartesianIds.map((id)=>unaryScalars.find((item)=>item.id===id)).filter((item):item is SemanticMathObject=>Boolean(item)).map((item)=>graphInput(item,objects,item.id===selected?.id?dynamicValues:{}));
-  const cartesianModels=useMemo(()=>cartesianInputs.map((input)=>buildGraphSeries(input,viewport)),[cartesianIds.join('|'),viewport.xMin,viewport.xMax,viewport.yMin,viewport.yMax,objects]);
+  const cartesianModels=useMemo(()=>cartesianInputs.map((input)=>buildGraphSeries(input,viewport)),[cartesianIds.join('|'),viewport.xMin,viewport.xMax,viewport.yMin,viewport.yMax,objects,dynamicValues]);
 
   const advanced=useMemo<{model:E3CanvasModel|null;error:string;summary:string}>(()=>{
     if(!selected||mode==='cartesian')return{model:null,error:'',summary:''};
@@ -158,7 +158,7 @@ export function VisualizationPageE3({objects,activeObject,onActivateObject,onOpe
         </div>
 
         <div className="e3-stage-footer"><span>{mode==='cartesian'?`${cartesianModels.length} explicit series · ${cartesianModels.reduce((sum,item)=>sum+item.segments.length,0)} branches`:advanced.summary}</span>{message&&<span>{message}</span>}</div>
-        {selectedDynamicAst&&<DynamicExplorationPanel object={selected} resolvedAst={selectedDynamicAst} parameters={dynamicParameters} onParameterChange={(name,patch)=>setDynamicParameters((current)=>updateDynamicParameter(current,name,patch))} onResetParameters={()=>setDynamicParameters(initializeDynamicParameters(selected,objects,[]))} series={mode==='cartesian'?cartesianModels:[]} viewport={viewport} trace={trace} selectedX={selectedX} onSelectX={(x)=>{setSelectedX(x);setInteractionMode('trace');}} tableCount={tableCount} onTableCount={setTableCount}/>}
+        {selected&&selectedDynamicAst&&<DynamicExplorationPanel object={selected} resolvedAst={selectedDynamicAst} parameters={dynamicParameters} onParameterChange={(name,patch)=>setDynamicParameters((current)=>updateDynamicParameter(current,name,patch))} onResetParameters={()=>setDynamicParameters(initializeDynamicParameters(selected,objects,[]))} series={mode==='cartesian'?cartesianModels:[]} viewport={viewport} trace={trace} selectedX={selectedX} onSelectX={(x)=>{setSelectedX(x);setInteractionMode('trace');}} tableCount={tableCount} onTableCount={setTableCount}/>}
       </div>
 
       <aside className="e3-inspector">
