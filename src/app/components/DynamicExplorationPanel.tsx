@@ -73,7 +73,7 @@ export function DynamicExplorationPanel({
             <div><span className="section-kicker">Live formula</span><strong>{object.name ?? object.kind}</strong></div>
             {parameters.length > 0 && <button type="button" onClick={onResetParameters}>Reset parameters</button>}
           </header>
-          <div className="p6-live-formula"><MathValue ast={resolvedAst} source={object.source} compact={false} /></div>
+          <div className="p6-live-formula" tabIndex={0} aria-label="Scrollable live formula"><MathValue ast={resolvedAst} source={object.source} compact={false} /></div>
           {parameters.length ? (
             <div className="p6-parameter-list">
               {parameters.map((parameter) => (
