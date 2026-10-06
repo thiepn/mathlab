@@ -80,12 +80,12 @@ test('live structured input and piecewise preview work', async ({ page }) => {
 });
 
 test('live unified capability registry keeps Tools and Reference search aligned', async ({ page }) => {
-  await page.goto('/#/tools');
+  await page.goto(routeURL('tools'), { waitUntil: 'domcontentloaded' });
   const toolsSearch = page.getByRole('textbox', { name: 'Search tools' });
   await toolsSearch.fill('spectrum');
   await expect(page.getByRole('button', { name: /Eigenvalues/ }).first()).toBeVisible();
 
-  await page.goto('/#/reference');
+  await page.goto(routeURL('reference'), { waitUntil: 'domcontentloaded' });
   const referenceSearch = page.getByRole('textbox', { name: 'Search mathematical reference' });
   await referenceSearch.fill('spectrum');
   await expect(page.getByText('Eigenvalues', { exact: true }).first()).toBeVisible();
