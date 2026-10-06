@@ -2,7 +2,7 @@ import { expect, test, type Page } from '@playwright/test';
 
 const runtime = globalThis as typeof globalThis & { process?: { env?: Record<string, string | undefined> } };
 const productionURL = new URL(runtime.process?.env?.MATHLAB_PRODUCTION_URL ?? 'https://thiepn.dev/mathlab/');
-const routes = ['workspace', 'tools', 'visualize', 'proof', 'practice', 'reference'] as const;
+const routes = ['workspace', 'tools', 'visualize', 'proof', 'practice', 'reference', 'share'] as const;
 
 function routeURL(route: string) {
   return new URL(`./#/${route}`, productionURL).toString();
@@ -33,7 +33,7 @@ test('custom-domain stable build boots and every primary route resolves', async 
   expect(consoleErrors).toEqual([]);
 });
 
-test('production manifest, icons and v2 service worker are published', async ({ page }) => {
+test('production manifest, icons and build-scoped service worker are published', async ({ page }) => {
   await openWorkspace(page);
 
   const manifestResponse = await page.request.get(new URL('manifest.webmanifest', productionURL).toString());
@@ -53,8 +53,17 @@ test('production manifest, icons and v2 service worker are published', async ({ 
   const swResponse = await page.request.get(new URL('sw.js', productionURL).toString());
   expect(swResponse.ok()).toBe(true);
   const sw = await swResponse.text();
-  expect(sw).toContain("const SHELL_CACHE = 'mathlab-v2-shell'");
-  expect(sw).toContain("const RUNTIME_CACHE = 'mathlab-v2-runtime'");
+  expect(sw).toContain("const CACHE_PREFIX = 'mathlab-build-'");
+  expect(sw).toContain("const BUILD_ID =");
+  expect(sw).toContain("const SHELL_CACHE = \`${CACHE_PREFIX}${BUILD_ID}-shell\`");
+  expect(sw).toContain("const RUNTIME_CACHE = \`${CACHE_PREFIX}${BUILD_ID}-runtime\`");
+
+  const registration = await page.evaluate(async () => {
+    if (!('serviceWorker' in navigator)) return null;
+    const ready = await navigator.serviceWorker.ready;
+    return ready.active?.scriptURL ?? null;
+  });
+  expect(registration).toMatch(/\/sw\.js\?v=[a-f0-9]{12}$/);
 
   for (const icon of ['mathlab-icon-192.png', 'mathlab-icon-512.png', 'mathlab-maskable-512.png']) {
     const response = await page.request.get(new URL(icon, productionURL).toString());
