@@ -43,15 +43,21 @@ export function SharedSnapshotPage({workspace,worksheet,onOpenWorkspace}:Props){
   const fileRef=useRef<HTMLInputElement>(null);
 
   useEffect(()=>{
-    const token=currentToken();
-    if(!token){setStatus('Open a MathLab shared snapshot file, or follow a MathLab share link.');return;}
-    let active=true;
-    void decodeShareToken(token).then((value)=>{
-      if(!active)return;setSnapshot(value);setError('');setStatus('');
-    }).catch((reason)=>{
-      if(!active)return;setSnapshot(null);setStatus('');setError(reason instanceof Error?reason.message:'Could not open this shared snapshot.');
-    });
-    return()=>{active=false;};
+    let generation=0;
+    const load=()=>{
+      const token=currentToken();
+      const current=++generation;
+      if(!token){setSnapshot(null);setError('');setStatus('Open a MathLab shared snapshot file, or follow a MathLab share link.');return;}
+      setSnapshot(null);setError('');setStatus('Loading shared snapshot…');
+      void decodeShareToken(token).then((value)=>{
+        if(current!==generation)return;setSnapshot(value);setError('');setStatus('');
+      }).catch((reason)=>{
+        if(current!==generation)return;setSnapshot(null);setStatus('');setError(reason instanceof Error?reason.message:'Could not open this shared snapshot.');
+      });
+    };
+    load();
+    window.addEventListener('hashchange',load);
+    return()=>{generation+=1;window.removeEventListener('hashchange',load);};
   },[]);
 
   const openFile=async(file?:File)=>{
