@@ -10,6 +10,7 @@ const requiredFiles = [
   'src/lib/math/capabilitiesE5.ts',
   'src/app/capabilityRegistry.ts',
   'src/app/workspaceOperations.ts',
+  'src/styles/m3.css',
   'tests/wirtschaftsmathematik.test.ts',
   'tests/browser/wirtschaftsmathematik.e2e.ts',
   'docs/P7_WIRTSCHAFTSMATHEMATIK.md',
@@ -51,6 +52,7 @@ requireText('src/lib/math/capabilitiesE5.ts', 'p7CapabilitiesForObject', 'Runtim
 requireText('src/app/capabilityRegistry.ts', 'P7_TOOL_CATALOG', 'Canonical capability registry omits P7');
 requireText('src/app/capabilityRegistry.ts', "'Optimization & OR'", 'Optimization & OR is not mapped into a learning course');
 requireText('src/app/workspaceOperations.ts', "'simplex-linear-program'", 'Workspace operation policy omits P7');
+requireText('src/styles/m3.css', '.workspace-tools-drawer > .context-panel {\n  display: block;', 'Mobile/tablet tools drawer must override the global hidden context panel rule');
 requireText('tests/wirtschaftsmathematik.test.ts', "describe('Post-v2 P7 Wirtschaftsmathematik'", 'P7 unit certification is missing');
 requireText('tests/browser/wirtschaftsmathematik.e2e.ts', 'P7 time-series workflow', 'P7 browser acceptance is missing');
 requireText('docs/ROADMAP.md', '| **P7 — Wirtschaftsmathematik expansion** | Optimization/OR, probability/statistics and applied numerical priorities. | **Complete** |', 'Roadmap does not mark P7 complete');
