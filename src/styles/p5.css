@@ -87,7 +87,7 @@
 }
 
 .p5-concept-index {
-  color: #96a3b2;
+  color: var(--ml-muted);
   font-family: var(--ml-font-mono);
   font-size: 11px;
 }
