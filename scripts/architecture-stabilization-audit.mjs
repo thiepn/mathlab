@@ -75,7 +75,7 @@ requireText('vite.config.ts', 'GITHUB_SHA', 'Production build identity must use 
 requireText('src/main.tsx', "./sw.js?v=", 'Service worker registration is not build-scoped');
 requireText('src/vite-env.d.ts', '__MATHLAB_BUILD_ID__', 'Build identity type contract is missing');
 requireText('public/sw.js', "CACHE_PREFIX = 'mathlab-build-'", 'Build-scoped cache prefix is missing');
-requireText('public/sw.js', "key.startsWith('mathlab-v2-')", 'Legacy v2 cache cleanup is missing');
+requireText('public/sw.js', "key.startsWith('mathlab-')", 'Obsolete MathLab cache cleanup is missing');
 requireText('public/sw.js', 'currentRuntime.match', 'Runtime cache lookup must be restricted to the current build');
 
 requireText('scripts/bundle-budget.mjs', '800 * KiB', 'Initial-entry bundle budget is missing');
