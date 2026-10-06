@@ -4,15 +4,15 @@ import type { SemanticMathObject } from './types';
 type Seed = Omit<ObjectCapability, 'applicable' | 'available' | 'reason'>;
 
 const MATRIX_TOOLS: Seed[] = [
-  { id:'simplex-linear-program', label:'Canonical simplex LP…', phase:'Post-v2 P7', group:'Optimization & operations research' },
-  { id:'assignment-problem', label:'Assignment problem…', phase:'Post-v2 P7', group:'Optimization & operations research' },
-  { id:'transportation-problem', label:'Transportation problem…', phase:'Post-v2 P7', group:'Optimization & operations research' },
-  { id:'polynomial-least-squares', label:'Polynomial least squares…', phase:'Post-v2 P7', group:'Applied numerical modeling' },
+  { id:'simplex-linear-program', label:'Canonical simplex LP…', phase:'P7', group:'Optimization & operations research' },
+  { id:'assignment-problem', label:'Assignment problem…', phase:'P7', group:'Optimization & operations research' },
+  { id:'transportation-problem', label:'Transportation problem…', phase:'P7', group:'Optimization & operations research' },
+  { id:'polynomial-least-squares', label:'Polynomial least squares…', phase:'P7', group:'Applied numerical modeling' },
 ];
 
 const SERIES_TOOLS: Seed[] = [
-  { id:'time-series-profile', label:'Time-series profile…', phase:'Post-v2 P7', group:'Time series & forecasting' },
-  { id:'exponential-smoothing', label:'Exponential smoothing…', phase:'Post-v2 P7', group:'Time series & forecasting' },
+  { id:'time-series-profile', label:'Time-series profile…', phase:'P7', group:'Time series & forecasting' },
+  { id:'exponential-smoothing', label:'Exponential smoothing…', phase:'P7', group:'Time series & forecasting' },
 ];
 
 function blocked(seed: Seed, reason: string): ObjectCapability {
