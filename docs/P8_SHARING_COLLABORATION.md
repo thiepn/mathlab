@@ -58,7 +58,7 @@ Compact snapshots are encoded entirely in the URL fragment:
 https://thiepn.dev/mathlab/#/share/<base64url-snapshot>
 ```
 
-The fragment is not part of the HTTP request sent to the static host. MathLab therefore does not upload the snapshot to a server merely to generate or open a link.
+The fragment is not part of the HTTP request sent to the static host. MathLab therefore does not upload the snapshot to a server merely to generate or open a link. The fragment is **not encryption**: anyone with the complete link can decode the snapshot, and browsers, synced history, extensions, screenshots or chat systems may retain the URL.
 
 P8 deliberately uses a conservative encoded-token limit of 24,000 characters. Larger snapshots fall back to a downloadable shared-snapshot file rather than producing fragile giant URLs.
 
