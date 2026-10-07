@@ -29,11 +29,11 @@ test('every P5 course exposes a concept pathway and engine coverage', async ({ p
 
   await page.goto('/#/practice');
   const courseNav = page.locator('.m6-course-nav');
+  await expect(courseNav).toBeVisible();
   const buttons = courseNav.locator('button');
-  const count = await buttons.count();
-  expect(count).toBe(8);
+  await expect(buttons).toHaveCount(8);
 
-  for (let index = 0; index < count; index += 1) {
+  for (let index = 0; index < 8; index += 1) {
     await buttons.nth(index).click();
     const pathway = page.getByRole('region', { name: 'Course learning pathway' });
     await expect(pathway).toBeVisible();
