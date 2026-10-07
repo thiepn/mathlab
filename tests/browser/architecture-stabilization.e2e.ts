@@ -32,10 +32,13 @@ test('P9 storage health is inspectable without interrupting workspace persistenc
   await page.goto('/#/workspace');
   await expect(page.locator('.save-state')).toHaveText('Saved locally');
 
+  const dataMenu = page.locator('details.workspace-data-menu');
   await page.getByText('Workspace data', { exact: true }).click();
   const health = page.locator('.p9-storage-health');
   await expect(health).toBeVisible();
   await expect(health).toContainText(/IndexedDB ready|Local storage unavailable/);
+  await page.getByText('Workspace data', { exact: true }).click();
+  await expect(dataMenu).not.toHaveAttribute('open', '');
 
   const input = page.getByRole('textbox', { name: 'Mathematical input' });
   await input.fill('p9_storage_probe := 11');
