@@ -31,7 +31,7 @@ test('boots cleanly and every routed surface is reachable', async ({ page }) => 
   page.on('console', (message) => { if (message.type() === 'error') consoleErrors.push(message.text()); });
 
   await openWorkspace(page);
-  await expect(page.locator('.release-badge')).toHaveText('v2.0');
+  await expect(page.locator('.release-badge')).toHaveText('v2.1');
 
   for (const [route, label] of routes) {
     await page.goto(`/#/${route}`);

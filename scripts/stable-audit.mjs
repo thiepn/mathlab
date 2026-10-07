@@ -7,7 +7,7 @@ const pass = (condition, message) => { if (!condition) failures.push(message); }
 const text = (path) => readFileSync(join(root, path), 'utf8');
 
 const pkg = JSON.parse(text('package.json'));
-pass(pkg.version === '2.0.0', 'stable gate requires package identity 2.0.0');
+pass(pkg.version === '2.1.0', 'stable gate requires package identity 2.1.0');
 pass(pkg.devDependencies?.['@playwright/test'] === '1.62.1', 'Playwright must stay pinned to 1.62.1 for this certification record');
 pass(pkg.scripts?.['test:e2e'] === 'playwright test --config=playwright.config.mjs', 'test:e2e must execute the stable Playwright configuration');
 pass(typeof pkg.scripts?.['audit:stable'] === 'string', 'audit:stable script missing');
@@ -91,15 +91,15 @@ pass(sw.includes("key.startsWith('mathlab-')"), 'P9 service worker must clean up
 pass(!sw.includes("mathlab-e3-shell") && !sw.includes("mathlab-e3-runtime"), 'E3 cache generation must not remain active');
 
 const header = text('src/app/components/Header.tsx');
-pass(header.includes('v2.0.0 stable release'), 'stable UI title is missing');
-pass(header.includes('>v2.0</span>'), 'stable UI badge is missing');
-pass(!header.includes('RC1') && !header.includes('2.0.0-rc.1'), 'stable UI must not retain RC identity');
+pass(header.includes('v2.1.0 stable release'), 'stable UI title is missing');
+pass(header.includes('>v2.1</span>'), 'stable UI badge is missing');
+pass(!header.includes('RC'), 'stable UI must not retain RC identity');
 pass(header.includes('PRIMARY_NAV') && header.includes('SECTION_NAV'), 'header must use the consolidated P1 shell navigation model');
 const appShell = text('src/app/App.tsx');
 pass(appShell.includes('mobile-nav-primary') && !appShell.includes('mobile-nav-six'), 'mobile shell must expose three primary destinations instead of the legacy six-tab bar');
 
 const release = text('docs/RELEASE_CERTIFICATION.md');
-pass(release.includes('v2.0.0'), 'stable certification record must identify v2.0.0');
+pass(release.includes('v2.1.0'), 'stable certification record must identify v2.1.0');
 pass(release.includes('STABLE RELEASE GATE'), 'stable certification record must contain the stable release gate decision');
 pass(release.includes('physical-device') || release.includes('physical device'), 'certification record must distinguish physical-device validation from automated evidence');
 
@@ -135,4 +135,4 @@ if (failures.length) {
   for (const failure of failures) console.error(`- ${failure}`);
   process.exit(1);
 }
-console.log('MathLab v2 stable release audit: PASS');
+console.log('MathLab v2.1 stable release audit: PASS');

@@ -2,7 +2,7 @@
 
 MathLab is a **local-first university mathematics workbench** built around persistent mathematical objects rather than disconnected calculator pages.
 
-**Current stable release: v2.0.0**
+**Current stable release: v2.1.0**
 
 The stable v2 engine spans algebra, calculus, multivariable/vector calculus, visualization, linear algebra, real and complex analysis, probability/statistics, numerical mathematics, ODEs, transforms, discrete mathematics/algorithms, number theory, finite algebraic structures, foundational topology/geometry, PDE templates, optimization, practice, and deterministic proof verification. Post-v2 P7 adds broader Wirtschaftsmathematik workflows for operations research, time series/forecasting, and data-driven numerical fitting. P8 adds local-first sharing through immutable, integrity-verified read-only snapshots and explicit recipient copies. P9 stabilizes the architecture with lazy route boundaries, atomic cross-tab persistence, build-scoped PWA caches and enforceable bundle budgets.
 

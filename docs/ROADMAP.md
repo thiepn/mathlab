@@ -93,9 +93,9 @@ Visualization may consume an existing Semantic Object directly only as a read-on
 
 ## Current release state
 
-**MathLab v2.0.0 is the stable live release.** The stable source passed the release/E12/stable audits, full regression suite, strict TypeScript, production build and real Chromium/Firefox/WebKit browser-engine gate. GitHub Pages then deployed `main`, and the separate custom-domain verification passed against `https://thiepn.dev/mathlab/` with a `mathlab-production: success` status.
+**MathLab v2.1.0 is the stable live release.** The stable source passed the release/E12/stable audits, full regression suite, strict TypeScript, production build and real Chromium/Firefox/WebKit browser-engine gate. GitHub Pages then deployed `main`, and the separate custom-domain verification passed against `https://thiepn.dev/mathlab/` with a `mathlab-production: success` status.
 
-Post-v2 product work now includes the accessibility/device certification layer plus the completed P1–P9 product sequence without changing the release identity or the locked E-series. It adds:
+MathLab v2.1.0 incorporates the accessibility/device certification layer plus the completed P0–P9 post-v2 product sequence while keeping the locked E-series mathematical-certification baseline unchanged. It adds:
 
 - automated axe-core WCAG A/AA route scans;
 - 320px + 200% text reflow checks;
