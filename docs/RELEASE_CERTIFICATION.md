@@ -6,7 +6,7 @@
 
 MathLab v2.1.0 is the product-release promotion for the completed post-v2 P0–P9 sequence. The exact source head is eligible for stable promotion only after all source/browser gates pass, it is merged to `main`, GitHub Pages deploys that exact merge SHA, and the independent custom-domain verifier reports `mathlab-production: success`.
 
-This promotion does **not** rewrite the E-series history. E12 remains the frozen mathematical-certification baseline for the v2 engine at `2.0.0`; v2.1.0 packages later product-shell, worksheet, interaction, learning, exploration, Wirtschaftsmathematik, sharing, accessibility/device and architecture work on top of that certified mathematical baseline.
+This promotion does **not** rewrite the E-series history. E12 remains the frozen mathematical-certification baseline for the v2 engine at `v2.0.0`; v2.1.0 packages later product-shell, worksheet, interaction, learning, exploration, Wirtschaftsmathematik, sharing, accessibility/device and architecture work on top of that certified mathematical baseline.
 
 ## Included post-v2 product work
 
