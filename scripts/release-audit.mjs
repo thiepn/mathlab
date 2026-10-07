@@ -8,7 +8,7 @@ const text = (path) => readFileSync(join(root, path), 'utf8');
 
 const pkg = JSON.parse(text('package.json'));
 const lock = JSON.parse(text('package-lock.json'));
-pass(pkg.version === '2.0.0', 'package version must be stable 2.0.0');
+pass(pkg.version === '2.1.0', 'package version must be stable 2.1.0');
 pass(lock.lockfileVersion === 3, 'package-lock.json must use npm lockfileVersion 3');
 pass(lock.packages?.['']?.version === pkg.version, 'package-lock root version must match package.json');
 for (const groupName of ['dependencies', 'devDependencies']) {
@@ -69,9 +69,9 @@ const app = text('src/app/App.tsx');
 pass(app.includes('skip-link'), 'app lacks keyboard skip link');
 pass(app.includes('navigator.onLine'), 'app lacks online/offline state');
 const header = text('src/app/components/Header.tsx');
-pass(header.includes('>v2.0</span>'), 'header must identify the stable v2.0 release');
-pass(header.includes('v2.0.0 stable release'), 'header stable title must match the package version');
-pass(!header.includes('RC1') && !header.includes('2.0.0-rc.1'), 'release UI must not retain RC identity');
+pass(header.includes('>v2.1</span>'), 'header must identify the stable v2.1 release');
+pass(header.includes('v2.1.0 stable release'), 'header stable title must match the package version');
+pass(!header.includes('RC'), 'release UI must not retain RC identity');
 
 const main = text('src/main.tsx');
 pass(main.includes('AppErrorBoundary'), 'app lacks top-level error boundary');
