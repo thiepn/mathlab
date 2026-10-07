@@ -8,7 +8,7 @@ async function probe() {
   const targets = [
     ['', (text) => /<title>MathLab<\/title>/i.test(text)],
     ['manifest.webmanifest', (text) => text.includes('"name": "MathLab"')],
-    ['sw.js', (text) => text.includes("mathlab-v2-shell") && text.includes("mathlab-v2-runtime")],
+    ['sw.js', (text) => text.includes("CACHE_PREFIX = 'mathlab-build-'") && text.includes('BUILD_ID') && text.includes('-shell') && text.includes('-runtime')],
   ];
 
   for (const [relative, validate] of targets) {
@@ -16,7 +16,7 @@ async function probe() {
     const response = await fetch(url, { redirect: 'follow', cache: 'no-store' });
     if (!response.ok) throw new Error(`${url} returned HTTP ${response.status}`);
     const text = await response.text();
-    if (!validate(text)) throw new Error(`${url} did not expose the expected MathLab v2 production contract`);
+    if (!validate(text)) throw new Error(`${url} did not expose the expected MathLab production contract`);
   }
 }
 

@@ -1,5 +1,7 @@
-const SHELL_CACHE = 'mathlab-v2-shell';
-const RUNTIME_CACHE = 'mathlab-v2-runtime';
+const BUILD_ID = (new URL(self.location.href).searchParams.get('v') || 'fallback').replace(/[^a-zA-Z0-9._-]/g, '-');
+const CACHE_PREFIX = 'mathlab-build-';
+const SHELL_CACHE = `${CACHE_PREFIX}${BUILD_ID}-shell`;
+const RUNTIME_CACHE = `${CACHE_PREFIX}${BUILD_ID}-runtime`;
 const SHELL = ['./', './index.html', './manifest.webmanifest', './mathlab-mark.svg', './mathlab-icon-192.png', './mathlab-icon-512.png', './mathlab-maskable-512.png'];
 
 self.addEventListener('install', (event) => {
@@ -9,7 +11,9 @@ self.addEventListener('install', (event) => {
 
 self.addEventListener('activate', (event) => {
   event.waitUntil(caches.keys().then((keys) => Promise.all(
-    keys.filter((key) => key.startsWith('mathlab-') && ![SHELL_CACHE, RUNTIME_CACHE].includes(key)).map((key) => caches.delete(key)),
+    keys
+      .filter((key) => key.startsWith('mathlab-') && ![SHELL_CACHE, RUNTIME_CACHE].includes(key))
+      .map((key) => caches.delete(key)),
   )));
   self.clients.claim();
 });
@@ -30,13 +34,19 @@ self.addEventListener('fetch', (event) => {
     event.respondWith(
       fetch(event.request)
         .then((response) => cacheResponse(event.request, response))
-        .catch(async () => (await caches.match(event.request)) || (await caches.match('./index.html'))),
+        .catch(async () => {
+          const runtime = await caches.open(RUNTIME_CACHE);
+          const shell = await caches.open(SHELL_CACHE);
+          return (await runtime.match(event.request)) || (await shell.match(event.request)) || (await shell.match('./index.html'));
+        }),
     );
     return;
   }
 
   event.respondWith((async () => {
-    const cached = await caches.match(event.request);
+    const currentRuntime = await caches.open(RUNTIME_CACHE);
+    const currentShell = await caches.open(SHELL_CACHE);
+    const cached = (await currentRuntime.match(event.request)) || (await currentShell.match(event.request));
     if (cached) {
       event.waitUntil(fetch(event.request).then((response) => cacheResponse(event.request, response)).catch(() => undefined));
       return cached;

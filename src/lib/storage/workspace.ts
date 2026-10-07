@@ -11,10 +11,8 @@ const MAX_OBJECTS = 1000;
 const MAX_ASSUMPTIONS = 250;
 const MAX_IMPORT_BYTES = 5_000_000;
 
-// A workspace save spans more than one IndexedDB transaction: read the current
-// record, optionally write recovery, then write the new record. Without a queue,
-// two React effects can interleave those transactions and allow an older snapshot
-// to land after a newer one. Keep the complete save protocol ordered.
+// Keep same-tab saves ordered. Cross-tab atomicity is enforced inside
+// MathLabDatabase.replaceVersionedWithRecovery.
 let workspaceSaveQueue: Promise<void> = Promise.resolve();
 
 export function emptyWorkspace(): MathWorkspaceState {
@@ -96,15 +94,16 @@ export async function loadWorkspace(): Promise<MathWorkspaceState> {
 }
 
 async function persistWorkspace(snapshot: MathWorkspaceState): Promise<void> {
-  const previous = await mathLabDb.get<unknown>(WORKSPACE_KEY);
-
-  // A delayed save must never roll the workspace back. This is deliberately
-  // checked inside the serialized save protocol so the comparison and write
-  // cannot race another MathLab save.
-  if (isP3Workspace(previous?.value) && previous.value.updatedAt > snapshot.updatedAt) return;
-
-  if (isP3Workspace(previous?.value)) await mathLabDb.put(RECOVERY_KEY, previous.value);
-  await mathLabDb.put(WORKSPACE_KEY, snapshot);
+  // Keep the revision comparison, Recovery write and replacement in one
+  // read/write transaction. This protects the local-first workspace not only
+  // from same-tab React effects, but also from interleaving writes in another
+  // MathLab tab sharing the same IndexedDB origin.
+  await mathLabDb.replaceVersionedWithRecovery(
+    WORKSPACE_KEY,
+    RECOVERY_KEY,
+    snapshot,
+    { isValid: isP3Workspace, revision: (value) => value.updatedAt },
+  );
 }
 
 export function saveWorkspace(state: MathWorkspaceState): Promise<void> {

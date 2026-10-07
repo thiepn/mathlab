@@ -10,6 +10,18 @@ const fake = vi.hoisted(() => {
       records.set(id, { id, value, updatedAt: Date.now() });
     }),
     delete: vi.fn(async (id: string) => { records.delete(id); }),
+    replaceVersionedWithRecovery: vi.fn(async <T>(
+      currentId: string,
+      recoveryId: string,
+      next: T,
+      options: { isValid: (value: unknown) => value is T; revision: (value: T) => number },
+    ) => {
+      const current = records.get(currentId)?.value;
+      if (options.isValid(current) && options.revision(current) > options.revision(next)) return false;
+      if (options.isValid(current)) records.set(recoveryId, { id: recoveryId, value: current, updatedAt: Date.now() });
+      records.set(currentId, { id: currentId, value: next, updatedAt: Date.now() });
+      return true;
+    }),
   };
   return {
     records,
@@ -19,6 +31,7 @@ const fake = vi.hoisted(() => {
       mathLabDb.get.mockClear();
       mathLabDb.put.mockClear();
       mathLabDb.delete.mockClear();
+      mathLabDb.replaceVersionedWithRecovery.mockClear();
     },
   };
 });

@@ -62,6 +62,9 @@ jobs:
       - name: Sharing and collaboration audit
         run: npm run audit:sharing
 
+      - name: Architecture stabilization audit
+        run: npm run audit:architecture
+
       - name: Install dependencies
         run: npm ci
 
@@ -73,6 +76,9 @@ jobs:
 
       - name: Build
         run: npm run build
+
+      - name: Production bundle budget
+        run: npm run audit:bundle
 
       - name: Install certified browser engines
         run: npx playwright install --with-deps chromium firefox webkit

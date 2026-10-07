@@ -1,19 +1,21 @@
-import { useMemo, useRef, useState } from 'react';
+import { lazy, Suspense, useMemo, useRef, useState } from 'react';
 import type { ParsedMath } from '../../lib/math/ast';
 import { domainSymbol } from '../../lib/math/assumptions';
 import { astToLatex, astToPlainText } from '../../lib/math/format';
 import { dependentObjects } from '../../lib/math/workspaceLifecycle';
 import { resolveSemanticObject, shapeLabel } from '../../lib/math/semantic';
 import type { MathResult } from '../../lib/math/types';
+import { inspectStorageHealth, requestPersistentStorage, type StorageHealth } from '../../lib/storage/health';
 import type { MathWorkspaceController } from '../hooks/useMathWorkspace';
 import type { WorksheetController } from '../hooks/useWorksheet';
 import { AssumptionBar } from './AssumptionBar';
 import { MathInput } from './MathInput';
 import { MathPreview } from './MathPreview';
 import { AlgebraResult } from './AlgebraResult';
-import { WorkspaceActions } from './WorkspaceActions';
 import { WorksheetTimeline } from './WorksheetTimeline';
-import { ShareSnapshotDialog } from './ShareSnapshotDialog';
+
+const LazyWorkspaceActions = lazy(() => import('./WorkspaceActions').then((module) => ({ default: module.WorkspaceActions })));
+const LazyShareSnapshotDialog = lazy(() => import('./ShareSnapshotDialog').then((module) => ({ default: module.ShareSnapshotDialog })));
 
 interface WorkspaceProps {
   controller: MathWorkspaceController;
@@ -67,6 +69,8 @@ export function Workspace({
   const [resolutionMessage, setResolutionMessage] = useState('');
   const [transferMessage, setTransferMessage] = useState('');
   const [shareOpen,setShareOpen]=useState(false);
+  const [storageHealth,setStorageHealth]=useState<StorageHealth|null>(null);
+  const [storageChecking,setStorageChecking]=useState(false);
   const importRef = useRef<HTMLInputElement>(null);
   const editorSource = editorSourceOverride ?? controller.activeObject?.source ?? '';
 
@@ -129,6 +133,27 @@ export function Workspace({
     }
   };
 
+  const checkStorageHealth = async () => {
+    if (storageChecking) return;
+    setStorageChecking(true);
+    try { setStorageHealth(await inspectStorageHealth()); }
+    finally { setStorageChecking(false); }
+  };
+
+  const makeStoragePersistent = async () => {
+    const granted = await requestPersistentStorage();
+    setTransferMessage(granted === true
+      ? 'Browser granted durable storage for MathLab.'
+      : granted === false
+        ? 'Browser did not grant durable storage. Export important work periodically.'
+        : 'Persistent-storage requests are not supported in this browser.');
+    await checkStorageHealth();
+  };
+
+  const storagePercent = storageHealth?.ratio === null || storageHealth?.ratio === undefined
+    ? null
+    : Math.round(storageHealth.ratio * 100);
+
   return (
     <main className="workspace-main m3-workspace-main">
       <div className="workspace-heading p3-workspace-heading">
@@ -140,13 +165,24 @@ export function Workspace({
         <div className="workspace-heading-actions m3-heading-actions">
           <span className={`save-state save-${controller.saveState}`}><i />{controller.saveState === 'saving' ? 'Saving' : controller.saveState === 'error' ? 'Storage issue' : controller.saveState === 'loading' ? 'Loading' : 'Saved locally'}</span>
           <button className="p8-share-button" disabled={!controller.hydrated||!worksheet.hydrated} onClick={()=>setShareOpen(true)}>Share</button>
-          <details className="workspace-data-menu">
+          <details className="workspace-data-menu" onToggle={(event) => { if (event.currentTarget.open && !storageHealth) void checkStorageHealth(); }}>
             <summary>Workspace data</summary>
             <div>
               <button disabled={!controller.hydrated} onClick={() => downloadWorkspace(controller.exportWorkspace())}>Export workspace</button>
               <button disabled={!controller.hydrated} onClick={() => importRef.current?.click()}>Import workspace</button>
               <button disabled={!controller.hydrated} onClick={() => void restore()}>Restore recovery</button>
               <button onClick={onOpenSharedSnapshot}>Open shared snapshot</button>
+              <div className={`p9-storage-health is-${storageHealth?.pressure ?? 'unknown'}`}>
+                <div role="status" aria-live="polite">
+                  <strong>{storageChecking ? 'Checking local storage…' : storageHealth?.indexedDbReady === false ? 'Local storage unavailable' : 'Local storage health'}</strong>
+                  {storageHealth && <span>
+                    {storageHealth.indexedDbReady ? 'IndexedDB ready' : storageHealth.message ?? 'IndexedDB unavailable'}
+                    {storagePercent !== null ? ` · ${storagePercent}% of browser quota used` : ''}
+                    {storageHealth.persisted === true ? ' · durable storage granted' : storageHealth.persisted === false ? ' · eviction protection not granted' : ''}
+                  </span>}
+                </div>
+                {storageHealth?.persistenceSupported && storageHealth.persisted === false && <button type="button" onClick={() => void makeStoragePersistent()}>Request durable storage</button>}
+              </div>
             </div>
           </details>
           <input ref={importRef} className="visually-hidden" type="file" accept="application/json,.json" aria-label="Import workspace JSON" disabled={!controller.hydrated} onChange={(event) => void importFile(event.target.files?.[0])} />
@@ -187,13 +223,22 @@ export function Workspace({
         )}
       </section>
 
-      <WorkspaceActions
-        object={object ?? null}
-        runningOperation={runningOperation}
-        onRun={onAction}
-        onOpenTools={onOpenTools}
-        onOpenProof={onOpenProof}
-      />
+      {object ? (
+        <Suspense fallback={<section className="workspace-actions is-loading" aria-live="polite">Loading available actions…</section>}>
+          <LazyWorkspaceActions
+            object={object}
+            runningOperation={runningOperation}
+            onRun={onAction}
+            onOpenTools={onOpenTools}
+            onOpenProof={onOpenProof}
+          />
+        </Suspense>
+      ) : (
+        <section className="workspace-actions is-empty" aria-label="Available mathematical actions">
+          <div><span className="section-kicker">Next step</span><strong>Enter or open mathematics first.</strong></div>
+          <p>MathLab will surface the most relevant operations here once it knows what kind of object you are working with.</p>
+        </section>
+      )}
 
       <AlgebraResult result={mathResult} status={engineStatus} error={engineError} onClear={onClearResult} onUseResult={onReuseSource} />
 
@@ -237,7 +282,7 @@ export function Workspace({
       <div className="phase-notice p3-notice m3-notice">
         <strong>Local-first workspace.</strong> Your saved mathematical objects and practice progress stay on this device unless you explicitly export or share them.
       </div>
-      {shareOpen&&<ShareSnapshotDialog workspace={controller.state} worksheet={worksheet.activeSession} onClose={()=>setShareOpen(false)}/>}
+      {shareOpen&&<Suspense fallback={null}><LazyShareSnapshotDialog workspace={controller.state} worksheet={worksheet.activeSession} onClose={()=>setShareOpen(false)}/></Suspense>}
     </main>
   );
 }

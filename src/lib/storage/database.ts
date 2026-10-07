@@ -21,7 +21,10 @@ export class MathLabDatabase {
         const db = request.result;
         if (!db.objectStoreNames.contains(STORE)) db.createObjectStore(STORE, { keyPath: 'id' });
       };
-      request.onblocked = () => reject(new Error('MathLab storage upgrade is blocked by another open tab. Close other MathLab tabs and retry.'));
+      request.onblocked = () => {
+        this.dbPromise = null;
+        reject(new Error('MathLab storage upgrade is blocked by another open tab. Close other MathLab tabs and retry.'));
+      };
       request.onsuccess = () => {
         const db = request.result;
         db.onversionchange = () => {
@@ -45,7 +48,11 @@ export class MathLabDatabase {
       const tx = db.transaction(STORE, mode);
       let request: IDBRequest<T> | void;
       try { request = action(tx.objectStore(STORE)); }
-      catch (error) { reject(error); return; }
+      catch (error) {
+        try { tx.abort(); } catch { /* transaction may already be inactive */ }
+        reject(error);
+        return;
+      }
       let value: T | undefined;
       if (request) {
         request.onsuccess = () => { value = request.result; };
@@ -69,6 +76,48 @@ export class MathLabDatabase {
   async delete(id: string): Promise<void> {
     await this.transaction('readwrite', (store) => store.delete(id));
   }
+
+  async replaceVersionedWithRecovery<T>(
+    currentId: string,
+    recoveryId: string,
+    next: T,
+    options: { isValid: (value: unknown) => value is T; revision: (value: T) => number },
+  ): Promise<boolean> {
+    const db = await this.open();
+    return new Promise<boolean>((resolve, reject) => {
+      const tx = db.transaction(STORE, 'readwrite');
+      const store = tx.objectStore(STORE);
+      const currentRequest = store.get(currentId);
+      let replaced = false;
+
+      currentRequest.onerror = () => {
+        try { tx.abort(); } catch { /* transaction may already be inactive */ }
+        reject(currentRequest.error ?? new Error('IndexedDB versioned read failed.'));
+      };
+
+      currentRequest.onsuccess = () => {
+        const current = currentRequest.result as StoredRecord<unknown> | undefined;
+        const currentValue = current?.value;
+        if (options.isValid(currentValue) && options.revision(currentValue) > options.revision(next)) return;
+
+        if (options.isValid(currentValue)) {
+          store.put({ id: recoveryId, value: currentValue, updatedAt: Date.now() } satisfies StoredRecord<T>);
+        }
+        store.put({ id: currentId, value: next, updatedAt: Date.now() } satisfies StoredRecord<T>);
+        replaced = true;
+      };
+
+      tx.oncomplete = () => resolve(replaced);
+      tx.onabort = () => reject(tx.error ?? new Error('IndexedDB versioned transaction was aborted.'));
+      tx.onerror = () => reject(tx.error ?? new Error('IndexedDB versioned transaction failed.'));
+    });
+  }
+
+  resetConnection(): void {
+    void this.dbPromise?.then((db) => db.close()).catch(() => undefined);
+    this.dbPromise = null;
+  }
 }
+
 
 export const mathLabDb = new MathLabDatabase();

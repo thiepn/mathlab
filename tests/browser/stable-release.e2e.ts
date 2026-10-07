@@ -7,6 +7,7 @@ const routes = [
   ['proof', 'Proof & Verification'],
   ['practice', 'Learn'],
   ['reference', 'Reference'],
+  ['share', 'Shared snapshot'],
 ] as const;
 
 async function openWorkspace(page: Page) {

@@ -95,7 +95,7 @@ Visualization may consume an existing Semantic Object directly only as a read-on
 
 **MathLab v2.0.0 is the stable live release.** The stable source passed the release/E12/stable audits, full regression suite, strict TypeScript, production build and real Chromium/Firefox/WebKit browser-engine gate. GitHub Pages then deployed `main`, and the separate custom-domain verification passed against `https://thiepn.dev/mathlab/` with a `mathlab-production: success` status.
 
-Post-v2 product work now includes the accessibility/device certification layer plus the completed P1–P8 product sequence without changing the release identity or the locked E-series. It adds:
+Post-v2 product work now includes the accessibility/device certification layer plus the completed P1–P9 product sequence without changing the release identity or the locked E-series. It adds:
 
 - automated axe-core WCAG A/AA route scans;
 - 320px + 200% text reflow checks;
@@ -125,6 +125,6 @@ The next roadmap is product-led rather than mathematics-phase-led:
 | **P6 — Dynamic exploration** | Parameters/sliders, tables and linked formula/graph/result workflows. | **Complete** |
 | **P7 — Wirtschaftsmathematik expansion** | Optimization/OR, probability/statistics and applied numerical priorities. | **Complete** |
 | **P8 — Sharing & collaboration** | Immutable share snapshots, read-only review, integrity verification and explicit local-copy collaboration. | **Complete** |
-| P9 — Architecture stabilization | Domain migration, code splitting, performance/storage hardening and physical accessibility certification. | Planned |
+| **P9 — Architecture stabilization** | Route/module splitting, atomic storage hardening, build-scoped PWA caching, measurable bundle budgets and physical-accessibility qualification readiness. | **Complete** |
 
 Future mathematical expansion is intentionally selective. New breadth must be justified by real university/applied-mathematics use rather than continuing expansion numbering automatically.

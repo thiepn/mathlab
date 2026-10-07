@@ -1,27 +1,30 @@
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { Suspense, useEffect, useMemo, useRef, useState } from 'react';
 import type { ParsedMath } from '../lib/math/ast';
 import { parseMath } from '../lib/math/parser';
 import { dependentObjects } from '../lib/math/workspaceLifecycle';
 import { resolveSemanticObject } from '../lib/math/semantic';
 import type { MathResult } from '../lib/math/types';
 import { MathWorkerClient } from '../lib/worker/client';
-import { findCapability, type CapabilityDescriptor } from './capabilityRegistry';
+import type { CapabilityDescriptor } from './capabilityRegistry';
 import { Header } from './components/Header';
 import { ObjectSidebar } from './components/ObjectSidebar';
-import { ContextPanel } from './components/ContextPanel';
 import { Workspace } from './components/Workspace';
-import { ToolsPage } from './components/ToolsPage';
-import { VisualizationPage } from './components/VisualizationPage';
-import { ProofLabPage } from './components/ProofLabPage';
-import { PracticePage } from './components/PracticePage';
-import { CourseReferencePage } from './components/CourseReferencePage';
-import { SharedSnapshotPage } from './components/SharedSnapshotPage';
-import { CommandPalette } from './components/CommandPalette';
 import { useHashRoute } from './hooks/useHashRoute';
 import { useMathWorkspace } from './hooks/useMathWorkspace';
 import { useWorksheet } from './hooks/useWorksheet';
 
 import { PRIMARY_NAV, ROUTE_TITLES, primarySectionForRoute } from './shellNavigation';
+import {
+  LazyCommandPalette,
+  LazyContextPanel,
+  LazyCourseReferencePage,
+  LazyPracticePage,
+  LazyProofLabPage,
+  LazySharedSnapshotPage,
+  LazyToolsPage,
+  LazyVisualizationPage,
+  RouteLoading,
+} from './routeModules';
 
 export function App() {
   const [route, setRoute] = useHashRoute();
@@ -269,19 +272,21 @@ export function App() {
           />
         )}
         {route === 'tools' && (
-          <ToolsPage
+          <Suspense fallback={<RouteLoading label="Loading tools…" />}>
+          <LazyToolsPage
             currentObject={contextObject}
             initialToolId={selectedToolId}
             onRun={runCatalogTool}
             onConfigure={configureCatalogTool}
             onTryExample={tryToolExample}
           />
+          </Suspense>
         )}
-        {route === 'visualize' && <VisualizationPage objects={controller.state.objects} activeObject={controller.activeObject} onActivateObject={activateObject} onOpenObject={openObject} />}
-        {route === 'proof' && <ProofLabPage initialSource={contextObject?.source ?? ''} />}
-        {route === 'practice' && <PracticePage />}
-        {route === 'reference' && <CourseReferencePage />}
-        {route === 'share' && <SharedSnapshotPage workspace={controller} worksheet={worksheet} onOpenWorkspace={() => setRoute('workspace')} />}
+        {route === 'visualize' && <Suspense fallback={<RouteLoading label="Loading visualization…" />}><LazyVisualizationPage objects={controller.state.objects} activeObject={controller.activeObject} onActivateObject={activateObject} onOpenObject={openObject} /></Suspense>}
+        {route === 'proof' && <Suspense fallback={<RouteLoading label="Loading proof workspace…" />}><LazyProofLabPage initialSource={contextObject?.source ?? ''} /></Suspense>}
+        {route === 'practice' && <Suspense fallback={<RouteLoading label="Loading learning workspace…" />}><LazyPracticePage /></Suspense>}
+        {route === 'reference' && <Suspense fallback={<RouteLoading label="Loading reference…" />}><LazyCourseReferencePage /></Suspense>}
+        {route === 'share' && <Suspense fallback={<RouteLoading label="Loading shared snapshot…" />}><LazySharedSnapshotPage workspace={controller} worksheet={worksheet} onOpenWorkspace={() => setRoute('workspace')} /></Suspense>}
       </div>
 
       {route === 'workspace' && toolsOpen && (
@@ -292,7 +297,7 @@ export function App() {
               <div><span className="section-kicker">Current object</span><strong>Tools &amp; inspector</strong></div>
               <button onClick={() => setToolsOpen(false)} aria-label="Close tools">×</button>
             </header>
-            <ContextPanel
+            <Suspense fallback={<RouteLoading label="Loading tools…" />}><LazyContextPanel
               object={contextObject}
               diagnostics={liveResolution.diagnostics}
               persisted={Boolean(persistedContext)}
@@ -307,7 +312,7 @@ export function App() {
                 void executeOperation(operation, options);
               }}
               runningOperation={runningOperation}
-            />
+            /></Suspense>
           </section>
         </>
       )}
@@ -329,17 +334,19 @@ export function App() {
       </nav>
       {drawerOpen && <button className="drawer-backdrop mobile-only" onClick={() => setDrawerOpen(false)} aria-label="Close objects" />}
       {commandOpen && (
-        <CommandPalette
+        <Suspense fallback={<RouteLoading label="Loading search…" />}><LazyCommandPalette
           onClose={() => setCommandOpen(false)}
           objects={controller.state.objects}
           onNew={newWork}
           onOpenObject={openObject}
           onRoute={(nextRoute) => setRoute(nextRoute)}
           onTool={(toolId) => {
-            const tool = findCapability(toolId);
-            if (tool) openCatalogTool(tool.id);
+            void import('./capabilityRegistry').then(({ findCapability }) => {
+              const tool = findCapability(toolId);
+              if (tool) openCatalogTool(tool.id);
+            });
           }}
-        />
+        /></Suspense>
       )}
     </div>
   );

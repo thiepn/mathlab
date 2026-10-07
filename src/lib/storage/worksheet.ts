@@ -142,10 +142,12 @@ export async function loadWorksheet(): Promise<WorksheetState> {
 }
 
 async function persistWorksheet(snapshot: WorksheetState): Promise<void> {
-  const previous = await mathLabDb.get<unknown>(WORKSHEET_KEY);
-  if (validState(previous?.value) && previous.value.updatedAt > snapshot.updatedAt) return;
-  if (validState(previous?.value)) await mathLabDb.put(RECOVERY_KEY, previous.value);
-  await mathLabDb.put(WORKSHEET_KEY, snapshot);
+  await mathLabDb.replaceVersionedWithRecovery(
+    WORKSHEET_KEY,
+    RECOVERY_KEY,
+    snapshot,
+    { isValid: validState, revision: (value) => value.updatedAt },
+  );
 }
 
 export function saveWorksheet(state: WorksheetState): Promise<void> {
