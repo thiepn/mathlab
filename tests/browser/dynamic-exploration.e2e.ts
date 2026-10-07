@@ -45,9 +45,10 @@ test('P6 dynamic exploration remains usable across every visualization course ob
   await page.goto('/#/workspace');
   const input = page.getByRole('textbox', { name: 'Mathematical input' });
 
-  for (const source of ['g(x) := c*sin(x)', 'h(x,y) := k*(x^2+y^2)']) {
+  for (const [name, source] of [['g', 'g(x) := c*sin(x)'], ['h', 'h(x,y) := k*(x^2+y^2)']] as const) {
     await input.fill(source);
     await page.getByRole('button', { name: /Commit/ }).click();
+    await expect(page.getByText(new RegExp(`Saved ${name} to the workspace\\.|Updated ${name}\\.`))).toBeVisible();
   }
 
   await page.goto('/#/visualize');
@@ -55,10 +56,14 @@ test('P6 dynamic exploration remains usable across every visualization course ob
   await expect(dynamic).toBeVisible();
 
   const objectList = page.locator('.e3-object-list');
-  await objectList.getByRole('button', { name: /h/ }).first().click();
+  const hButton = objectList.getByRole('button').filter({ hasText: /^h/ }).first();
+  await hButton.click();
+  await expect(hButton).toHaveClass(/is-active/);
   await expect(dynamic.getByRole('slider', { name: 'k slider' })).toBeVisible();
 
-  await objectList.getByRole('button', { name: /g/ }).first().click();
+  const gButton = objectList.getByRole('button').filter({ hasText: /^g/ }).first();
+  await gButton.click();
+  await expect(gButton).toHaveClass(/is-active/);
   await expect(dynamic.getByRole('slider', { name: 'c slider' })).toBeVisible();
 
   await dynamic.getByRole('button', { name: 'Reset parameters' }).click();
