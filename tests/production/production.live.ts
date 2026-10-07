@@ -11,7 +11,7 @@ function routeURL(route: string) {
 async function openWorkspace(page: Page) {
   await page.goto(routeURL('workspace'), { waitUntil: 'domcontentloaded' });
   await expect(page).toHaveTitle('Work · MathLab');
-  await expect(page.locator('.release-badge')).toHaveText('v2.0');
+  await expect(page.locator('.release-badge')).toHaveText('v2.1');
   await expect(page.locator('.save-state')).toHaveText('Saved locally');
   await expect(page.getByRole('textbox', { name: 'Mathematical input' })).toBeVisible();
 }
@@ -26,7 +26,7 @@ test('custom-domain stable build boots and every primary route resolves', async 
   for (const route of routes) {
     await page.goto(routeURL(route), { waitUntil: 'domcontentloaded' });
     await expect(page.locator('#mathlab-main')).toBeVisible();
-    await expect(page.locator('.release-badge')).toHaveText('v2.0');
+    await expect(page.locator('.release-badge')).toHaveText('v2.1');
   }
 
   expect(pageErrors).toEqual([]);
@@ -186,13 +186,13 @@ test('deployed service worker supports an offline reload', async ({ page, contex
     await navigator.serviceWorker.ready;
   });
   await page.reload({ waitUntil: 'domcontentloaded' });
-  await expect(page.locator('.release-badge')).toHaveText('v2.0');
+  await expect(page.locator('.release-badge')).toHaveText('v2.1');
 
   await context.setOffline(true);
   try {
     await page.reload({ waitUntil: 'domcontentloaded' });
     await expect(page).toHaveTitle('Work · MathLab');
-    await expect(page.locator('.release-badge')).toHaveText('v2.0');
+    await expect(page.locator('.release-badge')).toHaveText('v2.1');
     await expect(page.getByRole('textbox', { name: 'Mathematical input' })).toBeVisible();
   } finally {
     await context.setOffline(false);
