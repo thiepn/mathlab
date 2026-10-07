@@ -1,122 +1,100 @@
-# MathLab v2.0.0 — Stable Release Certification Record
+# MathLab v2.1.0 — Release Promotion Certification Record
 
-## STABLE RELEASE GATE
+## RELEASE PROMOTION GATE
 
-**Release: `v2.0.0`.**
+**Product release: `v2.1.0`.**
 
-MathLab v2.0.0 has passed the source, browser, GitHub Pages and live custom-domain release gates. This record remains exact-head based: any source, test, workflow, dependency, service-worker, UI-version or certification-document change requires a fresh complete gate before that newer head inherits the certification.
+MathLab v2.1.0 is the product-release promotion for the completed post-v2 P0–P9 sequence. The exact source head is eligible for stable promotion only after all source/browser gates pass, it is merged to `main`, GitHub Pages deploys that exact merge SHA, and the independent custom-domain verifier reports `mathlab-production: success`.
 
-The post-v2 accessibility/device hardening layer is additive. It does not change the mathematical release identity or invent a new E-series phase.
+This promotion does **not** rewrite the E-series history. E12 remains the frozen mathematical-certification baseline for the v2 engine at `2.0.0`; v2.1.0 packages later product-shell, worksheet, interaction, learning, exploration, Wirtschaftsmathematik, sharing, accessibility/device and architecture work on top of that certified mathematical baseline.
 
-## Mathematical evidence
+## Included post-v2 product work
 
-E12 re-runs the unchanged M7 22-domain rubric against the actual E1–E11 implementation.
+v2.1.0 incorporates the completed post-v2 sequence:
 
-Current result:
+- P0 — integrity repair;
+- P1 — product-shell consolidation;
+- P2 — persistent mathematical worksheet and recovery;
+- P3 — structured/mobile mathematical input;
+- P4 — unified capability registry;
+- P5 — Learning v2;
+- P6 — dynamic exploration;
+- P7 — Wirtschaftsmathematik expansion;
+- P8 — immutable local-first sharing and explicit recipient copy;
+- P9 — route splitting, atomic cross-tab persistence, storage health, build-scoped PWA caches and bundle budgets.
 
-- breadth: **66/100**;
-- implemented-domain maturity: **66/100**;
-- 9 strong domains;
-- 11 partial domains;
-- 2 narrow domains;
-- 0 missing/incidental domains;
-- 0 comprehensive domains.
+The mathematical breadth score remains the E12 fixed-rubric result: **66/100** breadth and **66/100** implemented-domain maturity, with 9 strong, 11 partial, 2 narrow and 0 comprehensive domains.
 
-See `E12_MATHEMATICAL_REAUDIT.md`.
+## Exact-head automated gate
 
-The stable release therefore represents a broad university-mathematics environment. It does **not** claim comprehensive coverage of mathematics.
-
-## Automated source, browser, accessibility and device gates
-
-The exact certified head must pass all of the following:
+The promotion candidate must pass:
 
 1. `npm run audit:release`;
-2. `npm run audit:e12`;
+2. `npm run audit:e12` for the frozen mathematical baseline;
 3. `npm run audit:stable`;
 4. `npm run audit:accessibility`;
-5. dependency installation under Node 22;
-6. generated-lockfile `npm audit --audit-level=high` security gate;
-7. all Vitest regression tests;
-8. strict TypeScript compilation;
-9. Vite production build;
-10. fixed 22-domain score/status invariants;
-11. 22-domain cumulative golden corpus;
-12. tool/catalog/capability/control consistency;
-13. explicit exactness-provenance checks;
-14. PWA/security/persistence static contracts;
-15. Playwright Chromium desktop smoke;
-16. Playwright Firefox desktop smoke;
-17. Playwright WebKit desktop smoke;
-18. Android-like Chromium phone emulation;
-19. iOS-like WebKit phone emulation;
-20. Android-like Chromium tablet emulation;
-21. iPad-like WebKit tablet emulation;
-22. 320 / 375 / 768 / 1024 / 1440 responsive-width overflow checks;
-23. 320 CSS-pixel + 200% root-text reflow check;
-24. keyboard command-palette and focus restoration checks;
-25. first-focus skip-link ordering and visible focus indication;
-26. automated axe-core WCAG A/AA scans across every primary route;
-27. `prefers-reduced-motion` behavior;
-28. forced-colors/high-contrast focus behavior;
-29. portrait/landscape checks across every touch project;
-30. WCAG 2.2 24 CSS-pixel minimum target-size checks for primary touch controls;
-31. real Worker-backed mathematical execution;
-32. IndexedDB save → reload persistence;
-33. manifest/start-url/scope/icon/maskable-icon installability source contract;
-34. active service-worker registration;
-35. installed service-worker offline application reload.
+5. P2–P9 dedicated product audits;
+6. `npm ci` under Node 22;
+7. `npm audit --audit-level=high`;
+8. the full Vitest regression suite;
+9. strict TypeScript compilation;
+10. Vite production build;
+11. the production bundle-budget audit;
+12. real Chromium, Firefox and WebKit browser certification;
+13. Android/iOS phone emulation and Android/iPad tablet emulation;
+14. responsive/reflow, keyboard/focus, axe A/AA, reduced-motion, forced-colors and touch-target checks;
+15. Worker-backed mathematics;
+16. IndexedDB persistence/recovery;
+17. installed service-worker offline reload;
+18. P9 lazy-route, storage-health and build-scoped-cache certification.
 
-The exact CI log is authoritative for current test totals. Historical pre-promotion totals remain historical evidence rather than being rewritten after new regression tests are added.
+The CI log for the exact candidate head is authoritative for current test totals.
 
-The GitHub Pages deployment workflow repeats the stable and accessibility audits, dependency security gate, full unit suite, production build, and complete browser/accessibility matrix before publishing `main`. After deployment, a separate live suite verifies the custom domain and emits the `mathlab-production` commit status.
+## Product release identity
 
-## Live production evidence
+The current product identity is locked consistently as:
 
-The stable production gate separately verifies the deployed `https://thiepn.dev/mathlab/` build rather than assuming a successful source build equals a successful deployment.
+- package: `2.1.0`;
+- UI badge: `v2.1`;
+- UI title: `MathLab v2.1.0 stable release`;
+- local fallback build identity: `local-v2.1.0`;
+- deployed service-worker generation: `mathlab-build-<commit>-shell` and `mathlab-build-<commit>-runtime`.
 
-It checks:
+The service worker no longer uses the old fixed `mathlab-v2-*` cache generation. P9 scopes caches to the deployed build identity and deletes obsolete MathLab generations on activation.
 
-- primary route resolution;
-- stable v2 identity;
-- published manifest, icons and service worker;
-- Worker-backed exact mathematics;
-- IndexedDB persistence across a real production reload;
-- page-level horizontal overflow;
-- deployed offline reload behavior;
-- Chromium and iOS-like WebKit production paths.
+## Mathematical-certification identity
 
-A deployment is accepted only after the exact merged `main` SHA receives `mathlab-production: success`.
+The product version and the mathematical-certification baseline are intentionally separate concepts.
 
-## Browser/device evidence boundary
+- `src/app/e12Certification.ts` remains locked to `E12_TARGET_VERSION = '2.0.0'`.
+- The unchanged M7/E12 22-domain rubric remains the mathematical evidence baseline.
+- Product releases after v2.0 may improve UX, learning, applied workflows, persistence, sharing, performance or architecture without pretending that the original E12 mathematical audit happened at a later version.
+- Any future material mathematical expansion must receive its own explicit evidence rather than silently relabeling E12.
 
-The automated browser matrix executes real Chromium, Firefox and WebKit engines. Its Android, iOS and tablet projects configure mobile/touch browser emulation; they are **not physical hardware**.
+## Live production gate
 
-Axe-core is an automated accessibility regression tool. Zero configured axe violations is useful evidence, but it is **not full WCAG conformance** and **not screen-reader certification**.
+After merge, GitHub Pages rebuilds from the exact `main` SHA. A separate live suite targets `https://thiepn.dev/mathlab/` and verifies:
 
-Accordingly, this certification does **not** claim direct physical-device testing. Physical Android Chrome, physical iPhone/iPad Safari, installed-PWA behavior on target hardware, VoiceOver, TalkBack, NVDA and physical Windows High Contrast remain external validation items recorded in `ACCESSIBILITY_DEVICE_CERTIFICATION.md`.
+- the v2.1 product identity;
+- all primary routes;
+- published manifest/icons and build-scoped service worker;
+- exact Worker-backed mathematics;
+- live IndexedDB persistence;
+- no page-level horizontal overflow;
+- deployed offline reload;
+- Chromium and iOS-like WebKit production paths;
+- commit-scoped service-worker registration.
 
-## Release identity
+The release is considered production-certified only when that exact merged SHA receives `mathlab-production: success`.
 
-Stable identity is locked consistently across the release contracts:
+## Accessibility and device evidence boundary
 
-- package: `2.0.0`;
-- UI badge: `v2.0`;
-- E12 target: `2.0.0`;
-- P15 release audit: stable-only;
-- E12 audit: stable-only;
-- stable audit: stable-only;
-- service-worker caches: `mathlab-v2-shell` and `mathlab-v2-runtime`.
+The automated matrix uses real browser engines and touch/mobile emulation, but it is not physical-device or screen-reader certification.
 
-No RC label may remain in the user-facing release identity.
+Physical Android/iPhone/iPad behavior, installed-PWA behavior on target hardware, VoiceOver, TalkBack, NVDA and physical Windows High Contrast remain external evidence items in `ACCESSIBILITY_DEVICE_CERTIFICATION.md`. Those rows must not be marked passed without real evidence.
 
-## Known non-blocking observations
+## Merge policy
 
-The dependency audit currently reports one **low-severity** `esbuild` development-server advisory. The gate rejects high and critical advisories. MathLab is a static production build and does not expose the Vite/esbuild development server as the deployed application.
+Only an exact branch head with a clean complete PR gate may be merged. The merge must use the tested expected-head SHA. Any source change after a successful gate requires a fresh gate.
 
-The Vite build also reports the existing >500 kB minified chunk warning. This is a performance-maintenance issue, not a correctness failure, and remains a candidate for post-v2 code splitting.
-
-## Merge and deployment policy
-
-Only an exact branch head with a clean complete gate may be squash-merged into `main`. The merge must use the tested expected-head SHA so branch drift cannot be silently accepted.
-
-After merge, GitHub Pages must rebuild from that `main` SHA and the live custom-domain suite must return `mathlab-production: success` before the newer head is treated as production-certified.
+After merge, the release is not complete until the custom-domain production status is successful.
