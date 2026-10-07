@@ -53,9 +53,12 @@ test('P6 dynamic exploration remains usable across every visualization course ob
   await page.goto('/#/visualize');
   const dynamic = page.getByRole('region', { name: 'Dynamic exploration' });
   await expect(dynamic).toBeVisible();
+
+  const objectList = page.locator('.e3-object-list');
+  await objectList.getByRole('button', { name: /h/ }).first().click();
   await expect(dynamic.getByRole('slider', { name: 'k slider' })).toBeVisible();
 
-  await page.locator('.e3-object-list').getByRole('button', { name: /g/ }).first().click();
+  await objectList.getByRole('button', { name: /g/ }).first().click();
   await expect(dynamic.getByRole('slider', { name: 'c slider' })).toBeVisible();
 
   await dynamic.getByRole('button', { name: 'Reset parameters' }).click();
