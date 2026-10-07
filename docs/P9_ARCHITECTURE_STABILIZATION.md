@@ -99,7 +99,7 @@ P9 injects a build identity:
 
 - GitHub Actions: first 12 characters of GITHUB_SHA;
 - explicit local override: MATHLAB_BUILD_ID;
-- local fallback: local-v2.0.0.
+- local fallback: local-v2.1.0.
 
 The application registers sw.js?v=<build-id>.
 
