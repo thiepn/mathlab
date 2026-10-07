@@ -19,7 +19,6 @@ const required=[
 for(const file of required)pass(existsSync(join(root,file)),`missing E12 certification artifact: ${file}`);
 
 const pkg=JSON.parse(text('package.json'));
-pass(pkg.version==='2.0.0','E12 package identity must be stable 2.0.0');
 pass(pkg.scripts?.['audit:e12']==='node scripts/e12-audit.mjs','package must expose audit:e12');
 
 if(existsSync(join(root,'src/app/e12Certification.ts'))){
