@@ -9,13 +9,25 @@ const fake = vi.hoisted(() => {
   const mathLabDb = {
     get: vi.fn(async (id: string) => records.get(id)),
     put: vi.fn(async (id: string, value: unknown) => {
-      workspaceWrites += id === 'workspace:p15:default' ? 1 : 0;
-      // Reproduce the production failure mode: the first workspace write is
-      // unusually slow while a later save is ready to proceed.
-      if (id === 'workspace:p15:default' && workspaceWrites === 1) {
+      records.set(id, { id, value, updatedAt: Date.now() });
+    }),
+    replaceVersionedWithRecovery: vi.fn(async <T>(
+      currentId: string,
+      recoveryId: string,
+      next: T,
+      options: { isValid: (value: unknown) => value is T; revision: (value: T) => number },
+    ) => {
+      workspaceWrites += currentId === 'workspace:p15:default' ? 1 : 0;
+      // Reproduce the original ordering hazard at the new atomic boundary:
+      // the first replacement is unusually slow while a later save is queued.
+      if (currentId === 'workspace:p15:default' && workspaceWrites === 1) {
         await new Promise((resolve) => setTimeout(resolve, 25));
       }
-      records.set(id, { id, value, updatedAt: Date.now() });
+      const current = records.get(currentId)?.value;
+      if (options.isValid(current) && options.revision(current) > options.revision(next)) return false;
+      if (options.isValid(current)) records.set(recoveryId, { id: recoveryId, value: current, updatedAt: Date.now() });
+      records.set(currentId, { id: currentId, value: next, updatedAt: Date.now() });
+      return true;
     }),
   };
   return {
@@ -26,6 +38,7 @@ const fake = vi.hoisted(() => {
       workspaceWrites = 0;
       mathLabDb.get.mockClear();
       mathLabDb.put.mockClear();
+      mathLabDb.replaceVersionedWithRecovery.mockClear();
     },
   };
 });
