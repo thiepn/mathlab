@@ -1,6 +1,6 @@
 # MathLab v2.1.0 — Release Promotion Certification Record
 
-## RELEASE PROMOTION GATE
+## STABLE RELEASE GATE
 
 **Product release: `v2.1.0`.**
 
