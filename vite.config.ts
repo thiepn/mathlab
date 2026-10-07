@@ -6,7 +6,7 @@ const runtime = globalThis as typeof globalThis & {
 };
 const buildId = runtime.process?.env?.GITHUB_SHA?.slice(0, 12)
   || runtime.process?.env?.MATHLAB_BUILD_ID
-  || 'local-v2.0.0';
+  || 'local-v2.1.0';
 
 export default defineConfig({
   plugins: [react()],
