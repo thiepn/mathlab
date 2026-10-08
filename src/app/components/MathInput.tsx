@@ -97,11 +97,13 @@ export function MathInput({ initialValue = '', canSubmit = true, onChangeParsed,
     applyEdit({ value: next.value, start: next.cursor, end: next.cursor });
   };
 
-  const submit = async () => {
+  const submit = () => {
     if (!canSubmit || !value.trim() || errors.length > 0 || !parsed.ast) return;
-    await add({ source: value.trim(), normalizedSource: parsed.normalizedSource, kind });
-    setHistoryIndex(-1);
+    // Committing mathematical work must not wait for optional input-history I/O.
+    // Otherwise a quick route change can unmount the editor before the commit runs.
     onSubmit?.(parsed);
+    setHistoryIndex(-1);
+    void add({ source: value.trim(), normalizedSource: parsed.normalizedSource, kind });
   };
 
   const navigateHistory = (direction: 1 | -1) => {
