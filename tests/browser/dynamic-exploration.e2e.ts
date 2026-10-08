@@ -45,16 +45,20 @@ test('P6 dynamic exploration remains usable across every visualization course ob
   await page.goto('/#/workspace');
   const input = page.getByRole('textbox', { name: 'Mathematical input' });
 
-  for (const source of ['g(x) := c*sin(x)', 'h(x,y) := k*(x^2+y^2)']) {
+  for (const [name, source] of [['g', 'g(x) := c*sin(x)'], ['h', 'h(x,y) := k*(x^2+y^2)']]) {
     await input.fill(source);
     await page.getByRole('button', { name: /Commit/ }).click();
+    await expect(page.getByText(`Saved ${name} to the workspace.`)).toBeVisible();
   }
 
+  await expect(page.locator('.save-state')).toHaveText('Saved locally');
   await page.goto('/#/visualize');
   const dynamic = page.getByRole('region', { name: 'Dynamic exploration' });
   await expect(dynamic).toBeVisible();
 
   const objectList = page.locator('.e3-object-list');
+  await expect(objectList.getByRole('button', { name: /h/ })).toHaveCount(1);
+  await expect(objectList.getByRole('button', { name: /g/ })).toHaveCount(1);
   await objectList.getByRole('button', { name: /h/ }).first().click();
   await expect(dynamic.getByRole('slider', { name: 'k slider' })).toBeVisible();
 

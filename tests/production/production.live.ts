@@ -198,3 +198,12 @@ test('deployed service worker supports an offline reload', async ({ page, contex
     await context.setOffline(false);
   }
 });
+
+test('Q1 device evidence collector is published but does not self-certify devices', async ({ page }) => {
+  await page.goto(new URL('qa/', productionURL).toString(), { waitUntil: 'domcontentloaded' });
+  await expect(page).toHaveTitle('Device qualification · MathLab');
+  await expect(page.locator('[data-target]')).toHaveCount(9);
+  await expect(page.locator('#completion')).toContainText('0 of 9');
+  await expect(page.locator('#completion')).toContainText('Qualification incomplete.');
+});
+

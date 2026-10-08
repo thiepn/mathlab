@@ -32,6 +32,26 @@ Automated axe analysis is a useful regression gate, but it cannot prove full WCA
 
 Any product, CSS, test, dependency, workflow or release-documentation change invalidates the previous exact-head evidence and requires a fresh complete gate.
 
+## Q1 — Reproducible real-device evidence collection
+
+MathLab includes a lightweight, local-only qualification page at **https://thiepn.dev/mathlab/qa/** (under the deployed app directory). This is **not** a new application destination or an automated device-certification tool.
+
+1. On the **physical** device or actual assistive-technology environment, open the qualification page in the relevant browser. Record the actual device, OS, browser/AT version and date.
+2. Select **Run browser diagnostics**. This probes the secure origin, an isolated temporary IndexedDB read/write, the main MathLab HTML entry point and horizontal reflow; the service-worker status is informational only.
+3. Select the corresponding manual target. Open the MathLab Work link (in another tab) and perform **each** target-specific check on the physical device. For a PWA upgrade test, use deployments before and after an actual new version; never claim it from an ordinary reload.
+4. Enter **Pass**, **Fail**, **Blocked** or **Not run**, and record observed behavior and a screenshot/video or reproducible issue reference. An undocumented Pass does not count as a documented pass.
+5. Export **JSON report**. Export works with partial or failed tests and requires explicit user action. Nothing is uploaded or synced to an account, and entries are lost if the page reloads before export. Review the user agent and notes before sharing.
+6. A reviewer must compare the evidence with this matrix and close defects before changing any outstanding item below. A successful diagnostic result, a simulated device, or a self-reported export alone is **not** proof of physical or assistive-technology certification.
+
+The export schema identifier is **mathlab-q1-device-evidence-v1**. Reports are independent of MathLab mathematical worksheet data; the IndexedDB probe uses an isolated, temporary database. The collector does not mutate product sessions, perform analytics, or silently store evidence.
+
+### Q1 exit criteria
+
+- All nine matrix targets have actual-device or assistive-technology versions, dates, and credible recorded outcomes.
+- All blocking failures have reproducible defects that are fixed and re-tested.
+- Installed-PWA offline launch and a genuine app-version upgrade are demonstrated separately from in-browser service-worker presence.
+- A reviewer signs off the physical evidence. The Q1 stage remains **external validation pending** until then, regardless of CI status.
+
 ## Physical-device and assistive-technology validation
 
 The following checks require external hardware or real assistive-technology environments and therefore remain deliberately outside CI. Completion must be recorded with device/OS/browser or AT version, date, evidence and pass/fail result.
