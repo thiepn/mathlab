@@ -1,0 +1,272 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="light dark">
+  <title>Device qualification · MathLab</title>
+  <style>
+    :root { font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; line-height: 1.5; color-scheme: light dark; }
+    *, *::before, *::after { box-sizing: border-box; }
+    body { margin: 0; background: Canvas; color: CanvasText; }
+    main { max-width: 1000px; padding: clamp(16px, 4vw, 40px); margin: auto; }
+    a { color: LinkText; }
+    .eyebrow { color: GrayText; font-weight: 650; letter-spacing: .07em; text-transform: uppercase; font-size: .78rem; }
+    h1 { font-size: clamp(1.65rem, 4vw, 2.4rem); line-height: 1.15; margin: .3em 0 .7em; }
+    h2 { font-size: 1.28rem; margin: 2em 0 .5em; }
+    p { max-width: 78ch; }
+    .intro { max-width: 76ch; }
+    .toolbar { display: flex; flex-wrap: wrap; align-items: center; gap: .7rem; margin: 1.5rem 0; }
+    button, select, textarea { font: inherit; }
+    button { padding: .64rem 1rem; border: 1px solid CanvasText; border-radius: 5px; background: CanvasText; color: Canvas; cursor: pointer; min-height: 44px; }
+    button.secondary { background: Canvas; color: CanvasText; }
+    button:focus-visible, a:focus-visible, textarea:focus-visible, select:focus-visible { outline: 3px solid Highlight; outline-offset: 3px; }
+    button:disabled { opacity: .6; cursor: wait; }
+    .meta, .hint { color: GrayText; font-size: .91rem; }
+    .meta { overflow-wrap: anywhere; }
+    .test-list { list-style: none; padding: 0; margin: 0; }
+    .test-list li { display: flex; gap: .8rem; padding: .65rem 0; border-bottom: 1px solid GrayText; align-items: start; }
+    .test-label { flex: 1; }
+    .status { font-weight: 700; font-size: .83rem; white-space: nowrap; }
+    .status[data-state="pass"] { color: #14764f; }
+    .status[data-state="fail"] { color: #b23e39; }
+    .status[data-state="info"] { color: GrayText; }
+    .target { padding: 1.1rem 0 1.3rem; border-top: 1px solid GrayText; }
+    .target h3 { margin: 0 0 .35rem; font-size: 1.09rem; }
+    .target p { margin: .3rem 0 .8rem; }
+    .fields { display: grid; grid-template-columns: minmax(145px, 205px) minmax(0, 1fr); gap: 1rem; align-items: start; }
+    .fields label { display: block; font-size: .88rem; font-weight: 650; margin-bottom: .3rem; }
+    select, textarea { background: Canvas; color: CanvasText; border: 1px solid GrayText; border-radius: 4px; width: 100%; padding: .57rem; }
+    select { min-height: 44px; }
+    textarea { min-height: 82px; resize: vertical; }
+    .notice { border-left: 3px solid Highlight; padding-left: 1rem; margin: 1.2rem 0; }
+    .summary { font-weight: 650; }
+    footer { margin-top: 2rem; padding: 1rem 0; border-top: 1px solid GrayText; }
+    @media (max-width: 600px) { .fields { grid-template-columns: 1fr; gap: .6rem; } .test-list li { display: block; } .status { display: inline-block; margin-top: .3rem; } }
+    @media (forced-colors: active) { .status { forced-color-adjust: auto; color: CanvasText !important; } }
+    @media (prefers-reduced-motion: reduce) { *, *::before, *::after { scroll-behavior: auto !important; } }
+  </style>
+</head>
+<body>
+  <main>
+    <a href="../#/workspace">← Back to MathLab</a>
+    <p class="eyebrow">MathLab · Q1 qualification</p>
+    <h1>Real-device evidence</h1>
+    <p class="intro">Use this on actual phones, tablets, or assistive-technology setups. Automated checks are preliminary diagnostics only. Emulators and browser simulations <strong>never</strong> count as physical-device evidence.</p>
+    <div class="notice"><strong>Local-only.</strong> Nothing is uploaded. You control whether to export a JSON report. Reports include browser/device metadata and any notes you enter; review them before sharing.</div>
+    <h2>1. Environment and quick checks</h2>
+    <p id="environment" class="meta"></p>
+    <div class="toolbar">
+      <button id="run-checks" type="button">Run browser diagnostics</button>
+      <span id="run-state" class="hint" role="status" aria-live="polite">No automatic checks run.</span>
+    </div>
+    <ul class="test-list" id="automatic-results" aria-label="Automated browser diagnostics"></ul>
+    <h2>2. Manual qualification matrix</h2>
+    <p class="hint">Select Pass only after performing the described checks on the stated physical device or assistive technology. Record device, version, observations and evidence reference. You may export an incomplete report.</p>
+    <div id="targets"></div>
+    <h2>3. Evidence report</h2>
+    <p class="summary" id="completion" role="status" aria-live="polite">0 of 9 targets have documented passes. Qualification incomplete.</p>
+    <div class="toolbar">
+      <button id="export" type="button">Export JSON report</button>
+      <button id="reset" class="secondary" type="button">Clear manual entries</button>
+    </div>
+    <p class="hint">A complete self-reported matrix still requires reviewer assessment. This page does not issue certification or modify MathLab user data.</p>
+    <footer class="meta">Q1 evidence collector · no analytics, accounts, or external scripts · <a href="../#/workspace">MathLab workbench</a></footer>
+  </main>
+  <script>
+    (() => {
+      "use strict";
+      const targets = [
+        { id: "android-chrome", name: "Physical Android phone · Chrome", steps: "Open Work, calculate a result, switch routes, rotate to landscape, test the virtual keyboard and touch navigation, then reload offline after opening the app online." },
+        { id: "iphone-safari", name: "Physical iPhone · Safari", steps: "Test mathematical input and results, portrait/landscape layout, safe-area spacing, virtual keyboard, touch navigation and offline reload." },
+        { id: "ipad-safari", name: "Physical iPad · Safari", steps: "Test tablet layout, both orientations, physical and on-screen keyboard editing, touch controls, navigation and offline reload." },
+        { id: "android-pwa", name: "Installed Android PWA", steps: "Install via Chrome, launch standalone, save a worksheet, relaunch offline and check that an update can install without mixing old and new UI." },
+        { id: "ios-pwa", name: "Installed iOS/iPadOS web app", steps: "Add to Home Screen, launch standalone, save a worksheet, relaunch offline, verify safe areas and confirm a subsequent app update behaves correctly." },
+        { id: "voiceover", name: "VoiceOver · iOS/iPadOS", steps: "Use the rotor/gesture navigation for landmarks, headings, forms and results. Check route changes, mathematical-result announcements, modal focus and return focus." },
+        { id: "talkback", name: "TalkBack · Android", steps: "Navigate headings, form labels and input controls by swipe. Confirm math results, navigation changes, dialogs and focus announcements." },
+        { id: "nvda", name: "NVDA · Windows Chrome/Firefox", steps: "Test headings/landmarks, keyboard navigation, input and result announcements, modal focus trapping and return focus in both browsers." },
+        { id: "windows-high-contrast", name: "Physical Windows · High Contrast", steps: "Enable Windows Contrast Themes, use keyboard-only navigation, and verify focus indicators, controls, mathematical output and state/status readability." }
+      ];
+      const byId = (id) => document.getElementById(id);
+      const results = [];
+      const environment = {
+        url: location.href,
+        userAgent: navigator.userAgent,
+        viewport: { width: innerWidth, height: innerHeight, devicePixelRatio: devicePixelRatio },
+        touchPoints: navigator.maxTouchPoints || 0,
+        standalone: matchMedia("(display-mode: standalone)").matches || navigator.standalone === true,
+        reducedMotion: matchMedia("(prefers-reduced-motion: reduce)").matches,
+        forcedColors: matchMedia("(forced-colors: active)").matches,
+        onlineAtOpen: navigator.onLine
+      };
+      byId("environment").textContent = "Viewport " + environment.viewport.width + " × " + environment.viewport.height + " CSS px · " + environment.touchPoints + " touch points · " + (environment.standalone ? "standalone" : "browser tab") + " · " + (navigator.onLine ? "online" : "offline");
+      const container = byId("targets");
+      for (const target of targets) {
+        const article = document.createElement("article");
+        article.className = "target";
+        article.dataset.target = target.id;
+        const h = document.createElement("h3");
+        h.textContent = target.name;
+        const steps = document.createElement("p");
+        steps.textContent = target.steps;
+        const fields = document.createElement("div");
+        fields.className = "fields";
+        const selectWrap = document.createElement("div");
+        const statusLabel = document.createElement("label");
+        statusLabel.htmlFor = "result-" + target.id;
+        statusLabel.textContent = "Test result";
+        const select = document.createElement("select");
+        select.id = "result-" + target.id;
+        for (const [value, label] of [["not-run", "Not run"], ["pass", "Pass"], ["fail", "Fail"], ["blocked", "Blocked"]]) {
+          const option = document.createElement("option");
+          option.value = value;
+          option.textContent = label;
+          select.append(option);
+        }
+        select.addEventListener("change", updateCompletion);
+        selectWrap.append(statusLabel, select);
+        const notesWrap = document.createElement("div");
+        const notesLabel = document.createElement("label");
+        notesLabel.htmlFor = "evidence-" + target.id;
+        notesLabel.textContent = "Device/OS/version, observed behavior and evidence reference";
+        const notes = document.createElement("textarea");
+        notes.id = "evidence-" + target.id;
+        notes.placeholder = "Example: iPhone model · iOS version · Safari · date · observed results / screenshot reference";
+        notes.addEventListener("input", updateCompletion);
+        notesWrap.append(notesLabel, notes);
+        fields.append(selectWrap, notesWrap);
+        article.append(h, steps, fields);
+        container.append(article);
+      }
+      function manualEntries() {
+        return targets.map((target) => ({
+          id: target.id, name: target.name, steps: target.steps,
+          result: byId("result-" + target.id).value,
+          evidence: byId("evidence-" + target.id).value.trim()
+        }));
+      }
+      function updateCompletion() {
+        const rows = manualEntries();
+        const documented = rows.filter((row) => row.result === "pass" && row.evidence.length > 0).length;
+        const done = documented === targets.length;
+        byId("completion").textContent = documented + " of " + targets.length + " targets have documented passes. " + (done ? "All targets self-reported passed; reviewer validation still required." : "Qualification incomplete.");
+      }
+      async function indexedDbRoundTrip() {
+        if (!("indexedDB" in window)) throw new Error("IndexedDB API unavailable");
+        const name = "mathlab-q1-diagnostic-" + Date.now();
+        let database;
+        try {
+          database = await new Promise((resolve, reject) => {
+            const request = indexedDB.open(name, 1);
+            request.onupgradeneeded = () => request.result.createObjectStore("diagnostics");
+            request.onsuccess = () => resolve(request.result);
+            request.onerror = () => reject(request.error || Error("Database open failed"));
+          });
+          await new Promise((resolve, reject) => {
+            const tx = database.transaction("diagnostics", "readwrite");
+            tx.objectStore("diagnostics").put("ok", "probe");
+            tx.oncomplete = resolve;
+            tx.onerror = () => reject(tx.error || Error("Write failed"));
+          });
+          const value = await new Promise((resolve, reject) => {
+            const tx = database.transaction("diagnostics", "readonly");
+            const request = tx.objectStore("diagnostics").get("probe");
+            request.onsuccess = () => resolve(request.result);
+            request.onerror = () => reject(request.error || Error("Read failed"));
+          });
+          if (value !== "ok") throw new Error("IndexedDB value mismatch");
+          return "Temporary isolated database read/write succeeded";
+        } finally {
+          if (database) database.close();
+          indexedDB.deleteDatabase(name);
+        }
+      }
+      function addResult(name, state, detail) {
+        const result = { name, state, detail };
+        results.push(result);
+        const li = document.createElement("li");
+        const label = document.createElement("span");
+        label.className = "test-label";
+        label.textContent = name + " — " + detail;
+        const stateEl = document.createElement("span");
+        stateEl.className = "status";
+        stateEl.dataset.state = state;
+        stateEl.textContent = state.toUpperCase();
+        li.append(label, stateEl);
+        byId("automatic-results").append(li);
+      }
+      async function check(name, callback) {
+        try { addResult(name, "pass", await callback()); }
+        catch (error) { addResult(name, "fail", error instanceof Error ? error.message : String(error)); }
+      }
+      byId("run-checks").addEventListener("click", async () => {
+        const button = byId("run-checks");
+        button.disabled = true;
+        byId("run-state").textContent = "Running diagnostics…";
+        byId("automatic-results").replaceChildren();
+        results.length = 0;
+        try {
+          await check("Secure origin", () => {
+            if (!isSecureContext) throw Error("HTTPS or a trusted localhost origin is required");
+            return "Secure context available";
+          });
+          await check("Independent IndexedDB round trip", indexedDbRoundTrip);
+          await check("MathLab entry point", async () => {
+            const response = await fetch(new URL("../", location.href), { cache: "no-store" });
+            if (!response.ok || !(await response.text()).includes("MathLab")) throw Error("App entry point could not be loaded");
+            return "App HTML reachable from this browser";
+          });
+          await check("Qualification page reflow", () => {
+            const overflow = document.documentElement.scrollWidth - innerWidth;
+            if (overflow > 1) throw Error("Horizontal document overflow: " + overflow + " px");
+            return "No page-level horizontal overflow";
+          });
+          if (!("serviceWorker" in navigator)) {
+            addResult("MathLab service worker", "info", "API unavailable; inspect app in browser mode");
+          } else {
+            try {
+              const registration = await navigator.serviceWorker.getRegistration(new URL("../", location.href).href);
+              addResult("MathLab service worker", "info", registration && registration.active ? "Active registration detected (not an offline or upgrade certification)" : "No active registration yet; visit the workbench online, then return");
+            } catch (error) {
+              addResult("MathLab service worker", "info", "Registration could not be inspected: " + String(error));
+            }
+          }
+          byId("run-state").textContent = "Diagnostics finished. Physical tests remain manual.";
+        } finally { button.disabled = false; }
+      });
+      byId("export").addEventListener("click", () => {
+        const manual = manualEntries();
+        const allDocumented = manual.every((row) => row.result === "pass" && row.evidence.length > 0);
+        const payload = {
+          schema: "mathlab-q1-device-evidence-v1",
+          exportedAt: new Date().toISOString(),
+          origin: location.origin,
+          environment,
+          automated: results.slice(),
+          manual,
+          assessment: allDocumented ? "all-manual-targets-self-reported-pass-review-required" : "incomplete",
+          caveat: "Self-reported evidence, not physical-device or screen-reader certification by an automated tool."
+        };
+        const blob = new Blob([JSON.stringify(payload, null, 2)], { type: "application/json" });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = "mathlab-q1-device-evidence.json";
+        document.body.append(a);
+        a.click();
+        a.remove();
+        setTimeout(() => URL.revokeObjectURL(url), 1500);
+      });
+      byId("reset").addEventListener("click", () => {
+        if (!confirm("Clear all manual test results and notes on this page?")) return;
+        for (const target of targets) {
+          byId("result-" + target.id).value = "not-run";
+          byId("evidence-" + target.id).value = "";
+        }
+        updateCompletion();
+      });
+      updateCompletion();
+    })();
+  </script>
+</body>
+</html>
