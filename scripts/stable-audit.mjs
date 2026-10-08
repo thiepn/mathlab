@@ -126,6 +126,14 @@ pass(deploy.includes('node scripts/wait-for-production.mjs'), 'Pages workflow mu
 pass(deploy.includes('playwright.production.config.mjs'), 'Pages workflow must execute the production Playwright configuration');
 pass(deploy.includes('statuses: write'), 'Pages workflow must be able to publish an observable production verification status');
 pass(deploy.includes('PRODUCTION_STATUS_CONTEXT: mathlab-production'), 'Pages workflow must use the canonical mathlab-production commit-status context');
+pass(deploy.includes('Mark release certification pending before the build'), 'Pages workflow must mark certification pending before build operations');
+pass(deploy.includes('finalize-production-status:'), 'Pages workflow must finish certification even when upstream jobs fail');
+pass(deploy.includes('if: ${{ always() }}'), 'production status finalizer must run after upstream failures');
+pass(deploy.includes('needs: [build, deploy, verify-production]'), 'production status finalizer must inspect every stage');
+pass(deploy.includes('BUILD_RESULT: ${{ needs.build.result }}'), 'finalizer must inspect source/build result');
+pass(deploy.includes('DEPLOY_RESULT: ${{ needs.deploy.result }}'), 'finalizer must inspect Pages deploy result');
+pass(deploy.includes('VERIFY_RESULT: ${{ needs.verify-production.result }}'), 'finalizer must inspect live verification result');
+pass(deploy.includes('MathLab production gate failed or was skipped'), 'finalizer must publish failure for incomplete pipelines');
 pass(deploy.includes('Mark production verification pending'), 'Pages workflow must publish a pending production status before live verification');
 pass(deploy.includes('Mark production verification successful'), 'Pages workflow must publish success after live verification');
 pass(deploy.includes('Mark production verification failed'), 'Pages workflow must publish failure when live verification fails');
