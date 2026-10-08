@@ -4,6 +4,8 @@ const requiredFiles = [
   'package.json',
   'playwright.config.mjs',
   'tests/browser/accessibility-device.e2e.ts',
+  'tests/browser/device-qualification.e2e.ts',
+  'public/qa/index.html',
   'src/styles/global.css',
   '.github/workflows/ci.yml',
   '.github/workflows/deploy.yml',
@@ -32,6 +34,15 @@ for (const project of ['android-chromium', 'ios-webkit', 'android-tablet-chromiu
 const browserTests = files['tests/browser/accessibility-device.e2e.ts'];
 for (const marker of ['AxeBuilder', 'wcag22aa', '200% text', 'reduced-motion', 'forced-colors', '24px minimum', 'service-worker registration']) {
   requireCondition(browserTests.includes(marker), `Accessibility browser test marker missing: ${marker}`);
+}
+
+const qualification = files['public/qa/index.html'];
+const qualificationTests = files['tests/browser/device-qualification.e2e.ts'];
+for (const marker of ['Real-device evidence', 'Run browser diagnostics', 'mathlab-q1-device-evidence-v1', 'Qualification incomplete.', 'Self-reported evidence', 'no analytics', 'result-', 'evidence-']) {
+  requireCondition(qualification.includes(marker), `Physical-device evidence kit marker missing: ${marker}`);
+}
+for (const marker of ['toHaveCount(9)', 'Qualification incomplete.', 'Run browser diagnostics', 'not physical-device or screen-reader certification', 'AxeBuilder']) {
+  requireCondition(qualificationTests.includes(marker), `Physical-device evidence test marker missing: ${marker}`);
 }
 
 const css = files['src/styles/global.css'];
