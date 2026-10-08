@@ -5,6 +5,7 @@ const requiredFiles = [
   'playwright.config.mjs',
   'tests/browser/accessibility-device.e2e.ts',
   'tests/browser/device-qualification.e2e.ts',
+  'tests/production/production.live.ts',
   'public/qa/index.html',
   'src/styles/global.css',
   '.github/workflows/ci.yml',
@@ -44,6 +45,9 @@ for (const marker of ['Real-device evidence', 'Run browser diagnostics', 'mathla
 for (const marker of ['toHaveCount(9)', 'Qualification incomplete.', 'Run browser diagnostics', 'not physical-device or screen-reader certification', 'AxeBuilder']) {
   requireCondition(qualificationTests.includes(marker), `Physical-device evidence test marker missing: ${marker}`);
 }
+
+const liveTests = files['tests/production/production.live.ts'];
+requireCondition(liveTests.includes("new URL('qa/', productionURL)") && liveTests.includes('Q1 device evidence collector'), 'Live production verifier must cover the Q1 qualification route.');
 
 const css = files['src/styles/global.css'];
 requireCondition(css.includes('@media (prefers-reduced-motion: reduce)'), 'Reduced-motion CSS handling is required.');
