@@ -6,6 +6,7 @@ import { resolveSemanticObject } from '../lib/math/semantic';
 import type { MathResult } from '../lib/math/types';
 import { MathWorkerClient } from '../lib/worker/client';
 import type { CapabilityDescriptor } from './capabilityRegistry';
+import { LatestOperationGate } from './LatestOperationGate';
 import { Header } from './components/Header';
 import { ObjectSidebar } from './components/ObjectSidebar';
 import { Workspace } from './components/Workspace';
@@ -40,6 +41,7 @@ export function App() {
   const [runningOperation, setRunningOperation] = useState('');
   const [editorSourceOverride, setEditorSourceOverride] = useState<string | null>(null);
   const workerClient = useRef<MathWorkerClient | null>(null);
+  const latestOperation = useRef(new LatestOperationGate());
   const controller = useMathWorkspace();
   const worksheet = useWorksheet();
 
@@ -70,7 +72,13 @@ export function App() {
     return () => { window.removeEventListener('online', update); window.removeEventListener('offline', update); };
   }, []);
 
-  const clearResult = () => { setMathResult(null); setEngineStatus('idle'); setEngineError(''); setRunningOperation(''); };
+  const clearResult = () => {
+    latestOperation.current.invalidate();
+    setMathResult(null);
+    setEngineStatus('idle');
+    setEngineError('');
+    setRunningOperation('');
+  };
 
   const changeActiveParsed = (parsed: ParsedMath) => {
     setActiveParsed(parsed);
@@ -80,6 +88,7 @@ export function App() {
   const executeOperation = async (operation: string, options?: Record<string, string | number | boolean>) => {
     if (!contextObject) return;
     if (!workerClient.current) workerClient.current = new MathWorkerClient();
+    const revision = latestOperation.current.begin();
     setRunningOperation(operation);
     setEngineStatus('running');
     setEngineError('');
@@ -97,18 +106,20 @@ export function App() {
           .filter((item) => item.name && ['scalar','expression','vector','matrix'].includes(item.kind))
           .map((item) => ({ name: item.name!, ast: item.valueAst })),
       });
+      if (!latestOperation.current.isCurrent(revision)) return;
       setMathResult(result);
       worksheet.recordResult(result);
       setEngineStatus('done');
       setToolsOpen(false);
       window.requestAnimationFrame(() => document.getElementById('mathlab-result')?.scrollIntoView({ behavior: 'smooth', block: 'start' }));
     } catch (error) {
+      if (!latestOperation.current.isCurrent(revision)) return;
       setMathResult(null);
       setEngineStatus('error');
       setEngineError(error instanceof Error ? error.message : 'The local mathematics engine could not complete this operation.');
       window.requestAnimationFrame(() => document.getElementById('mathlab-result')?.scrollIntoView({ behavior: 'smooth', block: 'start' }));
     } finally {
-      setRunningOperation('');
+      if (latestOperation.current.isCurrent(revision)) setRunningOperation('');
     }
   };
 
@@ -121,6 +132,7 @@ export function App() {
       if ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === 'n') {
         event.preventDefault();
         controller.clearSelection();
+        clearResult();
         setActiveParsed(parseMath(''));
         setRoute('workspace');
         setToolsOpen(false);
@@ -141,6 +153,7 @@ export function App() {
   }, [controller.clearSelection, setRoute]);
 
   const activateObject = (id: string) => {
+    clearResult();
     controller.selectObject(id);
     const object = controller.state.objects.find((item) => item.id === id);
     setActiveParsed(parseMath(object?.source ?? ''));
