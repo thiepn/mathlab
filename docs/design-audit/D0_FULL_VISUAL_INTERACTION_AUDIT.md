@@ -3,13 +3,13 @@
 **Audit date:** 2026-10-08  
 **Baseline:** \`main\` commit \`6265f651d90101e74b530d75616b5caffba26c22\` (live-production certification: success)  
 **Target product:** v3.0 presentation overhaul, **not** a mathematical-engine rewrite  
-**State:** **Source inspection complete; automated screenshot capture prepared; visual screenshot review and real-device observation remain explicit D0 follow-ups.**
+**State:** **Source inspection and first-fold screenshot review completed.** The [rendered screenshot report](./D0_RENDERED_SCREENSHOT_REVIEW.md) records 30 captures, no capture errors, and real page heights. Physical-device observation remains external.
 
 ## 0. Evidence boundaries
 
 **Verified by repository inspection:** seven hash-route destinations; primary/secondary navigation; React screen composition and interactions; current design tokens; 21 imported CSS files; Playwright baseline; mathematical workflow and storage boundaries. Existing certified browser tests cover much of basic functionality and accessibility.
 
-**Not yet verified by this audit:** appearance of rendered pixels across browsers, subjective human appeal, actual motion smoothness, real device ergonomics, user task timing, screen-reader narration and precise screenshot-based layout scores. The Playwright screenshot workflow in \`.github/workflows/d0-ui-inventory.yml\` captures reproducible UI images; screenshots must be **visually reviewed** before the D2 design direction is frozen. Browser emulation is not physical-device testing.
+**Now verified by screenshot review:** desktop, tablet and phone first-fold images were inspected; measured default page heights are in [D0_RENDERED_SCREENSHOT_REVIEW.md](./D0_RENDERED_SCREENSHOT_REVIEW.md). **Not yet verified:** actual motion smoothness, real-device ergonomics, user task timing, screen-reader narration, every line of extremely tall pages or visual parity across engines. The Playwright screenshot workflow in \`.github/workflows/d0-ui-inventory.yml\` captures reproducible UI images; screenshots must be **visually reviewed** before the D2 design direction is frozen. Browser emulation is not physical-device testing.
 
 **Current release preservation:** Maintain existing math engine, math-object AST/operations, IndexedDB workspaces and recovery, worksheets, worker processing, accessibility contracts, hash-link semantics, import/export, read-only share links, and offline/PWA update behavior. Audit/visual migration must never be treated as evidence for broader mathematical capability.
 
@@ -96,7 +96,7 @@ Score: 1 very weak, 10 excellent. **These are design-risk estimates to prioritiz
 
 ## 5. D0 screenshot and review matrix
 
-The automated script \`scripts/capture-d0-screenshots.mjs\` builds a repeatable **21-image base matrix**: seven routes × three viewports, plus the empty/saved-function Workbench states and optional graph-parameter/keypad states. CI uploads \`d0-visual-inventory\` with a JSON manifest and PNGs. The baseline is **local production build of the tested exact SHA**, not a marketing mockup.
+The automated script \`scripts/capture-d0-screenshots.mjs\` builds a repeatable **30-image rendered capture matrix**: seven routes × three viewports, plus the empty/saved-function Workbench states and optional graph-parameter/keypad states. CI uploads \`d0-visual-inventory\` with a JSON manifest and PNGs. The baseline is **local production build of the tested exact SHA**, not a marketing mockup.
 
 | Device model | Viewport | Required views |
 | --- | --- | --- |
@@ -141,8 +141,8 @@ The following must be resolved **before** approving a v3 visual direction:
 - [x] Document screen-specific UX risks, severity and redesign requirements.
 - [x] Establish scoring rubric and screenshot capture/review matrix.
 - [x] Implement repeatable screenshot script and CI artifact workflow.
-- [ ] Run screenshot capture, inspect actual rendered images and record findings.
+- [x] Run screenshot capture, inspect first-fold rendered images and record findings in the companion screenshot report.
 - [ ] Observe physical Android/iOS and assistive-technology usage (external issue #51).
 - [ ] Human-approve a visual baseline before D2 selection.
 
-**D0 source-audit package is ready. D0 visual-evidence closure remains conditional on actual captured-image review.**
+**D0 is complete as a source-and-rendered-baseline audit.** Real-device, assistive-technology and human task research remain independent qualification gates.
