@@ -1,6 +1,5 @@
 import AxeBuilder from '@axe-core/playwright';
 import { expect, test } from '@playwright/test';
-import { readFile } from 'node:fs/promises';
 
 test('physical qualification is explicitly manual and diagnostics work on browser/device projects', async ({ page }) => {
   const pageErrors: string[] = [];
@@ -43,11 +42,23 @@ test('JSON evidence export remains incomplete unless physical targets are docume
   await page.goto('/qa/');
   await page.locator('#result-android-chrome').selectOption('pass');
   await page.locator('#evidence-android-chrome').fill('Test fixture: manual entry, not a real-device pass');
+  await page.evaluate(() => {
+    const capture = window as Window & { __q1ExportBlob?: Blob };
+    const original = URL.createObjectURL.bind(URL);
+    URL.createObjectURL = (value: Blob | MediaSource) => {
+      capture.__q1ExportBlob = value as Blob;
+      return original(value);
+    };
+  });
   const downloadEvent = page.waitForEvent('download');
   await page.getByRole('button', { name: 'Export JSON report' }).click();
   const download = await downloadEvent;
   expect(download.suggestedFilename()).toBe('mathlab-q1-device-evidence.json');
-  const exported = JSON.parse(await readFile(await download.path(), 'utf8'));
+  const exported = await page.evaluate(async () => {
+    const captured = (window as Window & { __q1ExportBlob?: Blob }).__q1ExportBlob;
+    if (!captured) throw new Error('Export did not create a Blob');
+    return JSON.parse(await captured.text());
+  });
   expect(exported.schema).toBe('mathlab-q1-device-evidence-v1');
   expect(exported.assessment).toBe('incomplete');
   expect(exported.automated).toEqual([]);
