@@ -21,6 +21,18 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      - name: Mark release certification pending before the build
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          curl --fail-with-body --silent --show-error \
+            -X POST \
+            -H "Authorization: Bearer ${GH_TOKEN}" \
+            -H "Accept: application/vnd.github+json" \
+            -H "X-GitHub-Api-Version: 2022-11-28" \
+            "https://api.github.com/repos/${GITHUB_REPOSITORY}/statuses/${GITHUB_SHA}" \
+            -d "{\"state\":\"pending\",\"context\":\"mathlab-production\",\"description\":\"MathLab production release gate has started\",\"target_url\":\"${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}\"}"
+
       - name: Checkout
         uses: actions/checkout@v5
 
@@ -181,3 +193,30 @@ jobs:
           path: test-results/
           if-no-files-found: ignore
           retention-days: 7
+
+  finalize-production-status:
+    name: Record final production certification status
+    if: ${{ always() }}
+    needs: [build, deploy, verify-production]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Publish success or failure for the entire release pipeline
+        env:
+          GH_TOKEN: ${{ github.token }}
+          BUILD_RESULT: ${{ needs.build.result }}
+          DEPLOY_RESULT: ${{ needs.deploy.result }}
+          VERIFY_RESULT: ${{ needs.verify-production.result }}
+        run: |
+          result=failure
+          description="MathLab production gate failed or was skipped"
+          if [ "$BUILD_RESULT" = success ] && [ "$DEPLOY_RESULT" = success ] && [ "$VERIFY_RESULT" = success ]; then
+            result=success
+            description="MathLab live production certification passed"
+          fi
+          curl --fail-with-body --silent --show-error \
+            -X POST \
+            -H "Authorization: Bearer ${GH_TOKEN}" \
+            -H "Accept: application/vnd.github+json" \
+            -H "X-GitHub-Api-Version: 2022-11-28" \
+            "https://api.github.com/repos/${GITHUB_REPOSITORY}/statuses/${GITHUB_SHA}" \
+            -d "{\"state\":\"${result}\",\"context\":\"mathlab-production\",\"description\":\"${description}\",\"target_url\":\"${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}\"}"

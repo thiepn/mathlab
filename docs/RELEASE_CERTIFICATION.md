@@ -87,6 +87,10 @@ After merge, GitHub Pages rebuilds from the exact `main` SHA. A separate live su
 
 The release is considered production-certified only when that exact merged SHA receives `mathlab-production: success`.
 
+The deployment pipeline now records a `mathlab-production: pending` status before its build starts and publishes a terminal success/failure status through an unconditional aggregate status job. Failed or skipped build, Pages deploy, or live verification stages therefore produce an explicit failure instead of leaving a commit with no result. The existing live browser verifier remains mandatory for success.
+
+An earlier merged SHA without a terminal production status must not inherit certification merely because its PR gate was green.
+
 ## Accessibility and device evidence boundary
 
 The automated matrix uses real browser engines and touch/mobile emulation, but it is not physical-device or screen-reader certification.
