@@ -88,6 +88,15 @@ jobs:
       - name: Cross-browser stable and accessibility certification
         run: npm run test:e2e
 
+      - name: Upload N4 visual acceptance captures
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ui-n4-viewport-acceptance
+          path: test-results/ui-n4-*.png
+          if-no-files-found: ignore
+          retention-days: 7
+
       - name: Upload N3 visual reference captures
         if: always()
         uses: actions/upload-artifact@v4
