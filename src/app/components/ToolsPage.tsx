@@ -39,7 +39,7 @@ export function ToolsPage({ currentObject, initialToolId = '', onRun, onConfigur
 
   const normalized = query.trim().toLowerCase();
   const filtered = ALL_TOOLS.filter((tool) => (category === 'All' || tool.category === category) && (!normalized || capabilitySearchText(tool).includes(normalized)));
-  const selected = ALL_TOOLS.find((tool) => tool.id === selectedId) ?? filtered[0] ?? ALL_TOOLS[0];
+  const selected = filtered.find((tool) => tool.id === selectedId) ?? filtered[0];
   const selectedCapability = selected ? capabilities.find((capability) => capability.operation === selected.operation) : undefined;
   const readyCount = currentObject ? ALL_TOOLS.filter((tool) => capabilities.some((capability) => capability.operation === tool.operation && capability.available)).length : 0;
 
@@ -61,7 +61,7 @@ export function ToolsPage({ currentObject, initialToolId = '', onRun, onConfigur
     <main className="tools-page">
       <section className="tools-hero">
         <div>
-          <span className="section-kicker">Mathematical tool catalog</span>
+          <span className="section-kicker">02 / Mathematical instruments</span>
           <h1>Find the operation you need.</h1>
           <p>Search MathLab by mathematical task instead of memorizing object types or menus. Every item below maps to a real implemented engine or visualization workflow.</p>
         </div>
@@ -90,10 +90,11 @@ export function ToolsPage({ currentObject, initialToolId = '', onRun, onConfigur
           <div className="tool-results-heading"><strong>{category === 'All' ? 'All tools' : category}</strong><span>{filtered.length} result{filtered.length === 1 ? '' : 's'}</span></div>
           {filtered.length === 0 && <div className="tool-empty">No tool matches that search. Try a mathematical term such as “regression”, “Markov”, “SVD”, “optimization”, “phase plane”, “probability”, or “proof”.</div>}
           <div className="tool-card-list">
-            {filtered.map((tool) => {
+            {filtered.map((tool, index) => {
               const status = statusFor(tool);
               return (
-                <button key={tool.id} className={`tool-card ${selected?.id === tool.id ? 'is-selected' : ''}`} onClick={() => setSelectedId(tool.id)}>
+                <button key={tool.id} className={`tool-card ${selected?.id === tool.id ? 'is-selected' : ''}`} onClick={() => setSelectedId(tool.id)} aria-pressed={selected?.id === tool.id}>
+                  <span className="tool-index" aria-hidden="true">{String(index + 1).padStart(2, '0')}</span>
                   <span className="tool-card-main"><strong>{tool.label}</strong><small>{tool.description}</small></span>
                   <span className="tool-card-meta"><i className={`tool-status status-${status.tone}`}>{status.label}</i><b>{tool.category}</b></span>
                 </button>
