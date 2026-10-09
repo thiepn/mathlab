@@ -4,6 +4,18 @@
 /* The original mobile button background was white and covered the dark
    navigation rail, leaving N1's light labels almost invisible. Scope the
    correction to the actual three-destination mobile navigation. */
+/* A MathML node has its own ink color in the legacy styles. In the dark
+   graph-source rail it must inherit light ink rather than near-black. */
+.e3-object-rail .e3-object-list > button .math-preview,
+.e3-object-rail .e3-object-list > button .math-value,
+.e3-object-rail .e3-object-list > button .math-text-fallback,
+.e3-object-rail .e3-object-list > button .text-value {
+  color: #f1f5ee;
+}
+.e3-object-rail .e3-object-list > button.is-active .math-preview {
+  color: #fff9e9;
+}
+
 @media (max-width: 820px) {
   .mobile-nav.mobile-nav-primary {
     background: #20302f;
