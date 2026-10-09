@@ -39,7 +39,7 @@ export function ToolsPage({ currentObject, initialToolId = '', onRun, onConfigur
 
   const normalized = query.trim().toLowerCase();
   const filtered = ALL_TOOLS.filter((tool) => (category === 'All' || tool.category === category) && (!normalized || capabilitySearchText(tool).includes(normalized)));
-  const selected = ALL_TOOLS.find((tool) => tool.id === selectedId) ?? filtered[0] ?? ALL_TOOLS[0];
+  const selected = filtered.find((tool) => tool.id === selectedId) ?? filtered[0];
   const selectedCapability = selected ? capabilities.find((capability) => capability.operation === selected.operation) : undefined;
   const readyCount = currentObject ? ALL_TOOLS.filter((tool) => capabilities.some((capability) => capability.operation === tool.operation && capability.available)).length : 0;
 
