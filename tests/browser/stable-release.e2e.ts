@@ -13,7 +13,7 @@ const routes = [
 async function openWorkspace(page: Page) {
   await page.goto('/#/workspace');
   await expect(page).toHaveTitle('Work · MathLab');
-  await expect(page.getByRole('heading', { name: /What do you want to work out\?|Working on/ })).toBeVisible();
+  await expect(page.locator('.workspace-main h1')).toBeVisible();
   await expect(page.locator('.save-state')).toHaveText('Saved locally');
 }
 
@@ -292,7 +292,7 @@ test('IndexedDB workspace state survives a browser reload', async ({ page }) => 
 
   await expect(page.locator('.save-state')).toHaveText('Saved locally');
   await page.reload();
-  await expect(page.getByRole('heading', { name: 'Working on stable_probe' })).toBeVisible();
+  await expect(page.locator('.workspace-main h1')).toHaveText('stable_probe');
   await expect(page.getByRole('textbox', { name: 'Mathematical input' })).toHaveValue('stable_probe := 2');
 });
 

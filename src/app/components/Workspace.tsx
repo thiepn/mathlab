@@ -158,9 +158,9 @@ export function Workspace({
     <main className="workspace-main m3-workspace-main">
       <div className="workspace-heading p3-workspace-heading">
         <div>
-          <span className="eyebrow">Mathematical workspace</span>
-          <h1>{controller.activeObject?.name ? `Working on ${controller.activeObject.name}` : 'What do you want to work out?'}</h1>
-          <p className="workspace-heading-subtitle">Enter mathematics once. MathLab recognizes the object and surfaces the operations that make sense for it.</p>
+          <span className="eyebrow">01 / Mathematics workspace</span>
+          <h1>{controller.activeObject?.name ? controller.activeObject.name : 'The workbench'}</h1>
+          <p className="workspace-heading-subtitle">Define a symbol, explore an expression, or pick up where you left off. Your calculations stay in one working notebook.</p>
         </div>
         <div className="workspace-heading-actions m3-heading-actions">
           <span className={`save-state save-${controller.saveState}`}><i />{controller.saveState === 'saving' ? 'Saving' : controller.saveState === 'error' ? 'Storage issue' : controller.saveState === 'loading' ? 'Loading' : 'Saved locally'}</span>

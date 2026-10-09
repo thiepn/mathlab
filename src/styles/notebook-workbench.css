@@ -1,0 +1,435 @@
+/*
+ * Notebook Workbench / UI-N1.
+ * A mathematical instrument, not a card dashboard.
+ * Structural ink, quiet paper, mathematical typography, and a dedicated
+ * input–preview work surface. No external assets or network fonts.
+ */
+:root {
+  --ml-white: #fffefa;
+  --ml-canvas: #f3f1e9;
+  --ml-paper: #f7f5ee;
+  --ml-paper-strong: #eeebe2;
+  --ml-ink: #1e302f;
+  --ml-ink-soft: #344847;
+  --ml-muted: #53635f;
+  --ml-muted-soft: #64736e;
+  --ml-line: #d4d3c8;
+  --ml-line-strong: #b4b9ae;
+  --ml-blue: #155d50;
+  --ml-blue-strong: #104b41;
+  --ml-blue-soft: #e1eee7;
+  --ml-blue-faint: #f1f7f2;
+  --ml-green: #176a4f;
+  --ml-green-soft: #e6f2e9;
+  --ml-amber: #875d19;
+  --ml-amber-soft: #fff0d2;
+  --ml-red: #9c3335;
+  --ml-red-soft: #fae9e8;
+  --ml-font-display: "Iowan Old Style", "Baskerville", "Palatino Linotype", Georgia, serif;
+  --ml-font-math: "Cambria Math", "STIX Two Math", "Latin Modern Math", Georgia, serif;
+  --ml-left-width: 252px;
+  --ml-header-height: 64px;
+  --ml-radius-xs: 2px;
+  --ml-radius-sm: 3px;
+  --ml-radius-md: 4px;
+  --ml-radius-lg: 5px;
+  --ml-shadow-card: none;
+  --ml-shadow-input: none;
+  --ml-shadow-float: 0 18px 40px rgba(19, 36, 33, .15);
+}
+html, body, .app-shell, .app-grid { background: var(--ml-canvas); }
+body { letter-spacing: 0; }
+::selection { background: #c7dcd0; color: #122a27; }
+
+/* The dark technical masthead provides a permanent, unmistakable anchor. */
+.topbar {
+  background: #20302f;
+  border-bottom: 1px solid #40514b;
+  backdrop-filter: none;
+  color: #f3f1e8;
+}
+.brand {
+  border-right: 1px solid #40514b;
+  gap: 10px;
+  font-weight: 690;
+  letter-spacing: -.035em;
+}
+.brand__mark { stroke: #d4ae6b; }
+.brand__name { color: #f6f2e6; }
+.topnav { gap: 4px; padding-left: 20px; }
+.topnav__item {
+  min-width: 80px;
+  padding-inline: 16px;
+  color: #d3ded8;
+  font-weight: 600;
+}
+.topnav__item:hover { background: #30423e; color: #fff; }
+.topnav__item.is-active { background: #30423e; color: #fffefa; }
+.topnav__item.is-active::after { background: #d7ad67; height: 3px; }
+.topbar__actions { gap: 13px; }
+.release-connectivity, .release-badge { color: #d3ded8; }
+.release-badge { background: transparent; border-color: #5a6a62; color: #e1e4db; }
+.command-button {
+  min-height: 36px;
+  background: #2d403b;
+  border-color: #5c7068;
+  color: #ebeee6;
+  border-radius: 3px;
+}
+.command-button:hover { background: #38544b; }
+.command-button kbd { color: #e4e9df; font-family: var(--ml-font-mono); font-size: .72rem; }
+.section-nav {
+  border-bottom: 1px solid var(--ml-line-strong);
+  background: #eeece3;
+  backdrop-filter: none;
+}
+.section-nav__inner { max-width: none; padding-inline: clamp(18px, 3vw, 42px); }
+.section-nav__item { font-weight: 620; color: var(--ml-muted); }
+.section-nav__item.is-active {
+  background: transparent;
+  color: var(--ml-ink);
+}
+.section-nav__item.is-active::after { background: var(--ml-blue); height: 3px; }
+
+/* Object rail: objects are a mathematical index, not a collection of cards. */
+.object-sidebar {
+  background: #253532;
+  border-right: 1px solid #172522;
+  color: #f2f2e8;
+  padding: 22px 12px 28px;
+  scrollbar-color: #64766e #253532;
+}
+.side-heading { color: #d9e3d9; padding-inline: 11px; letter-spacing: .13em; }
+.object-count {
+  color: #e0e9df;
+  border-color: #5d7067;
+  background: #354640;
+}
+.sidebar-top-action { padding: 0 3px 20px; }
+.new-object-button {
+  background: #d4ad67;
+  border-color: #d4ad67;
+  color: #1c2e2b;
+  border-radius: 3px;
+  font-weight: 760;
+  box-shadow: none;
+}
+.new-object-button:hover { background: #e8c484; color: #1c2e2b; }
+.new-object-button span { color: inherit; }
+.semantic-object-row {
+  border-radius: 0;
+  border-left: 2px solid transparent;
+  border-bottom: 1px solid #40504a;
+  background: transparent;
+  color: #e6ebe3;
+}
+.semantic-object-row:hover { background: #31443e; }
+.semantic-object-row.is-active {
+  border-left-color: #e4b86c;
+  background: #40544b;
+}
+.semantic-object-main { color: #f1f2e9; }
+.semantic-object-main:hover { color: #fff; }
+.semantic-object-row .object-symbol { color: #e0bc78; }
+.semantic-object-row .object-meta { color: #c1d0c7; }
+.semantic-object-row .object-source { color: #f7f5ed; }
+.object-pin, .object-delete { color: #d9e5dc; }
+.object-pin:hover, .object-delete:hover { background: #465d52; color: white; }
+.object-pin.is-pinned { color: #e0bd7b; }
+.sidebar-empty, .sidebar-empty.compact, .sidebar-footnote { color: #d4ded5; }
+.sidebar-empty code { color: #ffe0a8; }
+.side-rule { border-color: #53635b; }
+.activity-row { color: #e0e8de; }
+.activity-row:hover { background: #34483f; }
+.activity-row strong { color: #f3f5ed; }
+.activity-row small, .activity-mark { color: #bfcfc3; }
+
+/* Notebook-like content hierarchy without decorative hero blocks. */
+.m3-workspace-main {
+  width: 100%;
+  max-width: 1580px;
+  padding: 28px clamp(20px, 3vw, 52px) 80px;
+}
+.workspace-heading {
+  align-items: flex-end;
+  padding-bottom: 19px;
+  margin-bottom: 23px;
+  border-bottom: 1px solid var(--ml-line-strong);
+}
+.eyebrow, .section-kicker {
+  color: var(--ml-blue);
+  font-family: var(--ml-font-mono);
+  letter-spacing: .105em;
+  font-size: .75rem;
+  font-weight: 730;
+}
+.workspace-heading h1 {
+  margin-top: 8px;
+  color: #1c302d;
+  font: 500 clamp(2.05rem, 3.25vw, 3.3rem)/1.08 var(--ml-font-display);
+  letter-spacing: -.045em;
+  text-wrap: balance;
+}
+.workspace-heading-subtitle {
+  max-width: 620px;
+  margin-top: 8px;
+  color: var(--ml-ink-soft);
+  font-size: .92rem;
+}
+.workspace-heading-actions { align-self: flex-end; }
+.save-state { color: var(--ml-ink-soft); }
+.p8-share-button {
+  background: var(--ml-blue);
+  border-color: var(--ml-blue);
+  color: white;
+  border-radius: 3px;
+  box-shadow: none;
+}
+.workspace-data-menu summary, .worksheet-controls button {
+  border-radius: 3px;
+  box-shadow: none;
+}
+
+/* The key work surface is a composed input + typeset-math specimen, not two
+ * unrelated stacked dashboard cards. Keep its live semantics and interactions. */
+.input-zone { margin-bottom: 18px; }
+.input-zone-heading {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  border-bottom: 0;
+  margin-bottom: 10px;
+}
+.math-entry-composition {
+  display: grid;
+  grid-template-columns: minmax(0, 1.12fr) minmax(0, .88fr);
+  background: var(--ml-white);
+  border: 1px solid var(--ml-line-strong);
+}
+.math-entry-editor {
+  min-width: 0;
+  border-right: 1px solid var(--ml-line-strong);
+  padding: 17px;
+  background: #fffefa;
+}
+.math-input-shell {
+  min-height: 78px;
+  border: 1px solid #8faba1;
+  border-bottom: 3px solid var(--ml-blue);
+  border-radius: 2px;
+  box-shadow: none;
+  background: white;
+}
+.math-input-shell:focus-within { border-color: var(--ml-blue); box-shadow: 0 0 0 1px var(--ml-blue); }
+.math-input-shell input { color: #122926; font-size: 1.02rem; }
+.input-prefix { color: var(--ml-blue); }
+.run-button {
+  background: var(--ml-blue);
+  color: #fff;
+  border-left: 1px solid var(--ml-blue-strong);
+  font-weight: 720;
+}
+.run-button:hover { background: var(--ml-blue-strong); }
+.math-helper-row { margin-top: 12px; }
+.math-helper-row button, .quick-math-key {
+  background: #f5f5ee;
+  border-color: var(--ml-line);
+  border-radius: 2px;
+}
+.math-helper-row button:hover { background: var(--ml-blue-soft); }
+.helper-note { color: var(--ml-muted); }
+.live-preview-panel {
+  margin: 0;
+  padding: 19px 24px;
+  border: 0;
+  border-radius: 0;
+  box-shadow: none;
+  background-color: #f4f5ef;
+  background-image: linear-gradient(to bottom, transparent 31px, rgba(104, 128, 112, .105) 32px);
+  background-size: 100% 32px;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+}
+.live-preview-panel .preview-meta {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+  border-bottom: 1px solid var(--ml-line);
+  padding-bottom: 11px;
+  margin-bottom: 16px;
+  color: var(--ml-ink-soft);
+  font-family: var(--ml-font-mono);
+  font-size: .74rem;
+  font-weight: 700;
+}
+.live-preview-panel .math-preview {
+  min-height: 145px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: clamp(1.4rem, 2.4vw, 2.15rem);
+}
+.math-preview-empty { color: var(--ml-muted); }
+.input-status { color: var(--ml-muted); font-size: .78rem; }
+.math-suggestions { z-index: 50; }
+.math-keypad { border-radius: 2px; box-shadow: none; }
+
+/* A true mathematical ledger: numbered records, visible rules, no floaty tiles. */
+.current-work-card {
+  margin: 18px 0 20px;
+  border: 1px solid var(--ml-line-strong);
+  border-left: 4px solid var(--ml-blue);
+  border-radius: 0;
+  background: #fffefa;
+  box-shadow: none;
+}
+.current-work-summary { padding: 19px 23px; }
+.current-work-summary > div:first-child > strong {
+  color: var(--ml-ink);
+  font: 500 1.32rem/1.2 var(--ml-font-display);
+}
+.current-work-math .math-preview { font-size: clamp(1.35rem, 2vw, 2rem); }
+.current-work-ledger {
+  background: #f4f2ea;
+  border-top-color: var(--ml-line-strong);
+  padding-inline: 22px;
+}
+.current-work-ledger span::before { background: var(--ml-blue); }
+.current-work-copy button {
+  border-radius: 2px;
+  color: var(--ml-ink-soft);
+  background: #fff;
+}
+.workspace-actions {
+  margin: 19px 0 26px;
+  padding: 18px 0 5px;
+  border: 0;
+  border-top: 2px solid var(--ml-ink);
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+}
+.workspace-actions-head { padding-inline: 0; }
+.workspace-actions-head > div:first-child > strong {
+  color: var(--ml-ink);
+  font-size: 1rem;
+  font-weight: 720;
+}
+.workspace-action-list {
+  grid-template-columns: repeat(auto-fit, minmax(165px, 1fr));
+  gap: 0;
+  border-left: 1px solid var(--ml-line);
+  border-top: 1px solid var(--ml-line);
+}
+.workspace-action-list button {
+  min-height: 74px;
+  border: 0;
+  border-right: 1px solid var(--ml-line);
+  border-bottom: 1px solid var(--ml-line);
+  border-radius: 0;
+  background: #fffefa;
+  padding: 12px 15px;
+  box-shadow: none;
+}
+.workspace-action-list button:hover {
+  background: #edf3eb;
+  box-shadow: inset 0 -3px var(--ml-blue);
+}
+.workspace-action-list button.is-primary {
+  background: #203a34;
+  color: #fff;
+}
+.workspace-action-list button.is-primary:hover { background: #2f5346; }
+.workspace-actions.is-empty { padding: 18px 0; border-bottom: 1px solid var(--ml-line); }
+
+/* Answers are typeset evidence, not marketing cards. */
+.answer-surface {
+  background: #fffefa;
+  border: 1px solid var(--ml-line-strong);
+  border-left: 4px solid var(--ml-blue);
+  border-radius: 0;
+  box-shadow: none;
+}
+.result-section {
+  border-radius: 0;
+  box-shadow: none;
+  background: var(--ml-white);
+}
+.result-fact { border-radius: 2px; }
+.worksheet-timeline {
+  background: var(--ml-white);
+  border: 1px solid var(--ml-line-strong);
+  border-top: 3px solid var(--ml-ink);
+  border-radius: 0;
+  box-shadow: none;
+}
+.worksheet-entry { border-bottom-color: var(--ml-line); }
+.worksheet-entry-index { background: #eeece4; color: var(--ml-ink-soft); }
+.worksheet-entry-math { border-radius: 0; background: #f7f6f0; }
+.phase-notice { color: var(--ml-muted); }
+
+/* Secondary routes share a sober editorial system. */
+.app-grid.is-focus-route > main { background: var(--ml-canvas); }
+.placeholder-page h1, .practice-hero h1, .proof-lab-page h1,
+.visualization-page h1, .reference-page h1 {
+  font-family: var(--ml-font-display);
+  font-weight: 520;
+  letter-spacing: -.035em;
+}
+.tool-card, .practice-card, .m6-proof-card, .reference-card {
+  border-radius: 3px;
+  box-shadow: none;
+}
+
+/* Respect the original touch and 320px reflow contracts. */
+@media (max-width: 1180px) {
+  .math-entry-composition { grid-template-columns: minmax(0, 1fr); }
+  .math-entry-editor { border-right: 0; border-bottom: 1px solid var(--ml-line-strong); }
+  .live-preview-panel .math-preview { min-height: 86px; }
+}
+@media (max-width: 820px) {
+  :root { --ml-header-height: 60px; }
+  .brand { border-right: 0; padding: 0 4px; }
+  .topbar__actions { padding-right: 11px; }
+  .topbar .icon-button { color: #fff; }
+  .section-nav__inner { padding-inline: 6px; }
+  .section-nav__item { font-size: .82rem; }
+  .m3-workspace-main { padding: 22px 16px 96px; }
+  .workspace-heading { align-items: flex-start; }
+  .workspace-heading h1 { font-size: clamp(1.9rem, 7vw, 2.5rem); }
+  .math-entry-editor { padding: 12px; }
+  .live-preview-panel { padding: 14px 15px; }
+  .current-work-summary { padding: 16px; }
+  .mobile-nav { background: #20302f; backdrop-filter: none; border-top: 1px solid #52635b; }
+  .mobile-nav button { color: #d9e5dc; }
+  .mobile-nav button.is-active { color: #ffe0a1; }
+}
+@media (max-width: 480px) {
+  .m3-workspace-main { padding-inline: 12px; }
+  .workspace-heading { gap: 12px; }
+  .workspace-heading-actions { flex-wrap: wrap; }
+  .workspace-heading h1 { font-size: 2rem; }
+  .math-entry-editor { padding: 9px; }
+  .math-input-shell { grid-template-columns: 38px minmax(0, 1fr) 58px; }
+  .math-input-shell input { font-size: 1rem; }
+  .live-preview-panel { padding-inline: 12px; }
+  .live-preview-panel .preview-meta { flex-wrap: wrap; }
+  .current-work-summary { gap: 12px; }
+  .workspace-action-list { grid-template-columns: repeat(2,minmax(0,1fr)); }
+}
+@media (max-width: 360px) {
+  .workspace-action-list { grid-template-columns: minmax(0, 1fr); }
+  .math-entry-editor { padding-inline: 7px; }
+}
+@media (forced-colors: active) {
+  .topbar, .object-sidebar, .mobile-nav, .section-nav, .math-entry-composition,
+  .math-entry-editor, .live-preview-panel, .workspace-actions, .current-work-card,
+  .worksheet-timeline { background: Canvas; color: CanvasText; border-color: CanvasText; }
+  .topbar button, .object-sidebar button, .mobile-nav button, .brand__name,
+  .semantic-object-row .object-source, .semantic-object-row .object-meta,
+  .semantic-object-row .object-symbol { color: ButtonText; }
+  .semantic-object-row.is-active, .topnav__item.is-active,
+  .mobile-nav button.is-active { outline: 2px solid Highlight; outline-offset: -2px; }
+}

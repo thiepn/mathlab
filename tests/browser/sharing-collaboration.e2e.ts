@@ -20,6 +20,8 @@ async function createShareLink(page: import('@playwright/test').Page) {
   await expect(link).toBeVisible();
   const value = await link.inputValue();
   expect(value).toContain('#/share/');
+  await dialog.getByRole('button', { name: 'Close sharing dialog' }).click();
+  await expect(dialog).toHaveCount(0);
   return value;
 }
 

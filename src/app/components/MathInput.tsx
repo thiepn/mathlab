@@ -128,6 +128,8 @@ export function MathInput({ initialValue = '', canSubmit = true, onChangeParsed,
         </div>
       </div>
 
+      <div className="math-entry-composition">
+        <div className="math-entry-editor">
       <div className={`math-input-shell ${firstError ? 'has-error' : ''}`}>
         <span className="input-prefix" aria-hidden="true">∑</span>
         <input
@@ -296,12 +298,14 @@ export function MathInput({ initialValue = '', canSubmit = true, onChangeParsed,
         <MathKeypad open={keypadOpen} onClose={() => { setKeypadOpen(false); focusSelection(cursor); }} onTemplate={applyTemplate} />
       </div>
 
+        </div>
       <div className="live-preview-panel">
         <div className="preview-meta">
           <span>Live preview</span>
           <span>{labels[kind]}{parsed.normalizedSource !== value ? ' · syntax normalized' : ''}</span>
         </div>
         <MathPreview ast={errors.length ? null : parsed.ast} fallback={value.trim() ? 'Fix the input diagnostic to restore the preview.' : 'Enter mathematics to preview it.'} />
+      </div>
       </div>
 
       {firstError ? (
