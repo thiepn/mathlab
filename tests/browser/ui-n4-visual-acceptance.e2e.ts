@@ -36,7 +36,7 @@ test('N4 screenshot acceptance covers responsive working screens and readable mo
         await expect(page.locator('.e3-canvas-frame')).toBeVisible();
         // Readable formulas are as important as readable navigation labels.
         const mathInkContrast = await page.locator('.e3-object-list > button.is-active .math-preview').first().evaluate(math => {
-          const channels = (value: string) => (value.match(/[\\d.]+/g) ?? []).slice(0, 3).map(Number);
+          const channels = (value: string) => (value.match(/[0-9.]+/g) ?? []).slice(0, 3).map(Number);
           const luminance = (value: string) => {
             const [r, g, b] = channels(value).map(n => {
               const unit = n / 255;
