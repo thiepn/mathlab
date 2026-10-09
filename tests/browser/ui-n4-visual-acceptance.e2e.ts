@@ -21,6 +21,16 @@ test('N4 screenshot acceptance covers responsive working screens and readable mo
     for (const route of routes) {
       await page.goto('/#/' + route);
       await expect(page.locator('#mathlab-main')).toBeVisible();
+      // The route container exists before lazy modules have rendered. Wait for
+      // real content, otherwise screenshots silently capture loading placeholders.
+      const readySurface = {
+        workspace: '.math-entry-composition',
+        tools: '.tool-card',
+        visualize: '.e3-canvas-frame',
+        proof: '.m6-proof-editor',
+        practice: '.m6-learning-hero',
+      }[route];
+      await expect(page.locator(readySurface).first()).toBeVisible();
       if (route === 'visualize') {
         await expect(page.locator('.e3-stage')).toBeVisible();
         await expect(page.locator('.e3-canvas-frame')).toBeVisible();
