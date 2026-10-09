@@ -136,7 +136,7 @@ export function VisualizationPageE3({objects,activeObject,onActivateObject,onOpe
   if(!selected)return <main className="e3-page"><section className="e3-empty"><span className="eyebrow">Visualization workspace</span><h1>Create something visualizable in Workspace.</h1><p>MathLab accepts unary scalar functions, parameterized curves, two-variable equations, scalar fields, 2D vector fields, graph surfaces and two-parameter 3D surfaces.</p></section></main>;
 
   return <main className="e3-page">
-    <header className="e3-hero"><div><span className="eyebrow">Visualization workspace</span><h1>See the mathematical object, not just its formula.</h1><p>Explicit curves, fields, level sets, trajectories and surfaces now share one deterministic visualization workspace.</p></div><div className="e3-hero-metrics"><strong>{available.length}</strong><span>visualizable objects</span><strong>{VISUALIZATION_MODES[mode].dimension}</strong><span>active renderer</span></div></header>
+    <header className="e3-hero"><div><span className="eyebrow">Visualization workspace</span><h1>Graphs, fields & surfaces</h1><p>Examine curves, phase portraits, level sets and surfaces in a single plotting workbench.</p></div><div className="e3-hero-metrics"><strong>{available.length}</strong><span>visualizable objects</span><strong>{VISUALIZATION_MODES[mode].dimension}</strong><span>active renderer</span></div></header>
 
     <section className="e3-workbench">
       <aside className="e3-object-rail" aria-label="Visualizable objects">
