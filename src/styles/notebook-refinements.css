@@ -1,0 +1,179 @@
+/* UI-N3 · evidence-led refinements: structure, density, and responsive interaction.
+   This layer repairs conflicts between legacy mobile rules and UI-N1/N2. */
+
+/* Shared precision: clear alignment and consistent focus on all work surfaces. */
+:root { --ml-instrument-rule: #abbab0; }
+.tools-page, .e3-page, .m6-proof-page, .m6-practice-page { min-width: 0; }
+.tools-hero, .e3-hero, .m6-proof-hero, .m6-learning-hero { max-width: 100%; }
+.tools-page :where(button, input),
+.e3-page :where(button, input, select),
+.m6-practice-page :where(button, input, select),
+.m6-proof-page :where(button, input, textarea, select) { accent-color: var(--ml-blue); }
+.tools-page :where(input, button):focus-visible,
+.e3-page :where(button, input):focus-visible,
+.m6-proof-page :where(button, textarea, input, select):focus-visible {
+  outline: 3px solid var(--ml-blue);
+  outline-offset: 2px;
+}
+
+/* Tools: a continuous reference index, with an attached details leaf. */
+.tools-layout { grid-template-columns: minmax(0, 1.6fr) minmax(310px, .84fr); }
+.tool-results { min-width: 0; }
+.tool-card { min-width: 0; }
+.tool-card-main { overflow-wrap: anywhere; }
+.tool-card-meta { min-width: 0; }
+.tool-card-meta .tool-status {
+  border-radius: 2px; padding-inline: 6px; min-height: 22px; font-weight: 710;
+}
+.tool-detail {
+  min-width: 0;
+  padding: 0;
+  scroll-margin-top: calc(var(--ml-header-height) + var(--ml-section-nav-height, 44px) + 12px);
+  border-left: 1px solid var(--ml-line-strong);
+}
+.tool-detail-heading { padding: 21px 22px 19px; }
+.tool-detail-section {
+  margin: 0;
+  padding: 20px 22px;
+  border-top: 0;
+  border-bottom: 1px solid var(--ml-line-strong);
+}
+.tool-detail-actions { margin: 0; padding: 20px 22px; }
+.tool-detail-actions button, .quiet-tool-button { min-height: 39px; }
+.tool-example .math-preview { max-width: 100%; }
+.tool-detail-actions button:hover { transform: none; }
+.tool-results-heading { gap: 12px; }
+.tool-results-heading strong, .tool-results-heading span { overflow-wrap: anywhere; }
+
+/* Visualization: restore complete plot semantic color tokens after N2 theme migration.
+   The original plot engine uses these tokens, not the app-wide --ml-blue name. */
+.e3-page {
+  --ml-accent-soft: var(--ml-blue-soft);
+  --ml-accent-strong: var(--ml-blue-strong);
+  --ml-ink-faint: #697d72;
+  --ml-positive: #166b53;
+  --ml-negative: #9c3335;
+  --ml-warning: #8d6318;
+  --ml-focus: var(--ml-blue);
+}
+.e3-plot-background { fill: #fffefa; }
+.e3-grid line { stroke: #d8ded6; }
+.e3-axes line { stroke: #697d72; }
+.e3-stage { min-width: 0; }
+.e3-toolbar-group { min-width: 0; }
+.e3-inspector { min-width: 0; }
+.e3-range-grid input { color: var(--ml-ink); }
+.e3-object-list > button { min-width: 0; }
+.e3-object-list > button .math-preview { max-width: 100%; overflow-x: auto; }
+.e3-inspector-head p { line-height: 1.52; }
+.e3-canvas-frame:focus-within { outline-offset: -2px; }
+
+/* Proof: the canonical Proof Lab owns the main landmark; advanced certificate
+   modes continue as a labelled section within the same document. */
+.e11-proof-extension { border-top: 4px solid var(--ml-ink); padding-top: 28px; }
+.e11-proof-extension > .m6-proof-hero { margin-top: 0; }
+.m6-proof-editor { min-width: 0; }
+.m6-proof-modes { min-width: 0; }
+.m6-proof-modes button { min-width: 0; }
+.m6-proof-preview .math-preview { overflow: visible; }
+
+/* Practice: clarify answer focus and keep dense question sheets readable. */
+.m6-exercise-card { min-width: 0; }
+.m6-exercise-prompt { color: var(--ml-ink); max-width: 80ch; }
+.m6-course-detail { min-width: 0; }
+.m6-course-nav button.is-active { outline-offset: -3px; }
+.m6-practice-choices button:focus-visible,
+.m6-practice-answer input:focus-visible { outline-offset: 3px; }
+.m6-practice-feedback { border-left: 3px solid var(--ml-blue); }
+.m6-session-sidebar { min-width: 0; }
+
+/* 821–1180px is a genuine intermediate layout, not cramped desktop. */
+@media (max-width: 1180px) {
+  .tools-layout { grid-template-columns: minmax(0, 1fr) minmax(280px, .9fr); }
+  .e3-workbench { grid-template-columns: minmax(0,1fr); }
+  .e3-object-rail {
+    display: grid;
+    grid-template-columns: minmax(0,1fr);
+    border-right: 0;
+    border-bottom: 1px solid #53675a;
+  }
+  .e3-object-list {
+    display: flex;
+    overflow-x: auto;
+    overflow-y: hidden;
+    max-height: none;
+    scrollbar-width: thin;
+  }
+  .e3-object-list > button {
+    min-width: min(215px, 45vw);
+    flex: 0 0 min(215px, 45vw);
+    border-right: 1px solid #53675a;
+    border-bottom: 0;
+  }
+  .e3-overlay-sources { display: flex; flex-wrap: wrap; }
+  .e3-inspector {
+    grid-column: 1;
+    display: grid;
+    grid-template-columns: repeat(2,minmax(0,1fr));
+    border-left: 0;
+    border-top: 1px solid var(--ml-line-strong);
+  }
+  .e3-inspector-head, .e3-object-summary { grid-column: 1 / -1; }
+}
+@media (max-width: 900px) {
+  .tools-layout { grid-template-columns: minmax(0,1fr); }
+  /* Legacy m4.css moved the inspector above results; selection without search context
+     is a bad mobile interaction. Restore source order and scroll to the selected detail. */
+  .tools-layout > .tool-results { order: 0; border-right: 0; border-bottom: 1px solid var(--ml-line-strong); }
+  .tools-layout > .tool-detail { order: 1; position: static; border-left: 0; }
+  .tool-card { grid-template-columns: 30px minmax(0,1fr); }
+  .tool-card-meta { grid-column: 2; justify-items: start; }
+  .e3-canvas-frame, .e3-canvas-shell { min-height: 410px; }
+}
+@media (max-width: 820px) {
+  .m6-proof-modes { display: flex; overflow-x: auto; }
+  .m6-proof-modes button { min-width: 175px; flex: 1 0 175px; }
+  .m6-proof-editor { border-right: 0; }
+  .m6-practice-page .m6-course-nav > button {
+    border-bottom: 2px solid #405a4d;
+    flex-basis: 178px;
+  }
+  .m6-practice-page .m6-course-nav > button.is-active {
+    border-bottom-color: #d9b476;
+    box-shadow: inset 3px 0 0 #d9b476;
+  }
+  .e3-hero { align-items: start; }
+  .e3-hero-metrics { min-width: 0; }
+  .e3-object-list > button { min-width: 184px; flex-basis: 184px; }
+}
+@media (max-width: 620px) {
+  .tool-card { grid-template-columns: 27px minmax(0,1fr); gap: 7px 9px; }
+  .tool-card-main { grid-column: 2; }
+  .tool-card-meta { grid-column: 2; }
+  .tool-detail { padding: 0; }
+  .tool-detail-heading { padding: 18px 15px; }
+  .tool-detail-section, .tool-detail-actions { padding: 17px 15px; }
+  .e3-object-list > button { min-width: 160px; flex-basis: 160px; }
+  .e3-overlay-sources { padding: 11px; gap: 10px; }
+  .e3-inspector { grid-template-columns: minmax(0,1fr); }
+  .e3-inspector-head, .e3-object-summary { grid-column: 1; }
+  .e3-canvas-frame, .e3-canvas-shell { min-height: 360px; }
+  .m6-proof-modes button { min-width: 152px; flex-basis: 152px; padding: 12px; }
+  .m6-exercise-prompt { line-height: 1.6; }
+}
+@media (max-width: 380px) {
+  .tools-page, .e3-page, .m6-proof-page, .m6-practice-page { padding-inline: 9px; }
+  .e3-toolbar { gap: 5px; }
+  .e3-toolbar-group button { min-height: 38px; }
+  .m6-proof-modes button { min-width: 142px; flex-basis: 142px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .tool-card, .e3-page button, .m6-proof-modes button { transition: none; }
+}
+@media (forced-colors: active) {
+  .tool-detail, .tool-detail-heading, .tool-detail-section, .e3-object-rail,
+  .m6-proof-editor, .m6-exercise-card { color: CanvasText; background: Canvas; border-color: CanvasText; }
+  .tool-detail-heading :is(h2,span,p) { color: CanvasText; }
+  .tool-card.is-selected, .e3-object-list > button.is-active,
+  .m6-proof-modes button.is-active { outline: 2px solid Highlight; outline-offset: -2px; }
+}
