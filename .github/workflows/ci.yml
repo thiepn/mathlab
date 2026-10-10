@@ -4,6 +4,7 @@ on:
   pull_request:
     branches:
       - main
+      - ui-n5-integrated-release
   workflow_dispatch:
 
 permissions:
