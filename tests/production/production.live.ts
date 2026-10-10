@@ -168,7 +168,9 @@ test('live IndexedDB workspace persists across a production reload', async ({ pa
   await expect(page.locator('.save-state')).toHaveText('Saved locally');
   await page.reload({ waitUntil: 'domcontentloaded' });
   await expect(page.locator('.save-state')).toHaveText('Saved locally');
-  await expect(page.getByRole('heading', { name: 'Working on production_probe' })).toBeVisible();
+  // N1's notebook heading is the saved object name, not the legacy "Working on …" label.
+  // Preserve the independent IndexedDB, save-state and editor-value assertions.
+  await expect(page.getByRole('heading', { name: 'production_probe', exact: true })).toBeVisible();
   await expect(page.getByRole('textbox', { name: 'Mathematical input' })).toHaveValue('production_probe := 2');
 });
 
