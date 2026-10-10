@@ -1,0 +1,41 @@
+name: D0 UI Screenshot Inventory
+
+on:
+  pull_request:
+    paths:
+      - 'docs/design-audit/**'
+      - 'scripts/capture-d0-screenshots.mjs'
+      - '.github/workflows/d0-ui-inventory.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  capture:
+    runs-on: ubuntu-latest
+    timeout-minutes: 16
+    steps:
+      - name: Checkout exact commit
+        uses: actions/checkout@v4
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+      - name: Install dependencies
+        run: npm ci --no-audit --no-fund
+      - name: Build production bundle
+        run: npm run build
+      - name: Install Chromium for screenshots
+        run: npx playwright install --with-deps chromium
+      - name: Capture D0 UI states
+        run: node scripts/capture-d0-screenshots.mjs
+      - name: Upload audit screenshots and manifest
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: d0-visual-inventory
+          path: d0-captures/
+          if-no-files-found: warn
+          retention-days: 14
