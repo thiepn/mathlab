@@ -12,7 +12,7 @@ function mathematicalObject(source: string) {
 describe('D1 object workflow ownership and available destinations', () => {
   it('allows persisted functions to reopen and enter graph exploration', () => {
     expect(objectJourneyState(mathematicalObject('f(x) := x^2 + 1'), true)).toMatchObject({
-      name: 'f', ownership: 'Saved locally', canReopen: true, canExplore: true,
+      name: 'f', ownership: 'Saved object', canReopen: true, canExplore: true,
     });
   });
   it('does not pretend unsaved mathematical input is persisted or re-openable', () => {

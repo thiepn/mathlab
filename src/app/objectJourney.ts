@@ -6,7 +6,7 @@ import { isVisualizable } from './visualizationModes';
 export function objectJourneyState(object: SemanticMathObject, saved: boolean) {
   return {
     name: object.name || object.kind,
-    ownership: saved ? 'Saved locally' : 'Temporary work',
+    ownership: saved ? 'Saved object' : 'Temporary work',
     canReopen: saved,
     canExplore: saved && isVisualizable(object),
   };
