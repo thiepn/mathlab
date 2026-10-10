@@ -276,6 +276,9 @@ export function App() {
             }}
             onOpenTools={() => setToolsOpen(true)}
             onOpenProof={() => setRoute('proof')}
+            onOpenObject={openObject}
+            onExploreObject={(id) => { activateObject(id); setRoute('visualize'); }}
+            onOpenObjects={openWorkspaceObjects}
             runningOperation={runningOperation}
             worksheet={worksheet}
             editorSourceOverride={editorSourceOverride}
