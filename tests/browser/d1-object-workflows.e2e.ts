@@ -9,7 +9,7 @@ test('D1 saved object travels from notebook to graph and back without changing s
   await page.getByRole('button', { name: /Commit/ }).click();
   await expect(page.locator('.object-sidebar')).toContainText('f');
   await expect(page.getByRole('region', { name: 'Object workflow for f' })).toBeVisible();
-  await page.getByRole('button', { name: 'Graph f' }).click();
+  await page.getByRole('button', { name: 'Explore f' }).click();
   await expect(page).toHaveURL(/#\/visualize$/);
   await expect(page.locator('.e3-canvas-frame')).toBeVisible();
   await page.getByRole('button', { name: 'Edit f' }).click();
@@ -18,7 +18,7 @@ test('D1 saved object travels from notebook to graph and back without changing s
   await expect(page.getByRole('heading', { name: 'f', exact: true })).toBeVisible();
   await page.reload();
   await expect(page.locator('.save-state')).toHaveText('Saved locally');
-  await expect(page.getByRole('button', { name: 'Graph f' })).toBeVisible();
+  await expect(page.getByRole('button', { name: 'Explore f' })).toBeVisible();
 });
 
 test('D1 tools and proof preserve active source and new work clears stale context', async ({ page }, info) => {
@@ -52,6 +52,6 @@ test('D1 phone math input remains near the first fold and object actions do not 
   expect(rect!.y).toBeLessThan(740);
   await editor.fill('f(x) := x^2 + 1');
   await page.getByRole('button', { name: /Commit/ }).click();
-  await expect(page.getByRole('button', { name: 'Graph f' })).toBeVisible();
+  await expect(page.getByRole('button', { name: 'Explore f' })).toBeVisible();
   expect(await page.evaluate(() => document.documentElement.scrollWidth - innerWidth)).toBeLessThanOrEqual(1);
 });

@@ -24,7 +24,7 @@ export function ObjectJourney({ object, saved, ready = true, variant, onEdit, on
       </div>
       <div className="d1-journey-actions" role="group" aria-label="Continue working with this object">
         {context.canReopen && onEdit && <button type="button" onClick={onEdit}>Edit {context.name}</button>}
-        {context.canExplore && onGraph && <button type="button" disabled={!ready} title={!ready ? 'Finish saving locally before opening this graph.' : undefined} onClick={onGraph}>Graph {context.name}</button>}
+        {context.canExplore && onGraph && <button type="button" disabled={!ready} title={!ready ? 'Finish saving locally before opening this graph.' : undefined} onClick={onGraph}>Explore {context.name}</button>}
         {onTools && <button type="button" onClick={onTools}>Tools for {context.name}</button>}
         {onProof && <button type="button" onClick={onProof}>Proof for {context.name}</button>}
         {onBrowse && <button type="button" onClick={onBrowse}>Saved objects</button>}
