@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import type { SemanticMathObject } from '../../lib/math/types';
 import {
   CAPABILITY_CATEGORIES,
@@ -25,6 +25,7 @@ function kindLabel(kind: SemanticMathObject['kind']) {
 }
 
 export function ToolsPage({ currentObject, initialToolId = '', onRun, onConfigure, onTryExample }: ToolsPageProps) {
+  const detailRef = useRef<HTMLElement>(null);
   const [query, setQuery] = useState('');
   const [category, setCategory] = useState<CapabilityCategory | 'All'>('All');
   const [selectedId, setSelectedId] = useState(initialToolId || ALL_TOOLS[0]?.id || '');
@@ -50,6 +51,16 @@ export function ToolsPage({ currentObject, initialToolId = '', onRun, onConfigur
     if (capability?.available) return { label: tool.needsConfiguration ? 'Configure' : 'Ready now', tone: 'ready' };
     if (capability && !capability.applicable) return { label: 'Input needs adjustment', tone: 'blocked' };
     return { label: 'Try example', tone: 'example' };
+  };
+
+  const selectTool = (id: string) => {
+    setSelectedId(id);
+    if (window.matchMedia('(max-width: 900px)').matches) {
+      window.requestAnimationFrame(() => detailRef.current?.scrollIntoView({
+        block: 'start',
+        behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'instant' : 'smooth',
+      }));
+    }
   };
 
   const openSpecialRoute = (tool: CapabilityDescriptor) => {
@@ -93,7 +104,7 @@ export function ToolsPage({ currentObject, initialToolId = '', onRun, onConfigur
             {filtered.map((tool, index) => {
               const status = statusFor(tool);
               return (
-                <button key={tool.id} className={`tool-card ${selected?.id === tool.id ? 'is-selected' : ''}`} onClick={() => setSelectedId(tool.id)} aria-pressed={selected?.id === tool.id}>
+                <button key={tool.id} className={`tool-card ${selected?.id === tool.id ? 'is-selected' : ''}`} onClick={() => selectTool(tool.id)} aria-pressed={selected?.id === tool.id}>
                   <span className="tool-index" aria-hidden="true">{String(index + 1).padStart(2, '0')}</span>
                   <span className="tool-card-main"><strong>{tool.label}</strong><small>{tool.description}</small></span>
                   <span className="tool-card-meta"><i className={`tool-status status-${status.tone}`}>{status.label}</i><b>{tool.category}</b></span>
@@ -104,7 +115,7 @@ export function ToolsPage({ currentObject, initialToolId = '', onRun, onConfigur
         </section>
 
         {selected && (
-          <aside className="tool-detail" aria-label={`${selected.label} details`}>
+          <aside ref={detailRef} className="tool-detail" aria-label={`${selected.label} details`}>
             <div className="tool-detail-heading">
               <span>{selected.category}</span>
               <h2>{selected.label}</h2>
