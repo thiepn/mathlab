@@ -32,6 +32,7 @@ export function App() {
   const [commandOpen, setCommandOpen] = useState(false);
   const [online, setOnline] = useState(() => navigator.onLine);
   const [drawerOpen, setDrawerOpen] = useState(false);
+  const [selectionEpoch, setSelectionEpoch] = useState(0);
   const [toolsOpen, setToolsOpen] = useState(false);
   const [selectedToolId, setSelectedToolId] = useState('');
   const [activeParsed, setActiveParsed] = useState<ParsedMath>(() => parseMath(''));
@@ -132,6 +133,7 @@ export function App() {
       if ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === 'n') {
         event.preventDefault();
         controller.clearSelection();
+        setSelectionEpoch((value) => value + 1);
         clearResult();
         setActiveParsed(parseMath(''));
         setRoute('workspace');
@@ -154,7 +156,9 @@ export function App() {
 
   const activateObject = (id: string) => {
     clearResult();
-    controller.selectObject(id);
+    // Reopening the active source is navigation, not a new IndexedDB mutation.
+    if (controller.state.activeObjectId !== id) controller.selectObject(id);
+    setSelectionEpoch((value) => value + 1);
     const object = controller.state.objects.find((item) => item.id === id);
     setActiveParsed(parseMath(object?.source ?? ''));
     setDrawerOpen(false);
@@ -169,6 +173,7 @@ export function App() {
 
   const newWork = () => {
     controller.clearSelection();
+    setSelectionEpoch((value) => value + 1);
     setActiveParsed(parseMath(''));
     clearResult();
     setRoute('workspace');
@@ -179,6 +184,7 @@ export function App() {
 
   const reuseWorksheetSource = (source: string) => {
     controller.clearSelection();
+    setSelectionEpoch((value) => value + 1);
     const parsed = parseMath(source);
     setEditorSourceOverride(source);
     setActiveParsed(parsed);
@@ -265,6 +271,7 @@ export function App() {
         {route === 'workspace' && (
           <Workspace
             controller={controller}
+            selectionEpoch={selectionEpoch}
             onActiveParsed={changeActiveParsed}
             mathResult={mathResult}
             engineStatus={engineStatus}

@@ -20,6 +20,7 @@ const LazyShareSnapshotDialog = lazy(() => import('./ShareSnapshotDialog').then(
 
 interface WorkspaceProps {
   controller: MathWorkspaceController;
+  selectionEpoch: number;
   onActiveParsed?: (parsed: ParsedMath) => void;
   mathResult?: MathResult | null;
   engineStatus?: 'idle' | 'running' | 'error' | 'done';
@@ -54,6 +55,7 @@ function downloadWorkspace(raw: string) {
 
 export function Workspace({
   controller,
+  selectionEpoch,
   onActiveParsed,
   mathResult = null,
   engineStatus = 'idle',
@@ -80,9 +82,10 @@ export function Workspace({
   const [storageChecking,setStorageChecking]=useState(false);
   const importRef = useRef<HTMLInputElement>(null);
   const editorSource = editorSourceOverride ?? controller.activeObject?.source ?? '';
-  // Selection/new work replaces the previous committed result's context.
-  // Keep the save confirmation intact; only reset the stale calculation object.
-  useEffect(() => setSubmitted(null), [controller.state.activeObjectId]);
+  // Only explicit navigation invalidates the prior submitted context.
+  // A newly committed named object changes activeObjectId too; clearing here
+  // would incorrectly remove its warnings (e.g. bounded piecewise support).
+  useEffect(() => setSubmitted(null), [selectionEpoch]);
 
   const resolution = useMemo(
     () => submitted ? resolveSemanticObject(submitted, controller.state.objects, controller.state.assumptions) : null,
@@ -236,6 +239,7 @@ export function Workspace({
       {object && <ObjectJourney
         object={object}
         saved={Boolean(persistedObject)}
+        ready={controller.saveState === 'saved'}
         variant="work"
         onGraph={persistedObject ? () => onExploreObject(persistedObject.id) : undefined}
         onTools={onOpenTools}

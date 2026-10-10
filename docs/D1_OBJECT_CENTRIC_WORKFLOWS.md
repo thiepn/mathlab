@@ -20,3 +20,6 @@ D1 is stacked on qualified UI-N5 PR #59 at `544b6f3cdf49d063f99317cbfbbcdf795c4a
 
 ## Release gate
 Qualify the **exact D1 head** with full checks before calling source qualification complete. Do not merge, deploy or change production until explicitly authorized. Do not modify N4 goldens.
+
+## Exact-head browser regression repair
+The initial D1 CI (run 38057712744) failed the long-standing piecewise warning across engines because a state effect cleared the committed result when `activeObjectId` changed. It also demonstrated that navigating through Graph before a debounced save had settled could leave a freshly saved object missing after immediate reload. The correction uses a UI-only navigation epoch for explicit source changes, preserves commit-time diagnostics, prevents stale save promises from falsely reporting the new state as saved, and disables the Graph journey action until the workspace is locally persisted. Reopening an already-active saved source does not create another write. Regression expectations are unchanged and must pass again.
