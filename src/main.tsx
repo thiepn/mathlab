@@ -25,6 +25,8 @@ import './styles/p9.css';
 import './styles/accessibility.css';
 import './styles/notebook-workbench.css';
 import './styles/notebook-surfaces.css';
+import './styles/notebook-refinements.css';
+import './styles/notebook-acceptance.css';
 
 if ('serviceWorker' in navigator && import.meta.env.PROD) {
   window.addEventListener('load', () => {

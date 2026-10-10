@@ -25,7 +25,7 @@ export function ProofLabPage({initialSource=''}:Props){
   const run=()=>{if(mode==='induction')return execute('induction-certificate',claim,{baseFact,recurrence,index,stepVariable,base:Number(base)});if(mode==='quantifier')return execute('finite-quantifier-proof',domain,{variable,predicate,quantifier,secondSet,secondVariable,secondQuantifier});if(mode==='lemma')return execute('lemma-rewrite',source,{lemma,target,direction,occurrence});return execute('theorem-registry','0');};
   return <>
     <P13ProofLabPage initialSource={initialSource}/>
-    <main className="workspace proof-lab-page m6-proof-page e11-proof-extension">
+    <section className="workspace proof-lab-page m6-proof-page e11-proof-extension" aria-label="Advanced proof obligations">
       <section className="m6-proof-hero"><div><span className="section-kicker">Proof & Verification</span><h1>Discharge theorem obligations explicitly.</h1><p>These modes extend transformation verification into bounded theorem application. Every positive verdict is tied to a deterministic checker; unsupported reasoning remains unproved.</p></div></section>
       <nav className="m6-proof-modes" aria-label="Proof mode">{(Object.keys(MODES) as E11Mode[]).map(item=><button key={item} className={mode===item?'is-active':''} onClick={()=>{setMode(item);clear();}}><strong>{MODES[item].label}</strong><small>{MODES[item].description}</small></button>)}</nav>
       <section className="m6-proof-editor"><header><div><span className="section-kicker">{MODES[mode].label}</span><h2>{MODES[mode].description}</h2></div><button onClick={clear} disabled={!result&&status==='idle'}>Clear result</button></header>
@@ -37,6 +37,6 @@ export function ProofLabPage({initialSource=''}:Props){
         {status==='error'&&<div className="engine-error m6-proof-error"><strong>Certificate could not be issued.</strong><p>{error}</p></div>}
       </section>
       {result&&<section className="m6-proof-result"><AlgebraResult result={result} status={status} error={error} onClear={clear}/></section>}
-    </main>
+    </section>
   </>;
 }
