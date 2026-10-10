@@ -36,6 +36,7 @@ export function useMathWorkspace() {
   const [hydrated, setHydrated] = useState(false);
   const [saveState, setSaveState] = useState<'loading' | 'saved' | 'saving' | 'error'>('loading');
   const skipHydratedSaveRef = useRef(false);
+  const saveRevisionRef = useRef(0);
 
   useEffect(() => {
     let mounted = true;
@@ -63,9 +64,13 @@ export function useMathWorkspace() {
       skipHydratedSaveRef.current = false;
       return;
     }
+    const revision = ++saveRevisionRef.current;
     setSaveState('saving');
     const handle = window.setTimeout(() => {
-      void saveWorkspace(state).then(() => setSaveState('saved')).catch(() => setSaveState('error'));
+      // Stale completions must not label a newer, unpersisted edit as saved.
+      void saveWorkspace(state)
+        .then(() => { if (saveRevisionRef.current === revision) setSaveState('saved'); })
+        .catch(() => { if (saveRevisionRef.current === revision) setSaveState('error'); });
     }, 180);
     return () => window.clearTimeout(handle);
   }, [state, hydrated]);

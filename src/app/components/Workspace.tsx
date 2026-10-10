@@ -1,4 +1,4 @@
-import { lazy, Suspense, useMemo, useRef, useState } from 'react';
+import { lazy, Suspense, useEffect, useMemo, useRef, useState } from 'react';
 import type { ParsedMath } from '../../lib/math/ast';
 import { domainSymbol } from '../../lib/math/assumptions';
 import { astToLatex, astToPlainText } from '../../lib/math/format';
@@ -13,12 +13,14 @@ import { MathInput } from './MathInput';
 import { MathPreview } from './MathPreview';
 import { AlgebraResult } from './AlgebraResult';
 import { WorksheetTimeline } from './WorksheetTimeline';
+import { ObjectJourney } from './ObjectJourney';
 
 const LazyWorkspaceActions = lazy(() => import('./WorkspaceActions').then((module) => ({ default: module.WorkspaceActions })));
 const LazyShareSnapshotDialog = lazy(() => import('./ShareSnapshotDialog').then((module) => ({ default: module.ShareSnapshotDialog })));
 
 interface WorkspaceProps {
   controller: MathWorkspaceController;
+  selectionEpoch: number;
   onActiveParsed?: (parsed: ParsedMath) => void;
   mathResult?: MathResult | null;
   engineStatus?: 'idle' | 'running' | 'error' | 'done';
@@ -27,6 +29,9 @@ interface WorkspaceProps {
   onAction: (operation: string) => void;
   onOpenTools: () => void;
   onOpenProof: () => void;
+  onOpenObject: (id: string) => void;
+  onExploreObject: (id: string) => void;
+  onOpenObjects: () => void;
   runningOperation?: string;
   worksheet: WorksheetController;
   editorSourceOverride?: string | null;
@@ -50,6 +55,7 @@ function downloadWorkspace(raw: string) {
 
 export function Workspace({
   controller,
+  selectionEpoch,
   onActiveParsed,
   mathResult = null,
   engineStatus = 'idle',
@@ -58,6 +64,9 @@ export function Workspace({
   onAction,
   onOpenTools,
   onOpenProof,
+  onOpenObject,
+  onExploreObject,
+  onOpenObjects,
   runningOperation = '',
   worksheet,
   editorSourceOverride = null,
@@ -73,12 +82,16 @@ export function Workspace({
   const [storageChecking,setStorageChecking]=useState(false);
   const importRef = useRef<HTMLInputElement>(null);
   const editorSource = editorSourceOverride ?? controller.activeObject?.source ?? '';
+  // Only explicit navigation invalidates the prior submitted context.
+  // A newly committed named object changes activeObjectId too; clearing here
+  // would incorrectly remove its warnings (e.g. bounded piecewise support).
+  useEffect(() => setSubmitted(null), [selectionEpoch]);
 
   const resolution = useMemo(
     () => submitted ? resolveSemanticObject(submitted, controller.state.objects, controller.state.assumptions) : null,
     [submitted, controller.state.objects, controller.state.assumptions],
   );
-  const object = resolution?.object ?? controller.activeObject;
+  const object = controller.activeObject ?? resolution?.object;
   const persistedObject = object ? controller.state.objects.find((item) => item.id === object.id || (!!object.name && item.name === object.name)) : undefined;
   const usedBy = persistedObject ? dependentObjects(controller.state.objects, persistedObject.name) : [];
 
@@ -223,6 +236,17 @@ export function Workspace({
         )}
       </section>
 
+      {object && <ObjectJourney
+        object={object}
+        saved={Boolean(persistedObject)}
+        ready={controller.saveState === 'saved'}
+        variant="work"
+        onGraph={persistedObject ? () => onExploreObject(persistedObject.id) : undefined}
+        onTools={onOpenTools}
+        onProof={onOpenProof}
+        onBrowse={onOpenObjects}
+      />}
+
       {object ? (
         <Suspense fallback={<section className="workspace-actions is-loading" aria-live="polite">Loading available actions…</section>}>
           <LazyWorkspaceActions
@@ -255,6 +279,12 @@ export function Workspace({
             <article>
               <span>Depends on</span>
               <strong>{object.dependencies.join(', ') || 'Nothing'}</strong>
+              <div className="d1-dependency-links" aria-label="Open saved dependencies">
+                {object.dependencies.map((name) => {
+                  const linked = controller.state.objects.find((item) => item.name === name);
+                  return linked ? <button key={linked.id} type="button" onClick={() => onOpenObject(linked.id)}>Open {name}</button> : null;
+                })}
+              </div>
               <p>{object.dependencies.length ? 'Named objects referenced by this definition.' : 'Independent of other saved objects.'}</p>
             </article>
             <article>

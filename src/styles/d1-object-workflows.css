@@ -1,0 +1,46 @@
+/* D1: object ownership and cross-surface actions. No changes to N4 screenshots/goldens. */
+.d1-object-journey {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px 22px;
+  margin: 0 0 16px;
+  padding: 10px 14px;
+  border-block: 1px solid var(--ml-line-strong);
+  background: #f3f3eb;
+  color: var(--ml-ink);
+}
+.d1-journey-source { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.d1-journey-source span { font: 700 .68rem/1.2 var(--ml-font-mono, monospace); letter-spacing: .06em; color: var(--ml-muted); text-transform: uppercase; }
+.d1-journey-source strong { font: 600 1.12rem/1.2 var(--ml-font-display, Georgia, serif); overflow-wrap: anywhere; }
+.d1-journey-actions { display: flex; flex-wrap: wrap; gap: 6px; }
+.d1-journey-actions button, .d1-dependency-links button {
+  min-height: 32px;
+  padding: 5px 11px;
+  border: 1px solid #879b91;
+  border-radius: 2px;
+  background: #fffefa;
+  color: #173d34;
+  font: 700 .82rem/1.3 var(--ml-font-ui, system-ui, sans-serif);
+  cursor: pointer;
+}
+.d1-journey-actions button:hover, .d1-dependency-links button:hover { background: #e1eee7; }
+.d1-journey-actions button:focus-visible, .d1-dependency-links button:focus-visible {
+  outline: 3px solid var(--ml-blue);
+  outline-offset: 2px;
+}
+.d1-object-journey.is-graph { margin: 0; border-top: 0; }
+.d1-dependency-links { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
+@media (max-width: 820px) {
+  .m3-workspace-main { padding-top: 12px; }
+  .m3-workspace-main .workspace-heading { margin-bottom: 12px; padding-bottom: 8px; }
+  .m3-workspace-main .workspace-heading-subtitle { display: none; }
+  .m3-workspace-main .workspace-heading h1 { font-size: clamp(1.5rem, 6vw, 2rem); margin-top: 3px; }
+  .d1-object-journey { align-items: flex-start; flex-direction: column; padding: 9px 12px; }
+  .d1-journey-actions { width: 100%; }
+  .d1-journey-actions button { flex: 1 1 auto; min-height: 40px; }
+}
+@media (forced-colors: active) {
+  .d1-object-journey { border: 1px solid CanvasText; background: Canvas; color: CanvasText; }
+  .d1-journey-actions button, .d1-dependency-links button { border: 1px solid ButtonText; color: ButtonText; background: ButtonFace; }
+}

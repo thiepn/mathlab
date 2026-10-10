@@ -27,6 +27,7 @@ import './styles/notebook-workbench.css';
 import './styles/notebook-surfaces.css';
 import './styles/notebook-refinements.css';
 import './styles/notebook-acceptance.css';
+import './styles/d1-object-workflows.css';
 
 if ('serviceWorker' in navigator && import.meta.env.PROD) {
   window.addEventListener('load', () => {

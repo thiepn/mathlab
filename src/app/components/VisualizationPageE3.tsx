@@ -9,6 +9,7 @@ import { GraphCanvas } from './GraphCanvas';
 import { E3Canvas, type E3CanvasModel } from './E3Canvas';
 import { MathValue } from './MathValue';
 import { DynamicExplorationPanel } from './DynamicExplorationPanel';
+import { ObjectJourney } from './ObjectJourney';
 
 interface VisualizationPageProps{
   objects:SemanticMathObject[];
@@ -158,6 +159,8 @@ export function VisualizationPageE3({objects,activeObject,onActivateObject,onOpe
         </div>
 
         <div className="e3-stage-footer"><span>{mode==='cartesian'?`${cartesianModels.length} explicit series · ${cartesianModels.reduce((sum,item)=>sum+item.segments.length,0)} branches`:advanced.summary}</span>{message&&<span>{message}</span>}</div>
+        {objects.some((object) => object.id === selected.id) &&
+          <ObjectJourney object={selected} saved variant="graph" onEdit={() => onOpenObject(selected.id)} />}
         {selected&&selectedDynamicAst&&<DynamicExplorationPanel object={selected} resolvedAst={selectedDynamicAst} parameters={dynamicParameters} onParameterChange={(name,patch)=>setDynamicParameters((current)=>updateDynamicParameter(current,name,patch))} onResetParameters={()=>setDynamicParameters(initializeDynamicParameters(selected,objects,[]))} series={mode==='cartesian'?cartesianModels:[]} viewport={viewport} trace={trace} selectedX={selectedX} onSelectX={(x)=>{setSelectedX(x);setInteractionMode('trace');}} tableCount={tableCount} onTableCount={setTableCount}/>}
       </div>
 
