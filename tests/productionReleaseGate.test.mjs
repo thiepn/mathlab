@@ -6,19 +6,12 @@ import { describe, expect, it } from 'vitest';
 const expectedSha = 'b'.repeat(40);
 const staleSha = 'a'.repeat(40);
 
-type ReleaseFixture = { schema: string; commit: string | null; buildId: string };
-
-function metadata(commit: string): ReleaseFixture {
+function metadata(commit) {
   return { schema: 'mathlab-release-v1', commit, buildId: commit.slice(0, 12) };
 }
 
-async function runProbe(options: {
-  release?: ReleaseFixture | null;
-  expected?: string;
-  title?: string;
-  worker?: string;
-} = {}): Promise<{ code: number | null; output: string }> {
-  const routes: Record<string, string> = {
+async function runProbe(options = {}) {
+  const routes = {
     '/mathlab/': options.title ?? '<title>MathLab</title>',
     '/mathlab/manifest.webmanifest': '{"name": "MathLab"}',
     '/mathlab/sw.js': options.worker ?? "const CACHE_PREFIX = 'mathlab-build-'; const BUILD_ID='old'; const SHELL_CACHE='-shell'; const RUNTIME_CACHE='-runtime';",
@@ -34,7 +27,7 @@ async function runProbe(options: {
       response.writeHead(200, { 'Content-Type': path.endsWith('.json') ? 'application/json' : 'text/plain' }).end(body);
     }
   });
-  await new Promise<void>((resolve) => server.listen(0, '127.0.0.1', resolve));
+  await new Promise((resolve) => server.listen(0, '127.0.0.1', resolve));
   try {
     const address = server.address();
     if (!address || typeof address === 'string') throw new Error('Missing ephemeral test port');
@@ -51,13 +44,13 @@ async function runProbe(options: {
         stdio: ['ignore', 'pipe', 'pipe'],
       });
       let output = '';
-      child.stdout.on('data', (chunk: Buffer) => { output += chunk.toString(); });
-      child.stderr.on('data', (chunk: Buffer) => { output += chunk.toString(); });
+      child.stdout.on('data', (chunk) => { output += chunk.toString(); });
+      child.stderr.on('data', (chunk) => { output += chunk.toString(); });
       child.on('error', reject);
       child.on('close', (code) => resolve({ code, output }));
     });
   } finally {
-    await new Promise<void>((resolve) => server.close(() => resolve()));
+    await new Promise((resolve) => server.close(() => resolve()));
   }
 }
 

@@ -76,14 +76,15 @@ test('P9 published release identity corresponds to the exact production build', 
   const response = await page.request.get('/release.json');
   expect(response.ok()).toBe(true);
   const identity = await response.json();
-  const sha = process.env.GITHUB_SHA ?? '';
+  const runtime = globalThis as typeof globalThis & { process?: { env?: Record<string, string | undefined> } };
+  const sha = runtime.process?.env?.GITHUB_SHA ?? '';
   if (/^[a-f0-9]{40}$/.test(sha)) {
     expect(identity).toEqual({ schema: 'mathlab-release-v1', commit: sha, buildId: sha.slice(0, 12) });
   } else {
     expect(identity).toEqual({
       schema: 'mathlab-release-v1',
       commit: null,
-      buildId: process.env.MATHLAB_BUILD_ID || 'local-v2.1.0',
+      buildId: runtime.process?.env?.MATHLAB_BUILD_ID || 'local-v2.1.0',
     });
   }
 });
