@@ -1,0 +1,53 @@
+name: Production persistence forensics (no deployment)
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - '.github/workflows/production-persistence-investigation.yml'
+      - 'tests/production/production.live.ts'
+      - 'tests/production/persistence-forensic.live.ts'
+permissions:
+  contents: read
+concurrency:
+  group: mathlab-persistence-forensic-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+jobs:
+  production-origin-only:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    env:
+      MATHLAB_PRODUCTION_URL: https://thiepn.dev/mathlab/
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version: '22'
+      - run: npm ci --no-audit --no-fund
+      - run: npx playwright install --with-deps chromium webkit
+      - name: Reproduce original unmodified production assertion
+        shell: bash
+        run: |
+          set -uo pipefail
+          set +e
+          npx playwright test --config=playwright.production.config.mjs --grep '^live IndexedDB workspace persists across a production reload$' --reporter=line 2>&1 | tee /tmp/mathlab-original-production-test.log
+          code=${PIPESTATUS[0]}
+          set -e
+          if [ "$code" -eq 0 ]; then
+            echo "::error::Original test unexpectedly passed; previous failure not reproduced"
+            exit 1
+          fi
+          if ! grep -Fq "Working on production_probe" /tmp/mathlab-original-production-test.log; then
+            echo "::error::Original test failed for a different reason; do not infer stale heading"
+            exit 1
+          fi
+          echo "Original production test reproduced the stale-heading assertion; no release gate was bypassed."
+      - name: Independent production-origin reload and IndexedDB assertions
+        run: npx playwright test --config=playwright.production.config.mjs --grep '^forensic: persisted mathematical object, selection and editor survive reload$' --reporter=line
+      - name: Preserve forensic screenshots and traces (only when available)
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: mathlab-persistence-forensic
+          path: test-results/
+          if-no-files-found: ignore
+          retention-days: 7
