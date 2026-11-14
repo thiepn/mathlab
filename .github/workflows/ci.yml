@@ -130,7 +130,17 @@ jobs:
           fi
           echo "Original assertion failure reproduced with the unmodified production test."
       - name: Independent production-origin reload and IndexedDB assertions
-        run: npx playwright test --config=playwright.production.config.mjs --grep '^forensic: persisted mathematical object, selection and editor survive reload$' --reporter=line
+        run: |
+          npx playwright test --config=playwright.production.config.mjs --grep '^forensic: persisted mathematical object, selection and editor survive reload
+      - name: Upload forensic evidence where available
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: mathlab-persistence-forensic
+          path: test-results/
+          if-no-files-found: ignore
+          retention-days: 7
+ --reporter=line
       - name: Upload forensic evidence where available
         if: always()
         uses: actions/upload-artifact@v4
