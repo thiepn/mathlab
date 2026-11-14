@@ -3,7 +3,8 @@ import { expect, test, type Page } from '@playwright/test';
 // This forensic suite runs only against the already deployed public MathLab
 // origin, in isolated Playwright browser contexts. It cannot deploy or write
 // to a user's personal browser profile.
-const productionURL = process.env.MATHLAB_PRODUCTION_URL ?? 'https://thiepn.dev/mathlab/';
+const runtime = globalThis as typeof globalThis & { process?: { env?: Record<string, string | undefined> } };
+const productionURL = runtime.process?.env?.MATHLAB_PRODUCTION_URL ?? 'https://thiepn.dev/mathlab/';
 
 interface WorkspaceValue {
   objects?: Array<{ id?: string; name?: string; source?: string }>;
