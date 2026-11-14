@@ -96,31 +96,3 @@ jobs:
           path: test-results/
           if-no-files-found: ignore
           retention-days: 7
-
-  production-origin-forensics:
-    if: github.head_ref == 'investigation/live-indexeddb-reload-20261114'
-    runs-on: ubuntu-24.04
-    timeout-minutes: 20
-    env:
-      MATHLAB_PRODUCTION_URL: https://thiepn.dev/mathlab/
-    steps:
-      - uses: actions/checkout@v5
-      - uses: actions/setup-node@v5
-        with:
-          node-version: '22'
-      - run: npm ci --no-audit --no-fund
-      - run: npx playwright install --with-deps chromium webkit
-      - name: Verify corrected production reload test against live origin
-        run: |
-          npx playwright test --config=playwright.production.config.mjs --grep 'live IndexedDB workspace persists across a production reload' --reporter=line
-      - name: Independently check production-origin persistence
-        run: |
-          npx playwright test --config=playwright.production.config.mjs --grep 'persisted mathematical object, selection and editor survive reload' --reporter=line
-      - name: Upload forensic artifacts if generated
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: mathlab-persistence-forensic
-          path: test-results/
-          if-no-files-found: ignore
-          retention-days: 7

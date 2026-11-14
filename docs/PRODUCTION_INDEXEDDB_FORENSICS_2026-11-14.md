@@ -28,3 +28,15 @@ The existing PR check on 14 November stopped at `npm audit --audit-level=high`: 
 ## Acceptance required
 
 For the exact final fix head, require a fresh production-origin Playwright pass of the corrected test and independent record/selection/editor after-reload test in Chromium and WebKit, then all mandatory source/test/browser/security checks before merge or deployment. Passing a targeted forensic job does not substitute for required CI.
+
+## Independently verified corrected test
+
+PR [#62](https://github.com/thiepn/mathlab/pull/62), run [#43617404816](https://github.com/thiepn/mathlab/actions/runs/43617404816), at tested head `1020f9b75693f570c12aa11c6391b332b8c5dd9b`:
+
+- Corrected existing production IndexedDB reload test: **Chromium PASS, iOS WebKit PASS (2/2)**.
+- Independent persisted-record, selected-object and input-after-reload test: **Chromium PASS, iOS WebKit PASS (2/2)**.
+- Full repository `verify` job: **FAIL** at unchanged `npm audit --audit-level=high`, with two moderate Vitest/mocker advisories and a high-severity Vite advisory. No downstream source, local browser, build or release gates were claimed as passing on this head.
+- These are genuinely separate live-production-origin Playwright tests in isolated browser contexts. They did **not** deploy MathLab or mark its production-release gate successful.
+- The temporary branch-specific CI job was removed from the final proposed patch; the production test files are byte-identical to those tested in the successful targeted job. Required `ci.yml` remains identical to `main`.
+
+**Disposition:** Root cause confirmed as stale test expectation. Proposed regression fix is scoped and validated, but **NO_GO for merge/deployment** until the independent dependency-security failure and all other required gates pass.
