@@ -112,6 +112,8 @@ jobs:
           node-version: "22"
       - name: Regenerate bounded patch-version lockfile
         run: |
+          npm install --global --ignore-scripts npm@11.21.2
+          npm --version
           npm install --package-lock-only --ignore-scripts --save-dev-exact vite@7.3.8 vitest@4.1.12
           node -e "const fs=require('fs');const lock=require('./package-lock.json');for(const [p,v] of [['node_modules/vite','7.3.8'],['node_modules/vitest','4.1.12'],['node_modules/@vitest/mocker','4.1.12']]){if(lock.packages[p]?.version!==v)throw Error('Unexpected '+p+': '+lock.packages[p]?.version)};const s=fs.readFileSync('package-lock.json','utf8');console.log('LOCKSTART '+s.length);for(let i=0;i<s.length;i+=5000)console.log('LOCKPART '+(i/5000)+' '+JSON.stringify(s.slice(i,i+5000)));console.log('LOCKEND '+s.length)"
       - name: Verify regenerated lockfile and advisories
