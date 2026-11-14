@@ -110,22 +110,9 @@ jobs:
           node-version: '22'
       - run: npm ci --no-audit --no-fund
       - run: npx playwright install --with-deps chromium webkit
-      - name: Reproduce unmodified production test
-        shell: bash
+      - name: Verify corrected production reload test against live origin
         run: |
-          set -uo pipefail
-          set +e
-          npx playwright test --config=playwright.production.config.mjs --grep 'live IndexedDB workspace persists across a production reload' --reporter=line 2>&1 | tee /tmp/original-production-test.log
-          code=${PIPESTATUS[0]}
-          set -e
-          if [ "$code" -eq 0 ]; then
-            echo "Original test unexpectedly passed"
-            exit 1
-          fi
-          if ! grep -Fq "Working on production_probe" /tmp/original-production-test.log; then
-            echo "Original test failed for a different reason"
-            exit 1
-          fi
+          npx playwright test --config=playwright.production.config.mjs --grep 'live IndexedDB workspace persists across a production reload' --reporter=line
       - name: Independently check production-origin persistence
         run: |
           npx playwright test --config=playwright.production.config.mjs --grep 'persisted mathematical object, selection and editor survive reload' --reporter=line

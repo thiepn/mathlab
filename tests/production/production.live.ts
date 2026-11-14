@@ -168,7 +168,8 @@ test('live IndexedDB workspace persists across a production reload', async ({ pa
   await expect(page.locator('.save-state')).toHaveText('Saved locally');
   await page.reload({ waitUntil: 'domcontentloaded' });
   await expect(page.locator('.save-state')).toHaveText('Saved locally');
-  await expect(page.getByRole('heading', { name: 'Working on production_probe' })).toBeVisible();
+  // The current workspace H1 is the exact active object name, not an obsolete 'Working on' label.
+  await expect(page.locator('.workspace-main h1')).toHaveText('production_probe');
   await expect(page.getByRole('textbox', { name: 'Mathematical input' })).toHaveValue('production_probe := 2');
 });
 
