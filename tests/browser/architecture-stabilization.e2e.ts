@@ -70,3 +70,20 @@ test('P9 service worker uses a build-scoped registration and cache generation', 
   expect(state.cacheKeys.some((key) => /^mathlab-build-.+-runtime$/.test(key))).toBe(true);
   expect(state.cacheKeys.some((key) => /^mathlab-v2-/.test(key))).toBe(false);
 });
+
+test('P9 published release identity corresponds to the exact production build', async ({ page }, testInfo) => {
+  test.skip(testInfo.project.name !== 'chromium-desktop', 'Release asset is shared across all browser engines.');
+  const response = await page.request.get('/release.json');
+  expect(response.ok()).toBe(true);
+  const identity = await response.json();
+  const sha = process.env.GITHUB_SHA ?? '';
+  if (/^[a-f0-9]{40}$/.test(sha)) {
+    expect(identity).toEqual({ schema: 'mathlab-release-v1', commit: sha, buildId: sha.slice(0, 12) });
+  } else {
+    expect(identity).toEqual({
+      schema: 'mathlab-release-v1',
+      commit: null,
+      buildId: process.env.MATHLAB_BUILD_ID || 'local-v2.1.0',
+    });
+  }
+});

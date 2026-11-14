@@ -2,6 +2,12 @@ const base = new URL(process.env.MATHLAB_PRODUCTION_URL ?? 'https://thiepn.dev/m
 const attempts = Number(process.env.MATHLAB_PRODUCTION_ATTEMPTS ?? 24);
 const delayMs = Number(process.env.MATHLAB_PRODUCTION_DELAY_MS ?? 5000);
 
+const expectedSha = process.env.GITHUB_SHA ?? '';
+if (!/^[a-f0-9]{40}$/.test(expectedSha)) {
+  console.error('Missing or invalid GITHUB_SHA: refusing to certify a production release without an exact commit');
+  process.exit(1);
+}
+
 const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
 async function probe() {
@@ -17,6 +23,18 @@ async function probe() {
     if (!response.ok) throw new Error(`${url} returned HTTP ${response.status}`);
     const text = await response.text();
     if (!validate(text)) throw new Error(`${url} did not expose the expected MathLab production contract`);
+  }
+
+  // A healthy older deployment must never satisfy the current commit's release gate.
+  const identityURL = new URL('release.json', base);
+  const response = await fetch(identityURL, { redirect: 'follow', cache: 'no-store' });
+  if (!response.ok) throw new Error(identityURL + ' returned HTTP ' + response.status);
+  const identity = await response.json();
+  if (identity?.schema !== 'mathlab-release-v1'
+      || identity?.commit !== expectedSha
+      || identity?.buildId !== expectedSha.slice(0, 12)) {
+    throw new Error('Release identity mismatch: expected ' + expectedSha
+      + ', received ' + String(identity?.commit ?? 'missing'));
   }
 }
 
