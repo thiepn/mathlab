@@ -96,3 +96,46 @@ jobs:
           path: test-results/
           if-no-files-found: ignore
           retention-days: 7
+
+  production-origin-forensics:
+    # This independent job is a temporary, branch-scoped investigation.
+    # It has no deployment permissions and never changes MathLab production.
+    if: github.head_ref == 'investigation/live-indexeddb-reload-20261114'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    env:
+      MATHLAB_PRODUCTION_URL: https://thiepn.dev/mathlab/
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version: '22'
+      - run: npm ci --no-audit --no-fund
+      - run: npx playwright install --with-deps chromium webkit
+      - name: Reproduce original unchanged production assertion
+        shell: bash
+        run: |
+          set -uo pipefail
+          set +e
+          npx playwright test --config=playwright.production.config.mjs --grep '^live IndexedDB workspace persists across a production reload$' --reporter=line 2>&1 | tee /tmp/mathlab-original-production-test.log
+          code=${PIPESTATUS[0]}
+          set -e
+          if [ "$code" -eq 0 ]; then
+            echo "::error::Original test unexpectedly passed; previous failure not reproduced"
+            exit 1
+          fi
+          if ! grep -Fq "Working on production_probe" /tmp/mathlab-original-production-test.log; then
+            echo "::error::Original test failed for a different reason; no stale-heading conclusion"
+            exit 1
+          fi
+          echo "Original assertion failure reproduced with the unmodified production test."
+      - name: Independent production-origin reload and IndexedDB assertions
+        run: npx playwright test --config=playwright.production.config.mjs --grep '^forensic: persisted mathematical object, selection and editor survive reload$' --reporter=line
+      - name: Upload forensic evidence where available
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: mathlab-persistence-forensic
+          path: test-results/
+          if-no-files-found: ignore
+          retention-days: 7
