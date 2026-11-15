@@ -4,12 +4,24 @@ import react from '@vitejs/plugin-react';
 const runtime = globalThis as typeof globalThis & {
   process?: { env?: Record<string, string | undefined> };
 };
-const buildId = runtime.process?.env?.GITHUB_SHA?.slice(0, 12)
+const candidateSha = runtime.process?.env?.GITHUB_SHA ?? '';
+const releaseSha = /^[a-f0-9]{40}$/.test(candidateSha) ? candidateSha : null;
+const buildId = releaseSha?.slice(0, 12)
   || runtime.process?.env?.MATHLAB_BUILD_ID
   || 'local-v2.1.0';
 
 export default defineConfig({
-  plugins: [react()],
+  plugins: [react(), {
+    name: 'mathlab-release-identity',
+    apply: 'build',
+    generateBundle() {
+      this.emitFile({
+        type: 'asset',
+        fileName: 'release.json',
+        source: JSON.stringify({ schema: 'mathlab-release-v1', commit: releaseSha, buildId }) + '\n',
+      });
+    },
+  }],
   base: './',
   define: {
     __MATHLAB_BUILD_ID__: JSON.stringify(buildId),

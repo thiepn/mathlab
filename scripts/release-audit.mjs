@@ -19,11 +19,11 @@ for (const groupName of ['dependencies', 'devDependencies']) {
   }
 }
 pass(pkg.engines?.node === '^20.19.0 || >=22.12.0', 'Node engine must match the supported Vite 7 runtime floor');
-pass(pkg.devDependencies?.vite === '7.3.6', 'Vite must stay pinned to the approved 7.3.6 security release');
-pass(pkg.devDependencies?.vitest === '4.1.11', 'Vitest must stay pinned to the maintained 4.1.11 security release');
-pass(lock.packages?.['node_modules/vite']?.version === '7.3.6', 'lockfile must resolve Vite 7.3.6');
-pass(lock.packages?.['node_modules/vitest']?.version === '4.1.11', 'lockfile must resolve Vitest 4.1.11');
-pass(lock.packages?.['node_modules/@vitest/mocker']?.version === '4.1.11', 'lockfile must resolve the patched @vitest/mocker 4.1.11');
+pass(pkg.devDependencies?.vite === '7.3.8', 'Vite must stay pinned to the approved 7.3.8 security release');
+pass(pkg.devDependencies?.vitest === '4.1.12', 'Vitest must stay pinned to the maintained 4.1.12 security release');
+pass(lock.packages?.['node_modules/vite']?.version === '7.3.8', 'lockfile must resolve Vite 7.3.8');
+pass(lock.packages?.['node_modules/vitest']?.version === '4.1.12', 'lockfile must resolve Vitest 4.1.12');
+pass(lock.packages?.['node_modules/@vitest/mocker']?.version === '4.1.12', 'lockfile must resolve the patched @vitest/mocker 4.1.12');
 pass(!lock.packages?.['node_modules/tinypool'], 'the vulnerable tinypool dependency must not return to the certified dependency graph');
 const esbuildVersion = lock.packages?.['node_modules/esbuild']?.version ?? '';
 const esbuildParts = esbuildVersion.split('.').map(Number);

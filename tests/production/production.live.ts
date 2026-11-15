@@ -36,6 +36,19 @@ test('custom-domain stable build boots and every primary route resolves', async 
 test('production manifest, icons and build-scoped service worker are published', async ({ page }) => {
   await openWorkspace(page);
 
+  // GitHub Pages can serve an older healthy deployment during rollout; certify the exact merged commit.
+  const expectedSha = runtime.process?.env?.GITHUB_SHA ?? '';
+  expect(expectedSha, 'Production verification must run with an exact GITHUB_SHA').toMatch(/^[a-f0-9]{40}$/);
+  const identityResponse = await page.request.get(new URL('release.json', productionURL).toString(), {
+    headers: { 'Cache-Control': 'no-cache' },
+  });
+  expect(identityResponse.ok(), 'The build must publish release.json').toBe(true);
+  expect(await identityResponse.json()).toEqual({
+    schema: 'mathlab-release-v1',
+    commit: expectedSha,
+    buildId: expectedSha.slice(0, 12),
+  });
+
   const manifestResponse = await page.request.get(new URL('manifest.webmanifest', productionURL).toString());
   expect(manifestResponse.ok()).toBe(true);
   const manifest = await manifestResponse.json();
@@ -64,6 +77,7 @@ test('production manifest, icons and build-scoped service worker are published',
     return ready.active?.scriptURL ?? null;
   });
   expect(registration).toMatch(/\/sw\.js\?v=[a-f0-9]{12}$/);
+  expect(new URL(registration!).searchParams.get('v')).toBe(expectedSha.slice(0, 12));
 
   for (const icon of ['mathlab-icon-192.png', 'mathlab-icon-512.png', 'mathlab-maskable-512.png']) {
     const response = await page.request.get(new URL(icon, productionURL).toString());
@@ -168,7 +182,8 @@ test('live IndexedDB workspace persists across a production reload', async ({ pa
   await expect(page.locator('.save-state')).toHaveText('Saved locally');
   await page.reload({ waitUntil: 'domcontentloaded' });
   await expect(page.locator('.save-state')).toHaveText('Saved locally');
-  await expect(page.getByRole('heading', { name: 'Working on production_probe' })).toBeVisible();
+  // The current workspace H1 is the exact active object name, not an obsolete 'Working on' label.
+  await expect(page.locator('.workspace-main h1')).toHaveText('production_probe');
   await expect(page.getByRole('textbox', { name: 'Mathematical input' })).toHaveValue('production_probe := 2');
 });
 
