@@ -1,5 +1,6 @@
 import { spawn } from 'node:child_process';
 import { createServer } from 'node:http';
+import { readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { describe, expect, it } from 'vitest';
 
@@ -91,5 +92,21 @@ describe('production release identity — fail closed against healthy stale depl
     expect(wrongPage.code).toBe(1);
     const wrongWorker = await runProbe({ worker: 'unexpected sw content' });
     expect(wrongWorker.code).toBe(1);
+  });
+});
+
+// github.ref is the selected ref for workflow_dispatch, not necessarily main.
+describe('manual release workflow is restricted to main', () => {
+  it('does not schedule production jobs for a manually selected feature branch', () => {
+    const workflow = readFileSync(new URL('../.github/workflows/deploy.yml', import.meta.url), 'utf8');
+    expect(workflow).toContain('  workflow_dispatch:');
+    expect(workflow).toMatch(/\n  build:\n    #[^\n]*\n    if: github\.ref == 'refs\/heads\/main'\n/);
+    expect(workflow).toMatch(/\n  deploy:\n    if: github\.ref == 'refs\/heads\/main'\n/);
+    expect(workflow).toMatch(/\n  finalize-production-status:\n    name: [^\n]+\n    if: \$\{\{ always\(\) && github\.ref == 'refs\/heads\/main' \}\}\n/);
+    expect(workflow).toMatch(/\n  verify-production:\n    name: Verify live production\n    runs-on: ubuntu-latest\n    needs: deploy\n/);
+    const isAllowed = (ref) => ref === 'refs/heads/main';
+    expect(isAllowed('refs/heads/main')).toBe(true);
+    expect(isAllowed('refs/heads/investigation/live-indexeddb-reload-20261114')).toBe(false);
+    expect(isAllowed('refs/tags/v2.1.0')).toBe(false);
   });
 });

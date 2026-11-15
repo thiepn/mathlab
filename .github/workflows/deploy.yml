@@ -18,6 +18,8 @@ concurrency:
 
 jobs:
   build:
+    # Manual dispatch is allowed, but must never deploy a draft or non-main ref.
+    if: github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
 
     steps:
@@ -107,6 +109,7 @@ jobs:
           path: ./dist
 
   deploy:
+    if: github.ref == 'refs/heads/main'
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
@@ -196,7 +199,7 @@ jobs:
 
   finalize-production-status:
     name: Record final production certification status
-    if: ${{ always() }}
+    if: ${{ always() && github.ref == 'refs/heads/main' }}
     needs: [build, deploy, verify-production]
     runs-on: ubuntu-latest
     steps:
