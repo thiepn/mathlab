@@ -128,7 +128,7 @@ pass(deploy.includes('statuses: write'), 'Pages workflow must be able to publish
 pass(deploy.includes('PRODUCTION_STATUS_CONTEXT: mathlab-production'), 'Pages workflow must use the canonical mathlab-production commit-status context');
 pass(deploy.includes('Mark release certification pending before the build'), 'Pages workflow must mark certification pending before build operations');
 pass(deploy.includes('finalize-production-status:'), 'Pages workflow must finish certification even when upstream jobs fail');
-pass(deploy.includes('if: ${{ always() }}'), 'production status finalizer must run after upstream failures');
+pass(deploy.includes("if: ${{ always() && github.ref == 'refs/heads/main' }}"), 'production finalizer must run after failures on main, never on non-main refs');
 pass(deploy.includes('needs: [build, deploy, verify-production]'), 'production status finalizer must inspect every stage');
 pass(deploy.includes('BUILD_RESULT: ${{ needs.build.result }}'), 'finalizer must inspect source/build result');
 pass(deploy.includes('DEPLOY_RESULT: ${{ needs.deploy.result }}'), 'finalizer must inspect Pages deploy result');
